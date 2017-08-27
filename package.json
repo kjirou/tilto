@@ -1,0 +1,38 @@
+{
+  "name": "text-sketchbook",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "flow": "$(npm bin)/flow",
+    "prepublish": "npm run flow && npm run test",
+    "test": "$(npm bin)/mocha --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kjirou/text-sketchbook.git"
+  },
+  "keywords": [
+    "text",
+    "terminal",
+    "renderer"
+  ],
+  "author": "kjirou",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kjirou/text-sketchbook/issues"
+  },
+  "homepage": "https://github.com/kjirou/text-sketchbook#readme",
+  "devDependencies": {
+    "flow-bin": "^0.53.1",
+    "mocha": "^3.5.0"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "index.js",
+    "lib",
+    "package.json"
+  ],
+  "private": true
+}
