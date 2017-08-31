@@ -8,9 +8,9 @@ describe('lib/TextSketchbook', function() {
   describe('addBox', function() {
     it('should throw an error when boxId is duplicated', function() {
       const book = new TextSketchbook(1, 2);
-      const box1 = new Box({x: 0, y: 0, width: 1, height: 1}, null, 'a');
-      const box2 = new Box({x: 0, y: 0, width: 1, height: 1}, null, 'b');
-      const box3 = new Box({x: 0, y: 0, width: 1, height: 1}, null, 'a');
+      const box1 = new Box({x: 0, y: 0, width: 1, height: 1}, {id: 'a'});
+      const box2 = new Box({x: 0, y: 0, width: 1, height: 1}, {id: 'b'});
+      const box3 = new Box({x: 0, y: 0, width: 1, height: 1}, {id: 'a'});
 
       book.addBox(box1);
       book.addBox(box2);
