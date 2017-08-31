@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "flow": "$(npm bin)/flow",
-    "prepublish": "npm run flow && npm run test",
     "test": "$(npm bin)/mocha --recursive"
   },
   "repository": {
