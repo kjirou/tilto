@@ -7,6 +7,7 @@ const {
   clearRightSide,
   clearTopSide,
   drawBottomSide,
+  drawCorner,
   drawLeftSide,
   drawRightSide,
   drawTopSide,
@@ -288,6 +289,43 @@ describe('lib/border-utils', function() {
         'x121',
         'x121',
       ].join('\n'));
+    });
+  });
+
+  describe('drawCorner', function() {
+    it('can draw a cornar with a single symbol', function() {
+      const box1 = new Box({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
+      drawCorner(box1, {x: 0, y: 0, width: 3, height: 2}, ['1']);
+      assert.strictEqual(box1.asString(), [
+        '111x',
+        '111x',
+        'xxxx',
+      ].join('\n'));
+
+      const box2 = new Box({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
+      drawCorner(box2, {x: 1, y: 1, width: 3, height: 2}, ['1']);
+      assert.strictEqual(box2.asString(), [
+        'xxxx',
+        'x111',
+        'x111',
+      ].join('\n'));
+    });
+
+    it('can draw a cornar with multiple symbols', function() {
+      const box = new Box({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
+      drawCorner(box, {x: 0, y: 0, width: 3, height: 2}, ['1', '2', '3', '4']);
+      assert.strictEqual(box.asString(), [
+        '123x',
+        '412x',
+        'xxxx',
+      ].join('\n'));
+    });
+
+    it('should throw an error if it is given an invalid rectangle', function() {
+      const box = new Box({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
+      assert.throws(() => {
+        drawCorner(box, {x: 0, y: 0, width: 4, height: 4}, ['1']);
+      }, /coordinate/);
     });
   });
 });
