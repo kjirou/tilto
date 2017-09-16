@@ -23,4 +23,21 @@ describe('lib/Box', function() {
       }, /size/);
     });
   });
+
+  describe('fromText', function() {
+    it('works (1)', function() {
+      const box = Box.fromText('AB');
+      assert.strictEqual(box.asString(), 'AB');
+    });
+
+    it('works (2)', function() {
+      const box = Box.fromText('AB\nCD\nEF');
+      assert.strictEqual(box.asString(), 'AB\nCD\nEF');
+    });
+
+    it('should remove the last new line character', function() {
+      const box = Box.fromText('AB\nCD\nEF\n');
+      assert.strictEqual(box.asString(), 'AB\nCD\nEF');
+    });
+  });
 });
