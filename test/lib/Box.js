@@ -81,4 +81,48 @@ describe('lib/Box', function() {
       assert.strictEqual(matrix, null);
     });
   });
+
+  describe('instance methods', function() {
+    describe('asString', function() {
+      describe('content pouring', function() {
+        it('should overwrite the part of output where the content was poured', function() {
+          const box = new Box({x: 0, y: 0, width: 5, height: 2}, {symbol: '.'});
+          box.setContent('foo');
+          assert.strictEqual(box.asString(), [
+            'foo..',
+            '.....',
+          ].join('\n'));
+        });
+
+        it('can break lines by "\\n"', function() {
+          const box = new Box({x: 0, y: 0, width: 5, height: 3}, {symbol: '.'});
+          box.setContent('hello\n\nworld');
+          assert.strictEqual(box.asString(), [
+            'hello',
+            '.....',
+            'world',
+          ].join('\n'));
+        });
+
+        it('can break lines automatically', function() {
+          const box = new Box({x: 0, y: 0, width: 5, height: 3}, {symbol: '.'});
+          box.setContent('helloworld!!');
+          assert.strictEqual(box.asString(), [
+            'hello',
+            'world',
+            '!!...',
+          ].join('\n'));
+        });
+
+        it('should ignore overflowing content', function() {
+          const box = new Box({x: 0, y: 0, width: 5, height: 2}, {symbol: '.'});
+          box.setContent('helloworld!!');
+          assert.strictEqual(box.asString(), [
+            'hello',
+            'world',
+          ].join('\n'));
+        });
+      });
+    });
+  });
 });
