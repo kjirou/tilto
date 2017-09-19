@@ -161,6 +161,150 @@ describe('lib/Box', function() {
           ].join('\n'));
         });
       });
+
+      describe('borders', function() {
+        describe('each sides/corners of 1 width', function() {
+          let box;
+
+          beforeEach(function() {
+            box = new Box({x: 0, y: 0, width: 3, height: 4}, {symbol: '.'});
+          });
+
+          it('can set the top side border', function() {
+            box.setBorders({topWidth: 1, topSymbols:['*']});
+            assert.strictEqual(box.asString(), [
+              '***',
+              '...',
+              '...',
+              '...',
+            ].join('\n'));
+          });
+
+          it('can set the bottom side border', function() {
+            box.setBorders({bottomWidth: 1, bottomSymbols:['*']});
+            assert.strictEqual(box.asString(), [
+              '...',
+              '...',
+              '...',
+              '***',
+            ].join('\n'));
+          });
+
+          it('can set the left side border', function() {
+            box.setBorders({leftWidth: 1, leftSymbols:['*']});
+            assert.strictEqual(box.asString(), [
+              '*..',
+              '*..',
+              '*..',
+              '*..',
+            ].join('\n'));
+          });
+
+          it('can set the right side border', function() {
+            box.setBorders({rightWidth: 1, rightSymbols:['*']});
+            assert.strictEqual(box.asString(), [
+              '..*',
+              '..*',
+              '..*',
+              '..*',
+            ].join('\n'));
+          });
+
+          it('can set the top-left corner', function() {
+            box.setBorders({topWidth: 1, leftWidth: 1, topLeftSymbols:['*']});
+            assert.strictEqual(box.asString(), [
+              '*  ',
+              ' ..',
+              ' ..',
+              ' ..',
+            ].join('\n'));
+          });
+
+          it('can set the top-right corner', function() {
+            box.setBorders({topWidth: 1, rightWidth: 1, topRightSymbols:['*']});
+            assert.strictEqual(box.asString(), [
+              '  *',
+              '.. ',
+              '.. ',
+              '.. ',
+            ].join('\n'));
+          });
+
+          it('can set the bottom-left corner', function() {
+            box.setBorders({bottomWidth: 1, leftWidth: 1, bottomLeftSymbols:['*']});
+            assert.strictEqual(box.asString(), [
+              ' ..',
+              ' ..',
+              ' ..',
+              '*  ',
+            ].join('\n'));
+          });
+
+          it('can set the bottom-right corner', function() {
+            box.setBorders({bottomWidth: 1, rightWidth: 1, bottomRightSymbols:['*']});
+            assert.strictEqual(box.asString(), [
+              '.. ',
+              '.. ',
+              '.. ',
+              '  *',
+            ].join('\n'));
+          });
+        });
+
+        describe('borders in all sides', function() {
+          it('works (1)', function() {
+            const box = new Box({x: 0, y: 0, width: 3, height: 4}, {symbol: '.'});
+            box.setBorders({
+              topWidth: 1,
+              bottomWidth: 1,
+              leftWidth: 1,
+              rightWidth: 1,
+              topSymbols: ['-'],
+              bottomSymbols: ['-'],
+              leftSymbols: ['|'],
+              rightSymbols: ['|'],
+              topLeftSymbols: ['+'],
+              topRightSymbols: ['+'],
+              bottomLeftSymbols: ['+'],
+              bottomRightSymbols: ['+'],
+            });
+
+            assert.strictEqual(box.asString(), [
+              '+-+',
+              '|.|',
+              '|.|',
+              '+-+',
+            ].join('\n'));
+          });
+
+          it('works (2)', function() {
+            const box = new Box({x: 0, y: 0, width: 7, height: 6}, {symbol: '.'});
+            box.setBorders({
+              topWidth: 1,
+              bottomWidth: 4,
+              leftWidth: 2,
+              rightWidth: 3,
+              topSymbols: ['T'],
+              bottomSymbols: ['B'],
+              leftSymbols: ['L'],
+              rightSymbols: ['R'],
+              topLeftSymbols: ['1'],
+              topRightSymbols: ['2'],
+              bottomLeftSymbols: ['3'],
+              bottomRightSymbols: ['4'],
+            });
+
+            assert.strictEqual(box.asString(), [
+              '11TT222',
+              'LL..RRR',
+              '33BB444',
+              '33BB444',
+              '33BB444',
+              '33BB444',
+            ].join('\n'));
+          });
+        });
+      });
     });
   });
 });
