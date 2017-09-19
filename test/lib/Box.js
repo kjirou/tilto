@@ -304,6 +304,38 @@ describe('lib/Box', function() {
             ].join('\n'));
           });
         });
+
+        describe('content pouring inside of borders', function() {
+          it('works', function() {
+            const box = new Box({x: 0, y: 0, width: 7, height: 6}, {symbol: '.'});
+
+            box.setBorders({
+              topWidth: 1,
+              bottomWidth: 1,
+              leftWidth: 1,
+              rightWidth: 1,
+              topSymbols: ['-'],
+              bottomSymbols: ['-'],
+              leftSymbols: ['|'],
+              rightSymbols: ['|'],
+              topLeftSymbols: ['+'],
+              topRightSymbols: ['+'],
+              bottomLeftSymbols: ['+'],
+              bottomRightSymbols: ['+'],
+            });
+
+            box.setContent('helloworld!\nfoo\nbar');
+
+            assert.strictEqual(box.asString(), [
+              '+-----+',
+              '|hello|',
+              '|world|',
+              '|!....|',
+              '|foo..|',
+              '+-----+',
+            ].join('\n'));
+          });
+        });
       });
     });
   });
