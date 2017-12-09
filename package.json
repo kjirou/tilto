@@ -33,5 +33,9 @@
     "lib",
     "package.json"
   ],
+  "engines": {
+    "node": ">=8",
+    "npm": ">=5"
+  },
   "private": true
 }
