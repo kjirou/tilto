@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/kjirou/text-sketchbook#readme",
   "devDependencies": {
-    "flow-bin": "^0.53.1",
+    "flow-bin": "^0.61.0",
     "mocha": "^3.5.0"
   },
   "files": [
@@ -33,5 +33,9 @@
     "lib",
     "package.json"
   ],
+  "engines": {
+    "node": ">=8",
+    "npm": ">=5"
+  },
   "private": true
 }
