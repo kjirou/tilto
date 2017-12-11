@@ -3,10 +3,41 @@ const assert = require('assert');
 const boxUtils = require('../../lib/box-utils');
 const {
   cropMatrix,
+  initializeMatrix,
+  overwriteMatrix,
+  toText,
 } = require('../../lib/matrix-utils');
 
 
 describe('lib/matrix-utils', function() {
+  describe('toText', function() {
+    it('works', function() {
+      const matrix = initializeMatrix({x: 0, y: 0, width: 2, height: 3}, '.');
+      assert.strictEqual(toText(matrix), [
+        '..',
+        '..',
+        '..',
+      ].join('\n'));
+    });
+  });
+
+  describe('overwriteMatrix', function() {
+    it('works', function() {
+      let matrix = initializeMatrix({x: 0, y: 0, width: 5, height: 7}, '.');
+      const replacer = initializeMatrix({x: 0, y: 0, width: 2, height: 3}, 'x');
+      matrix = overwriteMatrix(matrix, replacer, {x: 1, y: 2});
+      assert.strictEqual(toText(matrix), [
+        '.....',
+        '.....',
+        '.xx..',
+        '.xx..',
+        '.xx..',
+        '.....',
+        '.....',
+      ].join('\n'));
+    });
+  });
+
   describe('cropMatrix', function() {
     const box = boxUtils.initializeBoxFromText([
       '123',
