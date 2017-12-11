@@ -1,6 +1,5 @@
 const assert = require('assert');
 
-const Box = require('../../lib/Box');
 const {
   clearBottomSide,
   clearLeftSide,
@@ -12,40 +11,44 @@ const {
   drawRightSide,
   drawTopSide,
 } = require('../../lib/border-utils');
+const boxUtils = require('../../lib/box-utils');
 
 
 describe('lib/border-utils', function() {
-  const borderOptions1 = {
-    topWidth: 1,
-    rightWidth: 1,
-    bottomWidth: 1,
-    leftWidth: 1,
-    topPattern: ['-'],
-    rightPattern: ['|'],
-    bottomPattern: ['-'],
-    leftPattern: ['|'],
-    topRightPattern: ['+'],
-    bottomRightPattern: ['+'],
-    bottomLeftPattern: ['+'],
-    topLeftPattern: ['+'],
-  };
-
   describe('clearTopSide', function() {
     it('works', function() {
-      const box1 = new Box({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
-      clearTopSide(box1, 1);
-      assert.strictEqual(box1.asString('N'), [
+      let box1 = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      box1 = clearTopSide(box1, 1);
+      assert.strictEqual(boxUtils.render(box1, {defaultSymbol: 'N'}), [
         'NNN',
         'xxx',
         'xxx',
         'xxx',
       ].join('\n'));
 
-      const box2 = new Box({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
-      clearTopSide(box2, 2);
-      assert.strictEqual(box2.asString('N'), [
+      let box2 = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      box2 = clearTopSide(box2, 2);
+      assert.strictEqual(boxUtils.render(box2, {defaultSymbol: 'N'}), [
         'NNN',
         'NNN',
+        'xxx',
+        'xxx',
+      ].join('\n'));
+    });
+
+    it('should not break original box', function() {
+      const box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      const newBox = clearTopSide(box, 1);
+
+      assert.strictEqual(boxUtils.render(box, {defaultSymbol: 'N'}), [
+        'xxx',
+        'xxx',
+        'xxx',
+        'xxx',
+      ].join('\n'));
+      assert.strictEqual(boxUtils.render(newBox, {defaultSymbol: 'N'}), [
+        'NNN',
+        'xxx',
         'xxx',
         'xxx',
       ].join('\n'));
@@ -54,21 +57,39 @@ describe('lib/border-utils', function() {
 
   describe('clearBottomSide', function() {
     it('works', function() {
-      const box1 = new Box({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
-      clearBottomSide(box1, 1);
-      assert.strictEqual(box1.asString('N'), [
+      let box1 = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      box1 = clearBottomSide(box1, 1);
+      assert.strictEqual(boxUtils.render(box1, {defaultSymbol: 'N'}), [
         'xxx',
         'xxx',
         'xxx',
         'NNN',
       ].join('\n'));
 
-      const box2 = new Box({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
-      clearBottomSide(box2, 2);
-      assert.strictEqual(box2.asString('N'), [
+      let box2 = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      box2 = clearBottomSide(box2, 2);
+      assert.strictEqual(boxUtils.render(box2, {defaultSymbol: 'N'}), [
         'xxx',
         'xxx',
         'NNN',
+        'NNN',
+      ].join('\n'));
+    });
+
+    it('should not break original box', function() {
+      const box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      const newBox = clearBottomSide(box, 1);
+
+      assert.strictEqual(boxUtils.render(box, {defaultSymbol: 'N'}), [
+        'xxx',
+        'xxx',
+        'xxx',
+        'xxx',
+      ].join('\n'));
+      assert.strictEqual(boxUtils.render(newBox, {defaultSymbol: 'N'}), [
+        'xxx',
+        'xxx',
+        'xxx',
         'NNN',
       ].join('\n'));
     });
@@ -76,53 +97,89 @@ describe('lib/border-utils', function() {
 
   describe('clearLeftSide', function() {
     it('works', function() {
-      const box1 = new Box({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
-      clearLeftSide(box1, 1);
-      assert.strictEqual(box1.asString('N'), [
+      let box1 = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      box1 = clearLeftSide(box1, 1);
+      assert.strictEqual(boxUtils.render(box1, {defaultSymbol: 'N'}), [
         'Nxx',
         'Nxx',
         'Nxx',
         'Nxx',
       ].join('\n'));
 
-      const box2 = new Box({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
-      clearLeftSide(box2, 2);
-      assert.strictEqual(box2.asString('N'), [
+      let box2 = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      box2 = clearLeftSide(box2, 2);
+      assert.strictEqual(boxUtils.render(box2, {defaultSymbol: 'N'}), [
         'NNx',
         'NNx',
         'NNx',
         'NNx',
+      ].join('\n'));
+    });
+
+    it('should not break original box', function() {
+      const box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      const newBox = clearLeftSide(box, 1);
+
+      assert.strictEqual(boxUtils.render(box, {defaultSymbol: 'N'}), [
+        'xxx',
+        'xxx',
+        'xxx',
+        'xxx',
+      ].join('\n'));
+      assert.strictEqual(boxUtils.render(newBox, {defaultSymbol: 'N'}), [
+        'Nxx',
+        'Nxx',
+        'Nxx',
+        'Nxx',
       ].join('\n'));
     });
   });
 
   describe('clearRightSide', function() {
     it('works', function() {
-      const box1 = new Box({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
-      clearRightSide(box1, 1);
-      assert.strictEqual(box1.asString('N'), [
+      let box1 = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      box1 = clearRightSide(box1, 1);
+      assert.strictEqual(boxUtils.render(box1, {defaultSymbol: 'N'}), [
         'xxN',
         'xxN',
         'xxN',
         'xxN',
       ].join('\n'));
 
-      const box2 = new Box({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
-      clearRightSide(box2, 2);
-      assert.strictEqual(box2.asString('N'), [
+      let box2 = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      box2 = clearRightSide(box2, 2);
+      assert.strictEqual(boxUtils.render(box2, {defaultSymbol: 'N'}), [
         'xNN',
         'xNN',
         'xNN',
         'xNN',
       ].join('\n'));
     });
+
+    it('should not break original box', function() {
+      const box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      const newBox = clearRightSide(box, 1);
+
+      assert.strictEqual(boxUtils.render(box, {defaultSymbol: 'N'}), [
+        'xxx',
+        'xxx',
+        'xxx',
+        'xxx',
+      ].join('\n'));
+      assert.strictEqual(boxUtils.render(newBox, {defaultSymbol: 'N'}), [
+        'xxN',
+        'xxN',
+        'xxN',
+        'xxN',
+      ].join('\n'));
+    });
   });
 
   describe('drawTopSide', function() {
     it('can draw a border of 1 width', function() {
-      const box = new Box({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
-      drawTopSide(box, 1, ['B'], 0, 2);
-      assert.strictEqual(box.asString(), [
+      let box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      box = drawTopSide(box, 1, ['B'], 0, 2);
+      assert.strictEqual(boxUtils.render(box), [
         'BBB',
         'xxx',
         'xxx',
@@ -131,9 +188,9 @@ describe('lib/border-utils', function() {
     });
 
     it('can draw a border of 2 width', function() {
-      const box = new Box({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
-      drawTopSide(box, 2, ['1', '2'], 0, 2);
-      assert.strictEqual(box.asString(), [
+      let box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      box = drawTopSide(box, 2, ['1', '2'], 0, 2);
+      assert.strictEqual(boxUtils.render(box), [
         '111',
         '222',
         'xxx',
@@ -142,21 +199,39 @@ describe('lib/border-utils', function() {
     });
 
     it('can draw a border in the narrow x range', function() {
-      const box = new Box({x: 0, y: 0, width: 4, height: 2}, {symbol: 'x'});
-      drawTopSide(box, 1, ['B'], 1, 2);
-      assert.strictEqual(box.asString(), [
+      let box = boxUtils.initializeBox({x: 0, y: 0, width: 4, height: 2}, {symbol: 'x'});
+      box = drawTopSide(box, 1, ['B'], 1, 2);
+      assert.strictEqual(boxUtils.render(box), [
         'xBBx',
         'xxxx',
       ].join('\n'));
     });
 
     it('should circulate short symbols', function() {
-      const box = new Box({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
-      drawTopSide(box, 3, ['1', '2'], 0, 2);
-      assert.strictEqual(box.asString(), [
+      let box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      box = drawTopSide(box, 3, ['1', '2'], 0, 2);
+      assert.strictEqual(boxUtils.render(box), [
         '111',
         '222',
         '111',
+        'xxx',
+      ].join('\n'));
+    });
+
+    it('should not break original box', function() {
+      const box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      const newBox = drawTopSide(box, 1, ['B'], 0, 2);
+
+      assert.strictEqual(boxUtils.render(box), [
+        'xxx',
+        'xxx',
+        'xxx',
+        'xxx',
+      ].join('\n'));
+      assert.strictEqual(boxUtils.render(newBox), [
+        'BBB',
+        'xxx',
+        'xxx',
         'xxx',
       ].join('\n'));
     });
@@ -164,9 +239,9 @@ describe('lib/border-utils', function() {
 
   describe('drawBottomSide', function() {
     it('can draw a border of 1 width', function() {
-      const box = new Box({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
-      drawBottomSide(box, 1, ['B'], 0, 2);
-      assert.strictEqual(box.asString(), [
+      let box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      box = drawBottomSide(box, 1, ['B'], 0, 2);
+      assert.strictEqual(boxUtils.render(box), [
         'xxx',
         'xxx',
         'xxx',
@@ -175,9 +250,9 @@ describe('lib/border-utils', function() {
     });
 
     it('can draw a border of 2 width', function() {
-      const box = new Box({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
-      drawBottomSide(box, 2, ['1', '2'], 0, 2);
-      assert.strictEqual(box.asString(), [
+      let box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      box = drawBottomSide(box, 2, ['1', '2'], 0, 2);
+      assert.strictEqual(boxUtils.render(box), [
         'xxx',
         'xxx',
         '222',
@@ -186,31 +261,49 @@ describe('lib/border-utils', function() {
     });
 
     it('can draw a border in the narrow x range', function() {
-      const box = new Box({x: 0, y: 0, width: 4, height: 2}, {symbol: 'x'});
-      drawBottomSide(box, 1, ['B'], 1, 2);
-      assert.strictEqual(box.asString(), [
+      let box = boxUtils.initializeBox({x: 0, y: 0, width: 4, height: 2}, {symbol: 'x'});
+      box = drawBottomSide(box, 1, ['B'], 1, 2);
+      assert.strictEqual(boxUtils.render(box), [
         'xxxx',
         'xBBx',
       ].join('\n'));
     });
 
     it('should circulate short symbols', function() {
-      const box = new Box({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
-      drawBottomSide(box, 3, ['1', '2'], 0, 2);
-      assert.strictEqual(box.asString(), [
+      let box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      box = drawBottomSide(box, 3, ['1', '2'], 0, 2);
+      assert.strictEqual(boxUtils.render(box), [
         'xxx',
         '111',
         '222',
         '111',
       ].join('\n'));
     });
+
+    it('should not break original box', function() {
+      const box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+      const newBox = drawBottomSide(box, 1, ['B'], 0, 2);
+
+      assert.strictEqual(boxUtils.render(box), [
+        'xxx',
+        'xxx',
+        'xxx',
+        'xxx',
+      ].join('\n'));
+      assert.strictEqual(boxUtils.render(newBox), [
+        'xxx',
+        'xxx',
+        'xxx',
+        'BBB',
+      ].join('\n'));
+    });
   });
 
   describe('drawLeftSide', function() {
     it('can draw a border of 1 width', function() {
-      const box = new Box({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
-      drawLeftSide(box, 1, ['B'], 0, 2);
-      assert.strictEqual(box.asString(), [
+      let box = boxUtils.initializeBox({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
+      box = drawLeftSide(box, 1, ['B'], 0, 2);
+      assert.strictEqual(boxUtils.render(box), [
         'Bxxx',
         'Bxxx',
         'Bxxx',
@@ -218,9 +311,9 @@ describe('lib/border-utils', function() {
     });
 
     it('can draw a border of 2 width', function() {
-      const box = new Box({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
-      drawLeftSide(box, 2, ['B'], 0, 2);
-      assert.strictEqual(box.asString(), [
+      let box = boxUtils.initializeBox({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
+      box = drawLeftSide(box, 2, ['B'], 0, 2);
+      assert.strictEqual(boxUtils.render(box), [
         'BBxx',
         'BBxx',
         'BBxx',
@@ -228,9 +321,9 @@ describe('lib/border-utils', function() {
     });
 
     it('can draw a border in the narrow y range', function() {
-      const box = new Box({x: 0, y: 0, width: 2, height: 4}, {symbol: 'x'});
-      drawLeftSide(box, 1, ['B'], 1, 2);
-      assert.strictEqual(box.asString(), [
+      let box = boxUtils.initializeBox({x: 0, y: 0, width: 2, height: 4}, {symbol: 'x'});
+      box = drawLeftSide(box, 1, ['B'], 1, 2);
+      assert.strictEqual(boxUtils.render(box), [
         'xx',
         'Bx',
         'Bx',
@@ -239,21 +332,37 @@ describe('lib/border-utils', function() {
     });
 
     it('should circulate short symbols', function() {
-      const box = new Box({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
-      drawLeftSide(box, 3, ['1', '2'], 0, 2);
-      assert.strictEqual(box.asString(), [
+      let box = boxUtils.initializeBox({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
+      box = drawLeftSide(box, 3, ['1', '2'], 0, 2);
+      assert.strictEqual(boxUtils.render(box), [
         '121x',
         '121x',
         '121x',
+      ].join('\n'));
+    });
+
+    it('should not break original box', function() {
+      const box = boxUtils.initializeBox({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
+      const newBox = drawLeftSide(box, 1, ['B'], 0, 2);
+
+      assert.strictEqual(boxUtils.render(box), [
+        'xxxx',
+        'xxxx',
+        'xxxx',
+      ].join('\n'));
+      assert.strictEqual(boxUtils.render(newBox), [
+        'Bxxx',
+        'Bxxx',
+        'Bxxx',
       ].join('\n'));
     });
   });
 
   describe('drawRightSide', function() {
     it('can draw a border of 1 width', function() {
-      const box = new Box({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
-      drawRightSide(box, 1, ['B'], 0, 2);
-      assert.strictEqual(box.asString(), [
+      let box = boxUtils.initializeBox({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
+      box = drawRightSide(box, 1, ['B'], 0, 2);
+      assert.strictEqual(boxUtils.render(box), [
         'xxxB',
         'xxxB',
         'xxxB',
@@ -261,9 +370,9 @@ describe('lib/border-utils', function() {
     });
 
     it('can draw a border of 2 width', function() {
-      const box = new Box({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
-      drawRightSide(box, 2, ['B'], 0, 2);
-      assert.strictEqual(box.asString(), [
+      let box = boxUtils.initializeBox({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
+      box = drawRightSide(box, 2, ['B'], 0, 2);
+      assert.strictEqual(boxUtils.render(box), [
         'xxBB',
         'xxBB',
         'xxBB',
@@ -271,9 +380,9 @@ describe('lib/border-utils', function() {
     });
 
     it('can draw a border in the narrow y range', function() {
-      const box = new Box({x: 0, y: 0, width: 2, height: 4}, {symbol: 'x'});
-      drawRightSide(box, 1, ['B'], 1, 2);
-      assert.strictEqual(box.asString(), [
+      let box = boxUtils.initializeBox({x: 0, y: 0, width: 2, height: 4}, {symbol: 'x'});
+      box = drawRightSide(box, 1, ['B'], 1, 2);
+      assert.strictEqual(boxUtils.render(box), [
         'xx',
         'xB',
         'xB',
@@ -282,29 +391,45 @@ describe('lib/border-utils', function() {
     });
 
     it('should circulate short symbols', function() {
-      const box = new Box({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
-      drawRightSide(box, 3, ['1', '2'], 0, 2);
-      assert.strictEqual(box.asString(), [
+      let box = boxUtils.initializeBox({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
+      box = drawRightSide(box, 3, ['1', '2'], 0, 2);
+      assert.strictEqual(boxUtils.render(box), [
         'x121',
         'x121',
         'x121',
+      ].join('\n'));
+    });
+
+    it('should not break original box', function() {
+      const box = boxUtils.initializeBox({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
+      const newBox = drawRightSide(box, 1, ['B'], 0, 2);
+
+      assert.strictEqual(boxUtils.render(box), [
+        'xxxx',
+        'xxxx',
+        'xxxx',
+      ].join('\n'));
+      assert.strictEqual(boxUtils.render(newBox), [
+        'xxxB',
+        'xxxB',
+        'xxxB',
       ].join('\n'));
     });
   });
 
   describe('drawCorner', function() {
     it('can draw a cornar with a single symbol', function() {
-      const box1 = new Box({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
-      drawCorner(box1, {x: 0, y: 0, width: 3, height: 2}, ['1']);
-      assert.strictEqual(box1.asString(), [
+      let box1 = boxUtils.initializeBox({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
+      box1 = drawCorner(box1, {x: 0, y: 0, width: 3, height: 2}, ['1']);
+      assert.strictEqual(boxUtils.render(box1), [
         '111x',
         '111x',
         'xxxx',
       ].join('\n'));
 
-      const box2 = new Box({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
-      drawCorner(box2, {x: 1, y: 1, width: 3, height: 2}, ['1']);
-      assert.strictEqual(box2.asString(), [
+      let box2 = boxUtils.initializeBox({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
+      box2 = drawCorner(box2, {x: 1, y: 1, width: 3, height: 2}, ['1']);
+      assert.strictEqual(boxUtils.render(box2), [
         'xxxx',
         'x111',
         'x111',
@@ -312,20 +437,29 @@ describe('lib/border-utils', function() {
     });
 
     it('can draw a cornar with multiple symbols', function() {
-      const box = new Box({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
-      drawCorner(box, {x: 0, y: 0, width: 3, height: 2}, ['1', '2', '3', '4']);
-      assert.strictEqual(box.asString(), [
+      let box = boxUtils.initializeBox({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
+      box = drawCorner(box, {x: 0, y: 0, width: 3, height: 2}, ['1', '2', '3', '4']);
+      assert.strictEqual(boxUtils.render(box), [
         '123x',
         '412x',
         'xxxx',
       ].join('\n'));
     });
 
-    it('should throw an error if it is given an invalid rectangle', function() {
-      const box = new Box({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
-      assert.throws(() => {
-        drawCorner(box, {x: 0, y: 0, width: 4, height: 4}, ['1']);
-      }, /coordinate/);
+    it('should not break original box', function() {
+      const box = boxUtils.initializeBox({x: 0, y: 0, width: 4, height: 3}, {symbol: 'x'});
+      const newBox = drawCorner(box, {x: 0, y: 0, width: 1, height: 1}, ['1']);
+
+      assert.strictEqual(boxUtils.render(box), [
+        'xxxx',
+        'xxxx',
+        'xxxx',
+      ].join('\n'));
+      assert.strictEqual(boxUtils.render(newBox), [
+        '1xxx',
+        'xxxx',
+        'xxxx',
+      ].join('\n'));
     });
   });
 });
