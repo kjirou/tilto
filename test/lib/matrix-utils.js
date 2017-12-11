@@ -5,6 +5,7 @@ const {
   cropMatrix,
   initializeMatrix,
   overwriteMatrix,
+  pourContent,
   toText,
 } = require('../../lib/matrix-utils');
 
@@ -13,10 +14,30 @@ describe('lib/matrix-utils', function() {
   describe('toText', function() {
     it('works', function() {
       const matrix = initializeMatrix({width: 2, height: 3}, '.');
-      assert.strictEqual(toText(matrix), [
+      assert.strictEqual(toText(matrix, 'x'), [
         '..',
         '..',
         '..',
+      ].join('\n'));
+    });
+
+    it('replaces null symbols to the default symbol', function() {
+      const matrix = initializeMatrix({width: 2, height: 3}, null);
+      assert.strictEqual(toText(matrix, 'x'), [
+        'xx',
+        'xx',
+        'xx',
+      ].join('\n'));
+    });
+
+    it('replaces false symbols to blank', function() {
+      const matrix = initializeMatrix({width: 2, height: 3}, null);
+      matrix[0][0].symbol = false;
+      matrix[2][1].symbol = false;
+      assert.strictEqual(toText(matrix, '.'), [
+        '.',
+        '..',
+        '.',
       ].join('\n'));
     });
   });
@@ -76,6 +97,75 @@ describe('lib/matrix-utils', function() {
     it('should return null if it can not crop at all', function() {
       const matrix = cropMatrix(baseMatrix, {x: 3, y: 0, width: 2, height: 3});
       assert.strictEqual(matrix, null);
+    });
+  });
+
+  describe('pourContent', function() {
+    let matrix;
+
+    beforeEach(function() {
+      matrix = initializeMatrix({width: 4, height: 3}, null);
+    });
+
+    it('works', function() {
+      matrix = pourContent(matrix, '12345\nabc', () => 1);
+      assert.strictEqual(toText(matrix, '.'), [
+        '1234',
+        '5...',
+        'abc.',
+      ].join('\n'));
+    });
+
+    it('ignores zero-width symbols', function() {
+      matrix = pourContent(matrix, '1234aaa567aaa8aaa9', function(symbol) {
+        return symbol === 'a' ? 0 : 1;
+      });
+      assert.strictEqual(toText(matrix, '.'), [
+        '1234',
+        '5678',
+        '9...',
+      ].join('\n'));
+    });
+
+    describe('multibytes characters', function() {
+      it('reduces space considering the width of multibytes', function() {
+        matrix = pourContent(matrix, 'あ\n\nいうえ', boxUtils._defaultSymbolRuler);
+        assert.strictEqual(toText(matrix, '.'), [
+          'あ..',
+          '....',
+          'いう',
+        ].join('\n'));
+      });
+
+      it('breaks the line automatically', function() {
+        matrix = pourContent(matrix, 'あいうえおかき', boxUtils._defaultSymbolRuler);
+        assert.strictEqual(toText(matrix, '.'), [
+          'あい',
+          'うえ',
+          'おか',
+        ].join('\n'));
+      });
+
+      it('breaks the line automatically even when the width is not enough', function() {
+        matrix = pourContent(matrix, '1あい2う3え', boxUtils._defaultSymbolRuler);
+        assert.strictEqual(toText(matrix, '.'), [
+          '1あ.',
+          'い2.',
+          'う3.',
+        ].join('\n'));
+      });
+
+      it('cuts the content if a multibyte character appear when the width is 1', function() {
+        matrix = initializeMatrix({width: 1, height: 5}, null);
+        matrix = pourContent(matrix, '12あ34', boxUtils._defaultSymbolRuler);
+        assert.strictEqual(toText(matrix, '.'), [
+          '1',
+          '2',
+          '.',
+          '.',
+          '.',
+        ].join('\n'));
+      });
     });
   });
 });

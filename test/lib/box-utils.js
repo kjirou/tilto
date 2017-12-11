@@ -244,14 +244,14 @@ describe('lib/box-utils', function() {
             bottomRightSymbols: ['+'],
           });
 
-          box.content = 'helloworld!\nfoo\nbar';
+          box.content = 'へlloworlど\nふー\nbar';
 
           assert.strictEqual(boxUtils.render(box), [
             '+-----+',
-            '|hello|',
-            '|world|',
-            '|!....|',
-            '|foo..|',
+            '|へllo|',
+            '|worl.|',
+            '|ど...|',
+            '|ふー.|',
             '+-----+',
           ].join('\n'));
         });
