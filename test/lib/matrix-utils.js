@@ -94,9 +94,9 @@ describe('lib/matrix-utils', function() {
       assert.strictEqual(matrix2[0][1].symbol, 'b');
     });
 
-    it('should return null if it can not crop at all', function() {
+    it('should return [] if it can not crop at all', function() {
       const matrix = cropMatrix(baseMatrix, {x: 3, y: 0, width: 2, height: 3});
-      assert.strictEqual(matrix, null);
+      assert.deepStrictEqual(matrix, []);
     });
   });
 
