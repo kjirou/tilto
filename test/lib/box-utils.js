@@ -41,12 +41,12 @@ describe('lib/box-utils', function() {
     });
   });
 
-  describe('render', function() {
+  describe('toText', function() {
     describe('content pouring', function() {
       it('should overwrite the part of output where the content was poured', function() {
         const box = boxUtils.initializeBox({x: 0, y: 0, width: 5, height: 2}, {symbol: '.'});
         box.content = 'foo';
-        assert.strictEqual(boxUtils.render(box), [
+        assert.strictEqual(boxUtils.toText(box), [
           'foo..',
           '.....',
         ].join('\n'));
@@ -55,7 +55,7 @@ describe('lib/box-utils', function() {
       it('can break lines by "\\n"', function() {
         const box = boxUtils.initializeBox({x: 0, y: 0, width: 5, height: 3}, {symbol: '.'});
         box.content = 'hello\n\nworld';
-        assert.strictEqual(boxUtils.render(box), [
+        assert.strictEqual(boxUtils.toText(box), [
           'hello',
           '.....',
           'world',
@@ -65,7 +65,7 @@ describe('lib/box-utils', function() {
       it('can break lines automatically', function() {
         const box = boxUtils.initializeBox({x: 0, y: 0, width: 5, height: 3}, {symbol: '.'});
         box.content = 'helloworld!!';
-        assert.strictEqual(boxUtils.render(box), [
+        assert.strictEqual(boxUtils.toText(box), [
           'hello',
           'world',
           '!!...',
@@ -75,7 +75,7 @@ describe('lib/box-utils', function() {
       it('should ignore overflowing content', function() {
         const box = boxUtils.initializeBox({x: 0, y: 0, width: 5, height: 2}, {symbol: '.'});
         box.content = 'helloworld!!';
-        assert.strictEqual(boxUtils.render(box), [
+        assert.strictEqual(boxUtils.toText(box), [
           'hello',
           'world',
         ].join('\n'));
@@ -92,7 +92,7 @@ describe('lib/box-utils', function() {
 
         it('can set the top side border', function() {
           box = boxUtils.setBorders(box, {topWidth: 1, topSymbols:['*']});
-          assert.strictEqual(boxUtils.render(box), [
+          assert.strictEqual(boxUtils.toText(box), [
             '***',
             '...',
             '...',
@@ -102,7 +102,7 @@ describe('lib/box-utils', function() {
 
         it('can set the bottom side border', function() {
           box = boxUtils.setBorders(box, {bottomWidth: 1, bottomSymbols:['*']});
-          assert.strictEqual(boxUtils.render(box), [
+          assert.strictEqual(boxUtils.toText(box), [
             '...',
             '...',
             '...',
@@ -112,7 +112,7 @@ describe('lib/box-utils', function() {
 
         it('can set the left side border', function() {
           box = boxUtils.setBorders(box, {leftWidth: 1, leftSymbols:['*']});
-          assert.strictEqual(boxUtils.render(box), [
+          assert.strictEqual(boxUtils.toText(box), [
             '*..',
             '*..',
             '*..',
@@ -122,7 +122,7 @@ describe('lib/box-utils', function() {
 
         it('can set the right side border', function() {
           box = boxUtils.setBorders(box, {rightWidth: 1, rightSymbols:['*']});
-          assert.strictEqual(boxUtils.render(box), [
+          assert.strictEqual(boxUtils.toText(box), [
             '..*',
             '..*',
             '..*',
@@ -132,7 +132,7 @@ describe('lib/box-utils', function() {
 
         it('can set the top-left corner', function() {
           box = boxUtils.setBorders(box, {topWidth: 1, leftWidth: 1, topLeftSymbols:['*']});
-          assert.strictEqual(boxUtils.render(box), [
+          assert.strictEqual(boxUtils.toText(box), [
             '*  ',
             ' ..',
             ' ..',
@@ -142,7 +142,7 @@ describe('lib/box-utils', function() {
 
         it('can set the top-right corner', function() {
           box = boxUtils.setBorders(box, {topWidth: 1, rightWidth: 1, topRightSymbols:['*']});
-          assert.strictEqual(boxUtils.render(box), [
+          assert.strictEqual(boxUtils.toText(box), [
             '  *',
             '.. ',
             '.. ',
@@ -152,7 +152,7 @@ describe('lib/box-utils', function() {
 
         it('can set the bottom-left corner', function() {
           box = boxUtils.setBorders(box, {bottomWidth: 1, leftWidth: 1, bottomLeftSymbols:['*']});
-          assert.strictEqual(boxUtils.render(box), [
+          assert.strictEqual(boxUtils.toText(box), [
             ' ..',
             ' ..',
             ' ..',
@@ -162,7 +162,7 @@ describe('lib/box-utils', function() {
 
         it('can set the bottom-right corner', function() {
           box = boxUtils.setBorders(box, {bottomWidth: 1, rightWidth: 1, bottomRightSymbols:['*']});
-          assert.strictEqual(boxUtils.render(box), [
+          assert.strictEqual(boxUtils.toText(box), [
             '.. ',
             '.. ',
             '.. ',
@@ -189,7 +189,7 @@ describe('lib/box-utils', function() {
             bottomRightSymbols: ['+'],
           });
 
-          assert.strictEqual(boxUtils.render(box), [
+          assert.strictEqual(boxUtils.toText(box), [
             '+-+',
             '|.|',
             '|.|',
@@ -214,7 +214,7 @@ describe('lib/box-utils', function() {
             bottomRightSymbols: ['4'],
           });
 
-          assert.strictEqual(boxUtils.render(box), [
+          assert.strictEqual(boxUtils.toText(box), [
             '11TT222',
             'LL..RRR',
             '33BB444',
@@ -246,7 +246,7 @@ describe('lib/box-utils', function() {
 
           box.content = 'へlloworlど\nふー\nbar';
 
-          assert.strictEqual(boxUtils.render(box), [
+          assert.strictEqual(boxUtils.toText(box), [
             '+-----+',
             '|へllo|',
             '|worl.|',
