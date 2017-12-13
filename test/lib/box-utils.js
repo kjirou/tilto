@@ -44,18 +44,18 @@ describe('lib/box-utils', function() {
   describe('toText', function() {
     describe('content pouring', function() {
       it('should overwrite the part of output where the content was poured', function() {
-        const box = boxUtils.initializeBox({x: 0, y: 0, width: 5, height: 2}, {symbol: '.'});
+        const box = boxUtils.initializeBox({x: 0, y: 0, width: 5, height: 2});
         box.content = 'foo';
-        assert.strictEqual(boxUtils.toText(box), [
+        assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
           'foo..',
           '.....',
         ].join('\n'));
       });
 
       it('can break lines by "\\n"', function() {
-        const box = boxUtils.initializeBox({x: 0, y: 0, width: 5, height: 3}, {symbol: '.'});
+        const box = boxUtils.initializeBox({x: 0, y: 0, width: 5, height: 3});
         box.content = 'hello\n\nworld';
-        assert.strictEqual(boxUtils.toText(box), [
+        assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
           'hello',
           '.....',
           'world',
@@ -63,9 +63,9 @@ describe('lib/box-utils', function() {
       });
 
       it('can break lines automatically', function() {
-        const box = boxUtils.initializeBox({x: 0, y: 0, width: 5, height: 3}, {symbol: '.'});
+        const box = boxUtils.initializeBox({x: 0, y: 0, width: 5, height: 3});
         box.content = 'helloworld!!';
-        assert.strictEqual(boxUtils.toText(box), [
+        assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
           'hello',
           'world',
           '!!...',
@@ -73,9 +73,9 @@ describe('lib/box-utils', function() {
       });
 
       it('should ignore overflowing content', function() {
-        const box = boxUtils.initializeBox({x: 0, y: 0, width: 5, height: 2}, {symbol: '.'});
+        const box = boxUtils.initializeBox({x: 0, y: 0, width: 5, height: 2});
         box.content = 'helloworld!!';
-        assert.strictEqual(boxUtils.toText(box), [
+        assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
           'hello',
           'world',
         ].join('\n'));
@@ -87,7 +87,7 @@ describe('lib/box-utils', function() {
         let box;
 
         beforeEach(function() {
-          box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: '.'});
+          box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: '.'});
         });
 
         it('can set the top side border', function() {
@@ -173,7 +173,7 @@ describe('lib/box-utils', function() {
 
       describe('borders in all sides', function() {
         it('works (case: 1)', function() {
-          let box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: '.'});
+          let box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4});
           box = boxUtils.setBorders(box, {
             topWidth: 1,
             bottomWidth: 1,
@@ -189,7 +189,7 @@ describe('lib/box-utils', function() {
             bottomRightSymbols: ['+'],
           });
 
-          assert.strictEqual(boxUtils.toText(box), [
+          assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
             '+-+',
             '|.|',
             '|.|',
@@ -198,7 +198,7 @@ describe('lib/box-utils', function() {
         });
 
         it('works (case: 2)', function() {
-          let box = boxUtils.initializeBox({x: 0, y: 0, width: 7, height: 6}, {symbol: '.'});
+          let box = boxUtils.initializeBox({x: 0, y: 0, width: 7, height: 6});
           box = boxUtils.setBorders(box, {
             topWidth: 1,
             bottomWidth: 4,
@@ -214,7 +214,7 @@ describe('lib/box-utils', function() {
             bottomRightSymbols: ['4'],
           });
 
-          assert.strictEqual(boxUtils.toText(box), [
+          assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
             '11TT222',
             'LL..RRR',
             '33BB444',
@@ -227,7 +227,7 @@ describe('lib/box-utils', function() {
 
       describe('content pouring inside of borders', function() {
         it('works', function() {
-          let box = boxUtils.initializeBox({x: 0, y: 0, width: 7, height: 6}, {symbol: '.'});
+          let box = boxUtils.initializeBox({x: 0, y: 0, width: 7, height: 6});
 
           box = boxUtils.setBorders(box, {
             topWidth: 1,
@@ -246,13 +246,37 @@ describe('lib/box-utils', function() {
 
           box.content = 'へlloworlど\nふー\nbar';
 
-          assert.strictEqual(boxUtils.toText(box), [
+          assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
             '+-----+',
             '|へllo|',
             '|worl.|',
             '|ど...|',
             '|ふー.|',
             '+-----+',
+          ].join('\n'));
+        });
+      });
+    });
+
+    describe('children', function() {
+      describe('parent box has a child', function() {
+        let parent;
+        let child;
+
+        beforeEach(function() {
+          parent = boxUtils.initializeBox({x: 0, y: 0, width: 7, height: 6});
+          child = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 2}, {defaultSymbol: 'c'});
+          parent.children.push(child);
+        });
+
+        it('works', function() {
+          assert.strictEqual(boxUtils.toText(parent, {backgroundSymbol: '.'}), [
+            'ccc....',
+            'ccc....',
+            '.......',
+            '.......',
+            '.......',
+            '.......',
           ].join('\n'));
         });
       });
