@@ -4,6 +4,7 @@ const boxUtils = require('../../lib/box-utils');
 const {
   cropMatrix,
   initializeMatrix,
+  initializeMatrixFromText,
   overwriteMatrix,
   pourContent,
   toText,
@@ -46,7 +47,7 @@ describe('lib/matrix-utils', function() {
     it('works', function() {
       let matrix = initializeMatrix({width: 5, height: 7}, '.');
       const replacer = initializeMatrix({width: 2, height: 3}, 'x');
-      matrix = overwriteMatrix(matrix, replacer, {x: 1, y: 2});
+      matrix = overwriteMatrix(matrix, replacer, {x: 1, y: 2}, (symbol) => 1);
       assert.strictEqual(toText(matrix), [
         '.....',
         '.....',
@@ -56,6 +57,81 @@ describe('lib/matrix-utils', function() {
         '.....',
         '.....',
       ].join('\n'));
+    });
+
+    it('does not overwrite if the replacer width is 0', function() {
+      const matrix = initializeMatrix({width: 2, height: 2}, '.');
+      const replacer = initializeMatrix({width: 0, height: 1}, 'x');
+      const newMatrix = overwriteMatrix(matrix, replacer, {x: 0, y: 0}, (symbol) => 1);
+      assert.deepStrictEqual(matrix, newMatrix);
+    });
+
+    it('does not overwrite if the replacer height is 0', function() {
+      const matrix = initializeMatrix({width: 2, height: 2}, '.');
+      const replacer = initializeMatrix({width: 1, height: 0}, 'x');
+      const newMatrix = overwriteMatrix(matrix, replacer, {x: 0, y: 0}, (symbol) => 1);
+      assert.deepStrictEqual(matrix, newMatrix);
+    });
+
+    describe('multibyte fragments deletion', function() {
+      let matrix;
+      let replacer;
+
+      beforeEach(function() {
+        matrix = initializeMatrixFromText([
+          '....',
+          '....',
+          '....',
+        ].join('\n'));
+        replacer = initializeMatrixFromText([
+          'xx',
+          'xx',
+        ].join('\n'));
+      });
+
+      it('1', function() {
+        replacer[0][0].symbol = false;
+        const newMatrix = overwriteMatrix(matrix, replacer, {x: 2, y: 1}, boxUtils._defaultSymbolRuler);
+
+        assert.strictEqual(toText(newMatrix, '-'), [
+          '....',
+          '..-x',
+          '..xx',
+        ].join('\n'));
+      });
+
+      it('2', function() {
+        replacer[1][1].symbol = 'あ';
+        const newMatrix = overwriteMatrix(matrix, replacer, {x: 0, y: 0}, boxUtils._defaultSymbolRuler);
+
+        assert.strictEqual(toText(newMatrix, '-'), [
+          'xx..',
+          'x-..',
+          '....',
+        ].join('\n'));
+      });
+
+      it('3', function() {
+        matrix[1][0].symbol = 'あ';
+        const newMatrix = overwriteMatrix(matrix, replacer, {x: 1, y: 1}, boxUtils._defaultSymbolRuler);
+
+        assert.strictEqual(toText(newMatrix, '-'), [
+          '....',
+          '-xx.',
+          '.xx.',
+        ].join('\n'));
+      });
+
+      it('4', function() {
+        matrix[2][2].symbol = false;
+        const newMatrix = overwriteMatrix(matrix, replacer, {x: 0, y: 1}, boxUtils._defaultSymbolRuler);
+
+        assert.strictEqual(toText(newMatrix, '-'), [
+          '....',
+          'xx..',
+          'xx-.',
+        ].join('\n'));
+      });
     });
   });
 
