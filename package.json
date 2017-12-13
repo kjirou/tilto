@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "flow-bin": "^0.61.0",
+    "keypress": "^0.2.1",
     "log-update": "^2.3.0",
     "mocha": "^3.5.0"
   },
