@@ -259,25 +259,110 @@ describe('lib/box-utils', function() {
     });
 
     describe('children', function() {
-      describe('parent box has a child', function() {
-        let parent;
+      describe('the box that has a child', function() {
+        let box;
         let child;
 
         beforeEach(function() {
-          parent = boxUtils.initializeBox({x: 0, y: 0, width: 7, height: 6});
+          box = boxUtils.initializeBox({x: 0, y: 0, width: 7, height: 4});
           child = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 2}, {defaultSymbol: 'c'});
-          parent.children.push(child);
+          box.children.push(child);
         });
 
-        it('works', function() {
-          assert.strictEqual(boxUtils.toText(parent, {backgroundSymbol: '.'}), [
-            'ccc....',
-            'ccc....',
+        it('can move the child', function() {
+          child.x = 2;
+          child.y = 1;
+
+          assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
             '.......',
+            '..ccc..',
+            '..ccc..',
             '.......',
+          ].join('\n'));
+        });
+
+        it('applies the content of the child', function() {
+          child.content = '1234';
+
+          assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+            '123....',
+            '4cc....',
             '.......',
             '.......',
           ].join('\n'));
+        });
+
+        it('applies the multibyte content of the child', function() {
+          child.content = 'あ\n1い';
+
+          assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+            'あc....',
+            '1い....',
+            '.......',
+            '.......',
+          ].join('\n'));
+        });
+
+        it('should be overwrite with the content of the child', function() {
+          box.content = '1234567\nabcdefg\nABCDEFG';
+          child.x = 1;
+          child.y = 1;
+
+          assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+            '1234567',
+            'acccefg',
+            'AcccEFG',
+            '.......',
+          ].join('\n'));
+        });
+
+        it('should be overwrite with the content of the child even when the box contains multibytes', function() {
+          box.content = 'あいう\n1えおか';
+          child.x = 1;
+          child.y = 0;
+
+          assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+            '.cccう.',
+            '1ccc.か',
+            '.......',
+            '.......',
+          ].join('\n'));
+        });
+      });
+
+      describe('the box that has two children', function() {
+        let box;
+        let child1;
+        let child2;
+
+        beforeEach(function() {
+          box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 3});
+          child1 = boxUtils.initializeBox({x: 0, y: 0, width: 2, height: 2}, {defaultSymbol: '1'});
+          child2 = boxUtils.initializeBox({x: 0, y: 0, width: 1, height: 1}, {defaultSymbol: '2'});
+          box.children.push(child1);
+          box.children.push(child2);
+        });
+
+        describe('the children have same zIndex', function() {
+          it('puts the box added later at a higher position', function() {
+            assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+              '21.',
+              '11.',
+              '...',
+            ].join('\n'));
+          });
+        });
+
+        describe('the children have another zIndex', function() {
+          it('puts the box of high zIndex at a higher position', function() {
+            child1.zIndex = 1;
+
+            assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+              '11.',
+              '11.',
+              '...',
+            ].join('\n'));
+          });
         });
       });
     });
