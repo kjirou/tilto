@@ -43,14 +43,14 @@ function getMaxY(box/*: Box*/)/*: number*/ {
 }
 
 module.exports = {
+  createBox: boxUtils.createBox,
+  createBoxFromText: boxUtils.createBoxFromText,
+  createMatrix: matrixUtils.createMatrix,
+  createMatrixFromText: matrixUtils.createMatrixFromText,
+  getHeight,
   getMaxX,
   getMaxY,
-  getHeight,
   getWidth,
-  initializeBox: boxUtils.initializeBox,
-  initializeBoxFromText: boxUtils.initializeBoxFromText,
-  initializeMatrix: matrixUtils.initializeMatrix,
-  initializeMatrixFromText: matrixUtils.initializeMatrixFromText,
   render: boxUtils.toText,
   setBorders: boxUtils.setBorders,
 };

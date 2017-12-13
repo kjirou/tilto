@@ -2,9 +2,9 @@ const assert = require('assert');
 
 const boxUtils = require('../../lib/box-utils');
 const {
+  createMatrix,
+  createMatrixFromText,
   cropMatrix,
-  initializeMatrix,
-  initializeMatrixFromText,
   overwriteMatrix,
   pourContent,
   toText,
@@ -14,7 +14,7 @@ const {
 describe('lib/matrix-utils', function() {
   describe('toText', function() {
     it('works', function() {
-      const matrix = initializeMatrix({width: 2, height: 3}, '.');
+      const matrix = createMatrix({width: 2, height: 3}, '.');
       assert.strictEqual(toText(matrix, 'x'), [
         '..',
         '..',
@@ -23,7 +23,7 @@ describe('lib/matrix-utils', function() {
     });
 
     it('replaces null symbols to the default symbol', function() {
-      const matrix = initializeMatrix({width: 2, height: 3}, null);
+      const matrix = createMatrix({width: 2, height: 3}, null);
       assert.strictEqual(toText(matrix, 'x'), [
         'xx',
         'xx',
@@ -32,7 +32,7 @@ describe('lib/matrix-utils', function() {
     });
 
     it('replaces false symbols to blank', function() {
-      const matrix = initializeMatrix({width: 2, height: 3}, null);
+      const matrix = createMatrix({width: 2, height: 3}, null);
       matrix[0][0].symbol = false;
       matrix[2][1].symbol = false;
       assert.strictEqual(toText(matrix, '.'), [
@@ -45,8 +45,8 @@ describe('lib/matrix-utils', function() {
 
   describe('overwriteMatrix', function() {
     it('works', function() {
-      let matrix = initializeMatrix({width: 5, height: 7}, '.');
-      const replacer = initializeMatrix({width: 2, height: 3}, 'x');
+      let matrix = createMatrix({width: 5, height: 7}, '.');
+      const replacer = createMatrix({width: 2, height: 3}, 'x');
       matrix = overwriteMatrix(matrix, replacer, {x: 1, y: 2}, (symbol) => 1);
       assert.strictEqual(toText(matrix), [
         '.....',
@@ -60,15 +60,15 @@ describe('lib/matrix-utils', function() {
     });
 
     it('does not overwrite if the replacer width is 0', function() {
-      const matrix = initializeMatrix({width: 2, height: 2}, '.');
-      const replacer = initializeMatrix({width: 0, height: 1}, 'x');
+      const matrix = createMatrix({width: 2, height: 2}, '.');
+      const replacer = createMatrix({width: 0, height: 1}, 'x');
       const newMatrix = overwriteMatrix(matrix, replacer, {x: 0, y: 0}, (symbol) => 1);
       assert.deepStrictEqual(matrix, newMatrix);
     });
 
     it('does not overwrite if the replacer height is 0', function() {
-      const matrix = initializeMatrix({width: 2, height: 2}, '.');
-      const replacer = initializeMatrix({width: 1, height: 0}, 'x');
+      const matrix = createMatrix({width: 2, height: 2}, '.');
+      const replacer = createMatrix({width: 1, height: 0}, 'x');
       const newMatrix = overwriteMatrix(matrix, replacer, {x: 0, y: 0}, (symbol) => 1);
       assert.deepStrictEqual(matrix, newMatrix);
     });
@@ -78,12 +78,12 @@ describe('lib/matrix-utils', function() {
       let replacer;
 
       beforeEach(function() {
-        matrix = initializeMatrixFromText([
+        matrix = createMatrixFromText([
           '....',
           '....',
           '....',
         ].join('\n'));
-        replacer = initializeMatrixFromText([
+        replacer = createMatrixFromText([
           'xx',
           'xx',
         ].join('\n'));
@@ -136,7 +136,7 @@ describe('lib/matrix-utils', function() {
   });
 
   describe('cropMatrix', function() {
-    const box = boxUtils.initializeBoxFromText([
+    const box = boxUtils.createBoxFromText([
       '123',
       '456',
       '789',
@@ -180,7 +180,7 @@ describe('lib/matrix-utils', function() {
     let matrix;
 
     beforeEach(function() {
-      matrix = initializeMatrix({width: 4, height: 3}, null);
+      matrix = createMatrix({width: 4, height: 3}, null);
     });
 
     it('works', function() {
@@ -232,7 +232,7 @@ describe('lib/matrix-utils', function() {
       });
 
       it('cuts the content if a multibyte character appear when the width is 1', function() {
-        matrix = initializeMatrix({width: 1, height: 5}, null);
+        matrix = createMatrix({width: 1, height: 5}, null);
         matrix = pourContent(matrix, '12あ34', boxUtils._defaultSymbolRuler);
         assert.strictEqual(toText(matrix, '.'), [
           '1',
