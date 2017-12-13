@@ -4,39 +4,39 @@ const boxUtils = require('../../lib/box-utils');
 
 
 describe('lib/box-utils', function() {
-  describe('initializeBox', function() {
+  describe('createBox', function() {
     it('should not throw an error if arguments are valid', function() {
       assert.doesNotThrow(() => {
-        boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+        boxUtils.createBox({width: 3, height: 4}, {symbol: 'x'});
       });
     });
 
     it('should throw an error if matrix has no height', function() {
       assert.throws(() => {
-        boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 0}, {symbol: 'x'});
+        boxUtils.createBox({width: 3, height: 0}, {symbol: 'x'});
       }, /size/);
     });
 
     it('should throw an error if matrix has no width', function() {
       assert.throws(() => {
-        boxUtils.initializeBox({x: 0, y: 0, width: 0, height: 4}, {symbol: 'x'});
+        boxUtils.createBox({width: 0, height: 4}, {symbol: 'x'});
       }, /size/);
     });
   });
 
-  describe('initializeBoxFromText', function() {
+  describe('createBoxFromText', function() {
     it('works (case: 1)', function() {
-      const box = boxUtils.initializeBoxFromText('AB');
+      const box = boxUtils.createBoxFromText('AB');
       //assert.strictEqual(box.asString(), 'AB');
     });
 
     it('works (case: 2)', function() {
-      const box = boxUtils.initializeBoxFromText('AB\nCD\nEF');
+      const box = boxUtils.createBoxFromText('AB\nCD\nEF');
       //assert.strictEqual(box.asString(), 'AB\nCD\nEF');
     });
 
     it('should remove the last new line character', function() {
-      const box = boxUtils.initializeBoxFromText('AB\nCD\nEF\n');
+      const box = boxUtils.createBoxFromText('AB\nCD\nEF\n');
       //assert.strictEqual(box.asString(), 'AB\nCD\nEF');
     });
   });
@@ -44,7 +44,7 @@ describe('lib/box-utils', function() {
   describe('toText', function() {
     describe('content pouring', function() {
       it('should overwrite the part of output where the content was poured', function() {
-        const box = boxUtils.initializeBox({x: 0, y: 0, width: 5, height: 2});
+        const box = boxUtils.createBox({width: 5, height: 2});
         box.content = 'foo';
         assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
           'foo..',
@@ -53,7 +53,7 @@ describe('lib/box-utils', function() {
       });
 
       it('can break lines by "\\n"', function() {
-        const box = boxUtils.initializeBox({x: 0, y: 0, width: 5, height: 3});
+        const box = boxUtils.createBox({width: 5, height: 3});
         box.content = 'hello\n\nworld';
         assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
           'hello',
@@ -63,7 +63,7 @@ describe('lib/box-utils', function() {
       });
 
       it('can break lines automatically', function() {
-        const box = boxUtils.initializeBox({x: 0, y: 0, width: 5, height: 3});
+        const box = boxUtils.createBox({width: 5, height: 3});
         box.content = 'helloworld!!';
         assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
           'hello',
@@ -73,7 +73,7 @@ describe('lib/box-utils', function() {
       });
 
       it('should ignore overflowing content', function() {
-        const box = boxUtils.initializeBox({x: 0, y: 0, width: 5, height: 2});
+        const box = boxUtils.createBox({width: 5, height: 2});
         box.content = 'helloworld!!';
         assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
           'hello',
@@ -87,7 +87,7 @@ describe('lib/box-utils', function() {
         let box;
 
         beforeEach(function() {
-          box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: '.'});
+          box = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: '.'});
         });
 
         it('can set the top side border', function() {
@@ -173,7 +173,7 @@ describe('lib/box-utils', function() {
 
       describe('borders in all sides', function() {
         it('works (case: 1)', function() {
-          let box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4});
+          let box = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4});
           box = boxUtils.setBorders(box, {
             topWidth: 1,
             bottomWidth: 1,
@@ -198,7 +198,7 @@ describe('lib/box-utils', function() {
         });
 
         it('works (case: 2)', function() {
-          let box = boxUtils.initializeBox({x: 0, y: 0, width: 7, height: 6});
+          let box = boxUtils.createBox({x: 0, y: 0, width: 7, height: 6});
           box = boxUtils.setBorders(box, {
             topWidth: 1,
             bottomWidth: 4,
@@ -227,7 +227,7 @@ describe('lib/box-utils', function() {
 
       describe('content pouring inside of borders', function() {
         it('works', function() {
-          let box = boxUtils.initializeBox({x: 0, y: 0, width: 7, height: 6});
+          let box = boxUtils.createBox({x: 0, y: 0, width: 7, height: 6});
 
           box = boxUtils.setBorders(box, {
             topWidth: 1,
@@ -264,8 +264,8 @@ describe('lib/box-utils', function() {
         let child;
 
         beforeEach(function() {
-          box = boxUtils.initializeBox({x: 0, y: 0, width: 7, height: 4});
-          child = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 2}, {defaultSymbol: 'c'});
+          box = boxUtils.createBox({x: 0, y: 0, width: 7, height: 4});
+          child = boxUtils.createBox({x: 0, y: 0, width: 3, height: 2}, {defaultSymbol: 'c'});
           box.children.push(child);
         });
 
@@ -336,9 +336,9 @@ describe('lib/box-utils', function() {
         let child2;
 
         beforeEach(function() {
-          box = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 3});
-          child1 = boxUtils.initializeBox({x: 0, y: 0, width: 2, height: 2}, {defaultSymbol: '1'});
-          child2 = boxUtils.initializeBox({x: 0, y: 0, width: 1, height: 1}, {defaultSymbol: '2'});
+          box = boxUtils.createBox({x: 0, y: 0, width: 3, height: 3});
+          child1 = boxUtils.createBox({x: 0, y: 0, width: 2, height: 2}, {defaultSymbol: '1'});
+          child2 = boxUtils.createBox({x: 0, y: 0, width: 1, height: 1}, {defaultSymbol: '2'});
           box.children.push(child1);
           box.children.push(child2);
         });
