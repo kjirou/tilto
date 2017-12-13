@@ -7,19 +7,19 @@ describe('lib/box-utils', function() {
   describe('createBox', function() {
     it('should not throw an error if arguments are valid', function() {
       assert.doesNotThrow(() => {
-        boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
+        boxUtils.createBox({width: 3, height: 4}, {symbol: 'x'});
       });
     });
 
     it('should throw an error if matrix has no height', function() {
       assert.throws(() => {
-        boxUtils.createBox({x: 0, y: 0, width: 3, height: 0}, {symbol: 'x'});
+        boxUtils.createBox({width: 3, height: 0}, {symbol: 'x'});
       }, /size/);
     });
 
     it('should throw an error if matrix has no width', function() {
       assert.throws(() => {
-        boxUtils.createBox({x: 0, y: 0, width: 0, height: 4}, {symbol: 'x'});
+        boxUtils.createBox({width: 0, height: 4}, {symbol: 'x'});
       }, /size/);
     });
   });
@@ -44,7 +44,7 @@ describe('lib/box-utils', function() {
   describe('toText', function() {
     describe('content pouring', function() {
       it('should overwrite the part of output where the content was poured', function() {
-        const box = boxUtils.createBox({x: 0, y: 0, width: 5, height: 2});
+        const box = boxUtils.createBox({width: 5, height: 2});
         box.content = 'foo';
         assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
           'foo..',
@@ -53,7 +53,7 @@ describe('lib/box-utils', function() {
       });
 
       it('can break lines by "\\n"', function() {
-        const box = boxUtils.createBox({x: 0, y: 0, width: 5, height: 3});
+        const box = boxUtils.createBox({width: 5, height: 3});
         box.content = 'hello\n\nworld';
         assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
           'hello',
@@ -63,7 +63,7 @@ describe('lib/box-utils', function() {
       });
 
       it('can break lines automatically', function() {
-        const box = boxUtils.createBox({x: 0, y: 0, width: 5, height: 3});
+        const box = boxUtils.createBox({width: 5, height: 3});
         box.content = 'helloworld!!';
         assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
           'hello',
@@ -73,7 +73,7 @@ describe('lib/box-utils', function() {
       });
 
       it('should ignore overflowing content', function() {
-        const box = boxUtils.createBox({x: 0, y: 0, width: 5, height: 2});
+        const box = boxUtils.createBox({width: 5, height: 2});
         box.content = 'helloworld!!';
         assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
           'hello',
