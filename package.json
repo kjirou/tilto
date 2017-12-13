@@ -1,5 +1,5 @@
 {
-  "name": "text-sketchbook",
+  "name": "tilto",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kjirou/text-sketchbook.git"
+    "url": "git+https://github.com/kjirou/tilto.git"
   },
   "keywords": [
     "text",
@@ -19,9 +19,9 @@
   "author": "kjirou",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kjirou/text-sketchbook/issues"
+    "url": "https://github.com/kjirou/tilto/issues"
   },
-  "homepage": "https://github.com/kjirou/text-sketchbook#readme",
+  "homepage": "https://github.com/kjirou/tilto#readme",
   "dependencies": {
     "eastasianwidth": "^0.1.1"
   },
