@@ -19,7 +19,7 @@ describe('lib/border-utils', function() {
     it('works', function() {
       let box1 = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
       box1.matrix = clearTopSide(box1.matrix, 1);
-      assert.strictEqual(boxUtils.toText(box1, {defaultSymbol: 'N'}), [
+      assert.strictEqual(boxUtils.toText(box1, {backgroundSymbol: 'N'}), [
         'NNN',
         'xxx',
         'xxx',
@@ -28,7 +28,7 @@ describe('lib/border-utils', function() {
 
       let box2 = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
       box2.matrix = clearTopSide(box2.matrix, 2);
-      assert.strictEqual(boxUtils.toText(box2, {defaultSymbol: 'N'}), [
+      assert.strictEqual(boxUtils.toText(box2, {backgroundSymbol: 'N'}), [
         'NNN',
         'NNN',
         'xxx',
@@ -42,13 +42,13 @@ describe('lib/border-utils', function() {
         matrix: clearTopSide(box.matrix, 1),
       });
 
-      assert.strictEqual(boxUtils.toText(box, {defaultSymbol: 'N'}), [
+      assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: 'N'}), [
         'xxx',
         'xxx',
         'xxx',
         'xxx',
       ].join('\n'));
-      assert.strictEqual(boxUtils.toText(newBox, {defaultSymbol: 'N'}), [
+      assert.strictEqual(boxUtils.toText(newBox, {backgroundSymbol: 'N'}), [
         'NNN',
         'xxx',
         'xxx',
@@ -61,7 +61,7 @@ describe('lib/border-utils', function() {
     it('works', function() {
       let box1 = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
       box1.matrix = clearBottomSide(box1.matrix, 1);
-      assert.strictEqual(boxUtils.toText(box1, {defaultSymbol: 'N'}), [
+      assert.strictEqual(boxUtils.toText(box1, {backgroundSymbol: 'N'}), [
         'xxx',
         'xxx',
         'xxx',
@@ -70,7 +70,7 @@ describe('lib/border-utils', function() {
 
       let box2 = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
       box2.matrix = clearBottomSide(box2.matrix, 2);
-      assert.strictEqual(boxUtils.toText(box2, {defaultSymbol: 'N'}), [
+      assert.strictEqual(boxUtils.toText(box2, {backgroundSymbol: 'N'}), [
         'xxx',
         'xxx',
         'NNN',
@@ -84,13 +84,13 @@ describe('lib/border-utils', function() {
         matrix: clearBottomSide(box.matrix, 1),
       });
 
-      assert.strictEqual(boxUtils.toText(box, {defaultSymbol: 'N'}), [
+      assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: 'N'}), [
         'xxx',
         'xxx',
         'xxx',
         'xxx',
       ].join('\n'));
-      assert.strictEqual(boxUtils.toText(newBox, {defaultSymbol: 'N'}), [
+      assert.strictEqual(boxUtils.toText(newBox, {backgroundSymbol: 'N'}), [
         'xxx',
         'xxx',
         'xxx',
@@ -103,7 +103,7 @@ describe('lib/border-utils', function() {
     it('works', function() {
       let box1 = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
       box1.matrix = clearLeftSide(box1.matrix, 1);
-      assert.strictEqual(boxUtils.toText(box1, {defaultSymbol: 'N'}), [
+      assert.strictEqual(boxUtils.toText(box1, {backgroundSymbol: 'N'}), [
         'Nxx',
         'Nxx',
         'Nxx',
@@ -112,7 +112,7 @@ describe('lib/border-utils', function() {
 
       let box2 = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
       box2.matrix = clearLeftSide(box2.matrix, 2);
-      assert.strictEqual(boxUtils.toText(box2, {defaultSymbol: 'N'}), [
+      assert.strictEqual(boxUtils.toText(box2, {backgroundSymbol: 'N'}), [
         'NNx',
         'NNx',
         'NNx',
@@ -126,13 +126,13 @@ describe('lib/border-utils', function() {
         matrix: clearLeftSide(box.matrix, 1),
       });
 
-      assert.strictEqual(boxUtils.toText(box, {defaultSymbol: 'N'}), [
+      assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: 'N'}), [
         'xxx',
         'xxx',
         'xxx',
         'xxx',
       ].join('\n'));
-      assert.strictEqual(boxUtils.toText(newBox, {defaultSymbol: 'N'}), [
+      assert.strictEqual(boxUtils.toText(newBox, {backgroundSymbol: 'N'}), [
         'Nxx',
         'Nxx',
         'Nxx',
@@ -145,7 +145,7 @@ describe('lib/border-utils', function() {
     it('works', function() {
       let box1 = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
       box1.matrix = clearRightSide(box1.matrix, 1);
-      assert.strictEqual(boxUtils.toText(box1, {defaultSymbol: 'N'}), [
+      assert.strictEqual(boxUtils.toText(box1, {backgroundSymbol: 'N'}), [
         'xxN',
         'xxN',
         'xxN',
@@ -154,7 +154,7 @@ describe('lib/border-utils', function() {
 
       let box2 = boxUtils.initializeBox({x: 0, y: 0, width: 3, height: 4}, {symbol: 'x'});
       box2.matrix = clearRightSide(box2.matrix, 2);
-      assert.strictEqual(boxUtils.toText(box2, {defaultSymbol: 'N'}), [
+      assert.strictEqual(boxUtils.toText(box2, {backgroundSymbol: 'N'}), [
         'xNN',
         'xNN',
         'xNN',
@@ -168,13 +168,13 @@ describe('lib/border-utils', function() {
         matrix: clearRightSide(box.matrix, 1),
       });
 
-      assert.strictEqual(boxUtils.toText(box, {defaultSymbol: 'N'}), [
+      assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: 'N'}), [
         'xxx',
         'xxx',
         'xxx',
         'xxx',
       ].join('\n'));
-      assert.strictEqual(boxUtils.toText(newBox, {defaultSymbol: 'N'}), [
+      assert.strictEqual(boxUtils.toText(newBox, {backgroundSymbol: 'N'}), [
         'xxN',
         'xxN',
         'xxN',
