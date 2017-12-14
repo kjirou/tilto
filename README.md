@@ -27,3 +27,19 @@ console.log(tilto.render(box));
 ```
 
 See also [examples](/examples).
+
+
+## APIs
+### type Box
+```js
+type Box = {
+  borders: Borders;
+  children: Box[];
+  content: string,
+  matrix: Matrix,
+  symbolRuler: SymbolRuler,
+  x: number,
+  y: number,
+  zIndex: number,
+};
+```
