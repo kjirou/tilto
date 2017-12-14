@@ -1,7 +1,7 @@
 {
   "name": "tilto",
   "version": "0.0.0",
-  "description": "",
+  "description": "A TUI (Text User Interface) renderer",
   "main": "index.js",
   "scripts": {
     "flow": "$(npm bin)/flow",
@@ -43,6 +43,5 @@
   "engines": {
     "node": ">=6",
     "npm": ">=3"
-  },
-  "private": true
+  }
 }
