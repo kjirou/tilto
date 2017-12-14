@@ -1,7 +1,9 @@
 const assert = require('assert');
+const chalk = require('chalk');
 
 const boxUtils = require('../../lib/box-utils');
 const {
+  _parseContentToSymbols,
   createMatrix,
   createMatrixFromText,
   cropMatrix,
@@ -39,6 +41,16 @@ describe('lib/matrix-utils', function() {
         '.',
         '..',
         '.',
+      ].join('\n'));
+    });
+
+    it('can render single byte ANSI characters', function() {
+      const matrix = createMatrix({width: 2, height: 2}, null);
+      matrix[0][0].symbol = chalk.red('a');
+      matrix[1][1].symbol = chalk.red.underline.inverse('b');
+      assert.strictEqual(toText(matrix, '.'), [
+        chalk.red('a') + '.',
+        '.' + chalk.red.underline.inverse('b'),
       ].join('\n'));
     });
   });
@@ -175,6 +187,17 @@ describe('lib/matrix-utils', function() {
       assert.deepStrictEqual(matrix, []);
     });
   });
+
+  //describe('_parseContentToSymbols', function() {
+  //  it('works', function() {
+  //    const content = 'a' + chalk.red('bc') + 'd';
+  //    const symbols = _parseContentToSymbols(content);
+  //    assert.strictEqual(symbols[0], 'a');
+  //    assert.strictEqual(symbols[1], chalk.red('b'));
+  //    assert.strictEqual(symbols[2], chalk.red('c'));
+  //    assert.strictEqual(symbols[3], 'd');
+  //  });
+  //});
 
   describe('pourContent', function() {
     let matrix;

@@ -1,4 +1,5 @@
 const assert = require('assert');
+const chalk = require('chalk');
 
 const boxUtils = require('../../lib/box-utils');
 
@@ -38,6 +39,39 @@ describe('lib/box-utils', function() {
     it('should remove the last new line character', function() {
       const box = boxUtils.createBoxFromText('AB\nCD\nEF\n');
       //assert.strictEqual(box.asString(), 'AB\nCD\nEF');
+    });
+  });
+
+  describe('_defaultSymbolRuler', function() {
+    it('can measure single byte character', function() {
+      assert.strictEqual(boxUtils._defaultSymbolRuler('a'), 1);
+    });
+
+    it('can measure multibyte character', function() {
+      assert.strictEqual(boxUtils._defaultSymbolRuler('あ'), 2);
+    });
+
+    it('can measure ANSI string', function() {
+      assert.strictEqual(
+        boxUtils._defaultSymbolRuler(
+          chalk.red('a')
+        ),
+        1
+      );
+
+      assert.strictEqual(
+        boxUtils._defaultSymbolRuler(
+          chalk.red.underline('a')
+        ),
+        1
+      );
+
+      assert.strictEqual(
+        boxUtils._defaultSymbolRuler(
+          chalk.red.underline.inverse('a')
+        ),
+        1
+      );
     });
   });
 
