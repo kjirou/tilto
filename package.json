@@ -31,7 +31,9 @@
     "flow-bin": "^0.61.0",
     "keypress": "^0.2.1",
     "log-update": "^2.3.0",
-    "mocha": "^3.5.0"
+    "mocha": "^3.5.0",
+    "ts-node": "^8.0.1",
+    "typescript": "^3.2.4"
   },
   "files": [
     "LICENSE",
