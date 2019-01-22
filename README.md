@@ -1,5 +1,7 @@
 # tilto
 
+[![Build Status](https://travis-ci.org/kjirou/tilto.svg?branch=master)](https://travis-ci.org/kjirou/tilto)
+
 A TUI (Text User Interface) renderer
 
 
