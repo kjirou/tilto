@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    /* Basic Options */
+    "jsx": "preserve",
+    "module": "commonjs",
+    // TODO: Not working?
+    "newLine": "LF",
+    "target": "es5",
+    "typeRoots": [
+      "../node_modules/@types",
+      "../types"
+    ],
+    /* Strict Type-Checking Options */
+    "strict": true,
+    /* Additional Checks */
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "include": [
+    "../src"
+  ]
+}
