@@ -1,9 +1,6 @@
-const assert = require('assert');
+import * as assert from 'assert';
 
-const {
-  shrinkRectangle,
-} = require('../../src/lib/rectangle-utils');
-const boxUtils = require('../../src/lib/box-utils');
+import {shrinkRectangle} from '../../src/lib/rectangle-utils';
 
 
 describe('lib/rectangle-utils', function() {
