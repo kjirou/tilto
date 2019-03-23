@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "A TUI (Text User Interface) renderer",
   "main": "index.js",
+  "types": "dist/index.d.js",
   "scripts": {
+    "build": "$(npm bin)/tsc --project ./tsconfigs/build.json",
     "test": "$(npm bin)/mocha --require './setup/ts-node-reigister-for-test.js' 'test/**/*.ts'",
     "typecheck": "$(npm bin)/tsc --project ./tsconfigs/test.json"
   },
