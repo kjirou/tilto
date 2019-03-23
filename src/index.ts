@@ -16,8 +16,8 @@ export const createBox = boxUtils.createBox;
 export const createBoxFromText = boxUtils.createBoxFromText;
 export const createMatrix = matrixUtils.createMatrix;
 export const createMatrixFromText = matrixUtils.createMatrixFromText;
+export const render = boxUtils.toText;
 export const setBorders = boxUtils.setBorders;
-export const toText = boxUtils.toText;
 
 export function getWidth(box: Box): number {
   return matrixUtils.getWidth(box.matrix);
