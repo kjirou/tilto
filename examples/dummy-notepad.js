@@ -1,4 +1,5 @@
-const tilto = require('../index');
+require('../setup/ts-node-reigister-for-test');
+const tilto = require('../src');
 
 const logUpdate = require('log-update');
 const keypress = require('keypress');
