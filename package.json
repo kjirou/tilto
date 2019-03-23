@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/kjirou/tilto#readme",
   "dependencies": {
-    "eastasianwidth": "^0.1.1"
+    "eastasianwidth": "^0.2.0"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.6",
