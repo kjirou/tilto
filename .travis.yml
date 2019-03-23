@@ -3,6 +3,6 @@ node_js:
   - "6"
   - "8"
   - "10"
-script:
+before_script:
   - npm run test
   - npm run build
