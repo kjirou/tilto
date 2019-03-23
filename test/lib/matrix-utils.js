@@ -3,7 +3,7 @@ const chalk = require('chalk');
 
 const boxUtils = require('../../src/lib/box-utils');
 const {
-  _parseContentToSymbols,
+  parseContentToSymbols,
   createMatrix,
   createMatrixFromText,
   cropMatrix,
@@ -188,10 +188,10 @@ describe('lib/matrix-utils', function() {
     });
   });
 
-  //describe('_parseContentToSymbols', function() {
+  //describe('parseContentToSymbols', function() {
   //  it('works', function() {
   //    const content = 'a' + chalk.red('bc') + 'd';
-  //    const symbols = _parseContentToSymbols(content);
+  //    const symbols = parseContentToSymbols(content);
   //    assert.strictEqual(symbols[0], 'a');
   //    assert.strictEqual(symbols[1], chalk.red('b'));
   //    assert.strictEqual(symbols[2], chalk.red('c'));

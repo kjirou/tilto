@@ -1,11 +1,9 @@
-// @flow
-
-const rectangleUtils = require('./rectangle-utils');
-
-/*::
-import type {Coordinate} from './coordinate-utils';
-import type {Rectangle} from './rectangle-utils';
-import type {Size} from './size-utils';
+import {
+  Rectangle,
+  shrinkRectangle,
+  toCoordinate,
+  toSize,
+} from './rectangle-utils';
 
 export type ElementSymbol = string;
 export type Element = {
@@ -20,25 +18,24 @@ export type Element = {
 };
 export type Matrix = Element[][];
 export type SymbolRuler = (symbol: ElementSymbol) => 0 | 1 | 2;
- */
 
-
-function createMatrix(size/*: Size*/, defaultSymbol/*: (ElementSymbol | null)*/ = null)/*: Matrix*/ {
+export function createMatrix(size: Size, defaultSymbol: ElementSymbol | null = null): Matrix {
   const matrix = [];
   for (let y = 0; y < size.height; y += 1) {
-    matrix.push([]);
+    const row = [];
     for (let x = 0; x < size.width; x += 1) {
-      matrix[y].push({
+      row.push({
         y,
         x,
         symbol: defaultSymbol,
       });
     }
+    matrix.push(row);
   }
   return matrix;
 }
 
-function getElement(matrix/*: Matrix*/, coordinate/*: Coordinate*/)/*: Element | null*/ {
+export function getElement(matrix: Matrix, coordinate: Coordinate): Element | null {
   const row = matrix[coordinate.y];
   if (!row) {
     return null;
@@ -46,7 +43,7 @@ function getElement(matrix/*: Matrix*/, coordinate/*: Coordinate*/)/*: Element |
   return row[coordinate.x] || null;
 }
 
-function parseTextToSymbols(text/*: string*/)/*: ElementSymbol[][]*/ {
+function parseTextToSymbols(text: string): ElementSymbol[][] {
   return text
     .replace(/\n+$/, '')
     .split('\n')
@@ -54,7 +51,7 @@ function parseTextToSymbols(text/*: string*/)/*: ElementSymbol[][]*/ {
 }
 
 // TODO: multibytes
-function createMatrixFromText(text/*: string*/)/*: Matrix*/ {
+export function createMatrixFromText(text: string): Matrix {
   const symbols = parseTextToSymbols(text);
 
   const matrix = createMatrix({
@@ -76,7 +73,7 @@ function createMatrixFromText(text/*: string*/)/*: Matrix*/ {
   return matrix;
 }
 
-function toText(matrix/*: Matrix*/, backgroundSymbol/*: ElementSymbol*/)/*: string*/ {
+export function toText(matrix: Matrix, backgroundSymbol: ElementSymbol): string {
   return matrix
     .map(row => {
       return row.map(element => {
@@ -91,26 +88,26 @@ function toText(matrix/*: Matrix*/, backgroundSymbol/*: ElementSymbol*/)/*: stri
     .join('\n');
 };
 
-function getWidth(matrix/*: Matrix*/)/*: number*/ {
+export function getWidth(matrix: Matrix): number {
   if (matrix.length === 0) {
     return 0;
   }
   return matrix[0].length;
 }
 
-function getHeight(matrix/*: Matrix*/)/*: number*/ {
+export function getHeight(matrix: Matrix): number {
   return matrix.length;
 }
 
-function getMaxX(matrix/*: Matrix*/)/*: number*/ {
+export function getMaxX(matrix: Matrix): number {
   return getWidth(matrix) - 1;
 }
 
-function getMaxY(matrix/*: Matrix*/)/*: number*/ {
+export function getMaxY(matrix: Matrix): number {
   return getHeight(matrix) - 1;
 }
 
-function validateMatrix(matrix/*: Matrix*/)/*: boolean*/ {
+export function validateMatrix(matrix: Matrix): boolean {
   return (
     Array.isArray(matrix) &&
     matrix.length > 0 &&
@@ -121,12 +118,12 @@ function validateMatrix(matrix/*: Matrix*/)/*: boolean*/ {
 }
 
 // TODO: Negative coordinates
-function overwriteMatrix(
-  matrix/*: Matrix*/,
-  replacer/*: Matrix*/,
-  coordinate/*: Coordinate*/,
-  symbolRuler/*: SymbolRuler*/
-)/*: Matrix*/ {
+export function overwriteMatrix(
+  matrix: Matrix,
+  replacer: Matrix,
+  coordinate: Coordinate,
+  symbolRuler: SymbolRuler
+): Matrix {
   if (getWidth(replacer) === 0 || getHeight(replacer) === 0) {
     return matrix;
   }
@@ -204,7 +201,7 @@ function overwriteMatrix(
   return newMatrix;
 }
 
-function cropMatrix(matrix/*: Matrix*/, rectangle/*: Rectangle*/)/*: Matrix*/ {
+export function cropMatrix(matrix: Matrix, rectangle: Rectangle): Matrix {
   const newMatrix = [];
 
   for (let y = rectangle.y; y < rectangle.y + rectangle.height; y += 1) {
@@ -224,7 +221,7 @@ function cropMatrix(matrix/*: Matrix*/, rectangle/*: Rectangle*/)/*: Matrix*/ {
 }
 
 // TODO: Surrogate pairs
-function parseContentToSymbols(content/*: string*/)/*: (ElementSymbol | '\n')[]*/ {
+export function parseContentToSymbols(content: string): (ElementSymbol | '\n')[] {
   return content.split('');
   // TODO: ANSI string
   //       slice-ansi の挙動がバグなのか仕様を勘違いしているのか解析できなかった
@@ -252,11 +249,11 @@ function parseContentToSymbols(content/*: string*/)/*: (ElementSymbol | '\n')[]*
 }
 
 // TODO: consider word-wrap/word-break
-function pourContent(
-  matrix/*: Matrix*/,
-  content/*: string*/,
-  symbolRuler/*: SymbolRuler*/
-)/*: Matrix*/ {
+export function pourContent(
+  matrix: Matrix,
+  content: string,
+  symbolRuler: SymbolRuler
+): Matrix {
   const maxWidth = getWidth(matrix);
   const maxHeight = getHeight(matrix);
 
@@ -317,19 +314,3 @@ function pourContent(
 
   return newMatrix;
 }
-
-module.exports = {
-  _parseContentToSymbols: parseContentToSymbols,
-  createMatrix,
-  createMatrixFromText,
-  cropMatrix,
-  getElement,
-  getHeight,
-  getMaxX,
-  getMaxY,
-  getWidth,
-  overwriteMatrix,
-  pourContent,
-  toText,
-  validateMatrix,
-};
