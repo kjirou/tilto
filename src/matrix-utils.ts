@@ -1,7 +1,7 @@
 import {
   Coordinate,
   Size,
-} from '../utils';
+} from './utils';
 import {
   Rectangle,
   shrinkRectangle,

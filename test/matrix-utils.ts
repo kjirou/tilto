@@ -3,7 +3,7 @@ import * as assert from 'assert';
 import {
   createBoxFromText,
   defaultSymbolRuler,
-} from '../../src/lib/box-utils';
+} from '../src/box-utils';
 import {
   Matrix,
   parseContentToSymbols,
@@ -13,12 +13,12 @@ import {
   overwriteMatrix,
   pourContent,
   toText,
-} from '../../src/lib/matrix-utils';
+} from '../src/matrix-utils';
 
 const chalk = require('chalk');
 
 
-describe('lib/matrix-utils', function() {
+describe('matrix-utils', function() {
   describe('toText', function() {
     it('works', function() {
       const matrix = createMatrix({width: 2, height: 3}, '.');

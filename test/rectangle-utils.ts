@@ -1,9 +1,9 @@
 import * as assert from 'assert';
 
-import {shrinkRectangle} from '../../src/lib/rectangle-utils';
+import {shrinkRectangle} from '../src/rectangle-utils';
 
 
-describe('lib/rectangle-utils', function() {
+describe('rectangle-utils', function() {
   describe('shrinkRectangle', function() {
     const rect = {x: 1, y: 2, width: 3, height: 4};
 

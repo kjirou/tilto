@@ -1,7 +1,7 @@
 import * as utils from './utils';
-import * as boxUtils from './lib/box-utils';
-import * as matrixUtils from './lib/matrix-utils';
-import * as rectangleUtils from './lib/rectangle-utils';
+import * as boxUtils from './box-utils';
+import * as matrixUtils from './matrix-utils';
+import * as rectangleUtils from './rectangle-utils';
 
 export type BorderType = 'default';
 export type Box = boxUtils.Box;
