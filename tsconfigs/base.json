@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     /* Basic Options */
+    "allowJs": true,
     "jsx": "preserve",
     "lib": [
       "es2018"

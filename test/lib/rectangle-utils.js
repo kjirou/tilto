@@ -2,8 +2,8 @@ const assert = require('assert');
 
 const {
   shrinkRectangle,
-} = require('../../lib/rectangle-utils');
-const boxUtils = require('../../lib/box-utils');
+} = require('../../src/lib/rectangle-utils');
+const boxUtils = require('../../src/lib/box-utils');
 
 
 describe('lib/rectangle-utils', function() {

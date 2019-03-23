@@ -10,8 +10,8 @@ const {
   drawLeftSide,
   drawRightSide,
   drawTopSide,
-} = require('../../lib/border-utils');
-const boxUtils = require('../../lib/box-utils');
+} = require('../../src/lib/border-utils');
+const boxUtils = require('../../src/lib/box-utils');
 
 
 describe('lib/border-utils', function() {

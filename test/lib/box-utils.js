@@ -1,7 +1,7 @@
 const assert = require('assert');
 const chalk = require('chalk');
 
-const boxUtils = require('../../lib/box-utils');
+const boxUtils = require('../../src/lib/box-utils');
 
 
 describe('lib/box-utils', function() {

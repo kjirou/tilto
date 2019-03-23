@@ -1,7 +1,7 @@
 const assert = require('assert');
 const chalk = require('chalk');
 
-const boxUtils = require('../../lib/box-utils');
+const boxUtils = require('../../src/lib/box-utils');
 const {
   _parseContentToSymbols,
   createMatrix,
@@ -10,7 +10,7 @@ const {
   overwriteMatrix,
   pourContent,
   toText,
-} = require('../../lib/matrix-utils');
+} = require('../../src/lib/matrix-utils');
 
 
 describe('lib/matrix-utils', function() {
