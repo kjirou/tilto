@@ -1,8 +1,11 @@
-const assert = require('assert');
-const chalk = require('chalk');
+import * as assert from 'assert';
 
-const boxUtils = require('../../src/lib/box-utils');
-const {
+import {
+  createBoxFromText,
+  defaultSymbolRuler,
+} from '../../src/lib/box-utils';
+import {
+  Matrix,
   parseContentToSymbols,
   createMatrix,
   createMatrixFromText,
@@ -10,7 +13,9 @@ const {
   overwriteMatrix,
   pourContent,
   toText,
-} = require('../../src/lib/matrix-utils');
+} from '../../src/lib/matrix-utils';
+
+const chalk = require('chalk');
 
 
 describe('lib/matrix-utils', function() {
@@ -60,7 +65,7 @@ describe('lib/matrix-utils', function() {
       let matrix = createMatrix({width: 5, height: 7}, '.');
       const replacer = createMatrix({width: 2, height: 3}, 'x');
       matrix = overwriteMatrix(matrix, replacer, {x: 1, y: 2}, (symbol) => 1);
-      assert.strictEqual(toText(matrix), [
+      assert.strictEqual(toText(matrix, ''), [
         '.....',
         '.....',
         '.xx..',
@@ -86,8 +91,8 @@ describe('lib/matrix-utils', function() {
     });
 
     describe('multibyte fragments deletion', function() {
-      let matrix;
-      let replacer;
+      let matrix: Matrix;
+      let replacer: Matrix;
 
       beforeEach(function() {
         matrix = createMatrixFromText([
@@ -103,7 +108,7 @@ describe('lib/matrix-utils', function() {
 
       it('1', function() {
         replacer[0][0].symbol = false;
-        const newMatrix = overwriteMatrix(matrix, replacer, {x: 2, y: 1}, boxUtils.defaultSymbolRuler);
+        const newMatrix = overwriteMatrix(matrix, replacer, {x: 2, y: 1}, defaultSymbolRuler);
 
         assert.strictEqual(toText(newMatrix, '-'), [
           '....',
@@ -114,7 +119,7 @@ describe('lib/matrix-utils', function() {
 
       it('2', function() {
         replacer[1][1].symbol = 'あ';
-        const newMatrix = overwriteMatrix(matrix, replacer, {x: 0, y: 0}, boxUtils.defaultSymbolRuler);
+        const newMatrix = overwriteMatrix(matrix, replacer, {x: 0, y: 0}, defaultSymbolRuler);
 
         assert.strictEqual(toText(newMatrix, '-'), [
           'xx..',
@@ -125,7 +130,7 @@ describe('lib/matrix-utils', function() {
 
       it('3', function() {
         matrix[1][0].symbol = 'あ';
-        const newMatrix = overwriteMatrix(matrix, replacer, {x: 1, y: 1}, boxUtils.defaultSymbolRuler);
+        const newMatrix = overwriteMatrix(matrix, replacer, {x: 1, y: 1}, defaultSymbolRuler);
 
         assert.strictEqual(toText(newMatrix, '-'), [
           '....',
@@ -136,7 +141,7 @@ describe('lib/matrix-utils', function() {
 
       it('4', function() {
         matrix[2][2].symbol = false;
-        const newMatrix = overwriteMatrix(matrix, replacer, {x: 0, y: 1}, boxUtils.defaultSymbolRuler);
+        const newMatrix = overwriteMatrix(matrix, replacer, {x: 0, y: 1}, defaultSymbolRuler);
 
         assert.strictEqual(toText(newMatrix, '-'), [
           '....',
@@ -148,7 +153,7 @@ describe('lib/matrix-utils', function() {
   });
 
   describe('cropMatrix', function() {
-    const box = boxUtils.createBoxFromText([
+    const box = createBoxFromText([
       '123',
       '456',
       '789',
@@ -200,7 +205,7 @@ describe('lib/matrix-utils', function() {
   //});
 
   describe('pourContent', function() {
-    let matrix;
+    let matrix: Matrix;
 
     beforeEach(function() {
       matrix = createMatrix({width: 4, height: 3}, null);
@@ -228,7 +233,7 @@ describe('lib/matrix-utils', function() {
 
     describe('multibytes characters', function() {
       it('reduces space considering the width of multibytes', function() {
-        matrix = pourContent(matrix, 'あ\n\nいうえ', boxUtils.defaultSymbolRuler);
+        matrix = pourContent(matrix, 'あ\n\nいうえ', defaultSymbolRuler);
         assert.strictEqual(toText(matrix, '.'), [
           'あ..',
           '....',
@@ -237,7 +242,7 @@ describe('lib/matrix-utils', function() {
       });
 
       it('breaks the line automatically', function() {
-        matrix = pourContent(matrix, 'あいうえおかき', boxUtils.defaultSymbolRuler);
+        matrix = pourContent(matrix, 'あいうえおかき', defaultSymbolRuler);
         assert.strictEqual(toText(matrix, '.'), [
           'あい',
           'うえ',
@@ -246,7 +251,7 @@ describe('lib/matrix-utils', function() {
       });
 
       it('breaks the line automatically even when the width is not enough', function() {
-        matrix = pourContent(matrix, '1あい2う3え', boxUtils.defaultSymbolRuler);
+        matrix = pourContent(matrix, '1あい2う3え', defaultSymbolRuler);
         assert.strictEqual(toText(matrix, '.'), [
           '1あ.',
           'い2.',
@@ -256,7 +261,7 @@ describe('lib/matrix-utils', function() {
 
       it('cuts the content if a multibyte character appear when the width is 1', function() {
         matrix = createMatrix({width: 1, height: 5}, null);
-        matrix = pourContent(matrix, '12あ34', boxUtils.defaultSymbolRuler);
+        matrix = pourContent(matrix, '12あ34', defaultSymbolRuler);
         assert.strictEqual(toText(matrix, '.'), [
           '1',
           '2',
