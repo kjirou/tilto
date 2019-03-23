@@ -5,6 +5,7 @@ node_js:
   - "10"
 script:
   - npm run test
+  - npm run build
 branches:
   except:
   - gh-pages
