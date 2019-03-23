@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "flow": "$(npm bin)/flow",
-    "test": "$(npm bin)/mocha --require './setup/ts-node-reigister-for-test.js' 'test/**/*.js'",
+    "test": "$(npm bin)/mocha --require './setup/ts-node-reigister-for-test.js' 'test/**/*.ts'",
     "typecheck": "$(npm bin)/tsc --project ./tsconfigs/test.json"
   },
   "repository": {
