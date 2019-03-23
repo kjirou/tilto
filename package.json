@@ -2,7 +2,7 @@
   "name": "tilto",
   "version": "0.0.1",
   "description": "A TUI (Text User Interface) renderer",
-  "main": "index.js",
+  "main": "dist/index.js",
   "types": "dist/index.d.js",
   "scripts": {
     "build": "$(npm bin)/tsc --project ./tsconfigs/build.json",
@@ -41,8 +41,7 @@
   "files": [
     "LICENSE",
     "README.md",
-    "index.js",
-    "lib",
+    "dist",
     "package.json"
   ],
   "engines": {
