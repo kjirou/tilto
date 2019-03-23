@@ -1,9 +1,9 @@
-type Coordinate = {
+export type Coordinate = {
   x: number,
   y: number,
-}
+};
 
-type Size = {
+export type Size = {
   width: number,
   height: number,
-}
+};

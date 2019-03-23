@@ -1,16 +1,15 @@
+import * as utils from './utils';
 import * as boxUtils from './lib/box-utils';
 import * as matrixUtils from './lib/matrix-utils';
 import * as rectangleUtils from './lib/rectangle-utils';
 
 export type BorderType = 'default';
 export type Box = boxUtils.Box;
-// TODO:
-//export type Coordinate;
+export type Coordinate = utils.Coordinate;
 export type Element = matrixUtils.Element;
 export type Matrix = matrixUtils.Matrix;
 export type Rectangle = rectangleUtils.Rectangle;
-// TODO:
-//export type Size;
+export type Size = utils.Size;
 export type SymbolRuler = matrixUtils.SymbolRuler;
 
 export const createBox = boxUtils.createBox;

@@ -1,4 +1,8 @@
 import {
+  Coordinate,
+  Size,
+} from '../utils';
+import {
   Rectangle,
   shrinkRectangle,
   toCoordinate,

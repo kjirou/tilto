@@ -1,3 +1,7 @@
+import {
+  Coordinate,
+  Size,
+} from '../utils';
 export type Rectangle = {
   x: Coordinate['x'],
   y: Coordinate['y'],
