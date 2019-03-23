@@ -1,6 +1,6 @@
-const assert = require('assert');
+import * as assert from 'assert';
 
-const {
+import {
   clearBottomSide,
   clearLeftSide,
   clearRightSide,
@@ -10,25 +10,28 @@ const {
   drawLeftSide,
   drawRightSide,
   drawTopSide,
-} = require('../../src/lib/border-utils');
-const boxUtils = require('../../src/lib/box-utils');
+} from '../../src/lib/border-utils';
+import {
+  createBox,
+  toText,
+} from '../../src/lib/box-utils';
 
 
 describe('lib/border-utils', function() {
   describe('clearTopSide', function() {
     it('works', function() {
-      let box1 = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      let box1 = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       box1.matrix = clearTopSide(box1.matrix, 1);
-      assert.strictEqual(boxUtils.toText(box1, {backgroundSymbol: 'N'}), [
+      assert.strictEqual(toText(box1, {backgroundSymbol: 'N'}), [
         'NNN',
         'xxx',
         'xxx',
         'xxx',
       ].join('\n'));
 
-      let box2 = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      let box2 = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       box2.matrix = clearTopSide(box2.matrix, 2);
-      assert.strictEqual(boxUtils.toText(box2, {backgroundSymbol: 'N'}), [
+      assert.strictEqual(toText(box2, {backgroundSymbol: 'N'}), [
         'NNN',
         'NNN',
         'xxx',
@@ -37,18 +40,18 @@ describe('lib/border-utils', function() {
     });
 
     it('should not break original box', function() {
-      const box = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      const box = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       const newBox = Object.assign({}, box, {
         matrix: clearTopSide(box.matrix, 1),
       });
 
-      assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: 'N'}), [
+      assert.strictEqual(toText(box, {backgroundSymbol: 'N'}), [
         'xxx',
         'xxx',
         'xxx',
         'xxx',
       ].join('\n'));
-      assert.strictEqual(boxUtils.toText(newBox, {backgroundSymbol: 'N'}), [
+      assert.strictEqual(toText(newBox, {backgroundSymbol: 'N'}), [
         'NNN',
         'xxx',
         'xxx',
@@ -59,18 +62,18 @@ describe('lib/border-utils', function() {
 
   describe('clearBottomSide', function() {
     it('works', function() {
-      let box1 = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      let box1 = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       box1.matrix = clearBottomSide(box1.matrix, 1);
-      assert.strictEqual(boxUtils.toText(box1, {backgroundSymbol: 'N'}), [
+      assert.strictEqual(toText(box1, {backgroundSymbol: 'N'}), [
         'xxx',
         'xxx',
         'xxx',
         'NNN',
       ].join('\n'));
 
-      let box2 = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      let box2 = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       box2.matrix = clearBottomSide(box2.matrix, 2);
-      assert.strictEqual(boxUtils.toText(box2, {backgroundSymbol: 'N'}), [
+      assert.strictEqual(toText(box2, {backgroundSymbol: 'N'}), [
         'xxx',
         'xxx',
         'NNN',
@@ -79,18 +82,18 @@ describe('lib/border-utils', function() {
     });
 
     it('should not break original box', function() {
-      const box = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      const box = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       const newBox = Object.assign({}, box, {
         matrix: clearBottomSide(box.matrix, 1),
       });
 
-      assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: 'N'}), [
+      assert.strictEqual(toText(box, {backgroundSymbol: 'N'}), [
         'xxx',
         'xxx',
         'xxx',
         'xxx',
       ].join('\n'));
-      assert.strictEqual(boxUtils.toText(newBox, {backgroundSymbol: 'N'}), [
+      assert.strictEqual(toText(newBox, {backgroundSymbol: 'N'}), [
         'xxx',
         'xxx',
         'xxx',
@@ -101,18 +104,18 @@ describe('lib/border-utils', function() {
 
   describe('clearLeftSide', function() {
     it('works', function() {
-      let box1 = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      let box1 = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       box1.matrix = clearLeftSide(box1.matrix, 1);
-      assert.strictEqual(boxUtils.toText(box1, {backgroundSymbol: 'N'}), [
+      assert.strictEqual(toText(box1, {backgroundSymbol: 'N'}), [
         'Nxx',
         'Nxx',
         'Nxx',
         'Nxx',
       ].join('\n'));
 
-      let box2 = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      let box2 = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       box2.matrix = clearLeftSide(box2.matrix, 2);
-      assert.strictEqual(boxUtils.toText(box2, {backgroundSymbol: 'N'}), [
+      assert.strictEqual(toText(box2, {backgroundSymbol: 'N'}), [
         'NNx',
         'NNx',
         'NNx',
@@ -121,18 +124,18 @@ describe('lib/border-utils', function() {
     });
 
     it('should not break original box', function() {
-      const box = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      const box = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       const newBox = Object.assign({}, box, {
         matrix: clearLeftSide(box.matrix, 1),
       });
 
-      assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: 'N'}), [
+      assert.strictEqual(toText(box, {backgroundSymbol: 'N'}), [
         'xxx',
         'xxx',
         'xxx',
         'xxx',
       ].join('\n'));
-      assert.strictEqual(boxUtils.toText(newBox, {backgroundSymbol: 'N'}), [
+      assert.strictEqual(toText(newBox, {backgroundSymbol: 'N'}), [
         'Nxx',
         'Nxx',
         'Nxx',
@@ -143,18 +146,18 @@ describe('lib/border-utils', function() {
 
   describe('clearRightSide', function() {
     it('works', function() {
-      let box1 = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      let box1 = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       box1.matrix = clearRightSide(box1.matrix, 1);
-      assert.strictEqual(boxUtils.toText(box1, {backgroundSymbol: 'N'}), [
+      assert.strictEqual(toText(box1, {backgroundSymbol: 'N'}), [
         'xxN',
         'xxN',
         'xxN',
         'xxN',
       ].join('\n'));
 
-      let box2 = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      let box2 = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       box2.matrix = clearRightSide(box2.matrix, 2);
-      assert.strictEqual(boxUtils.toText(box2, {backgroundSymbol: 'N'}), [
+      assert.strictEqual(toText(box2, {backgroundSymbol: 'N'}), [
         'xNN',
         'xNN',
         'xNN',
@@ -163,18 +166,18 @@ describe('lib/border-utils', function() {
     });
 
     it('should not break original box', function() {
-      const box = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      const box = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       const newBox = Object.assign({}, box, {
         matrix: clearRightSide(box.matrix, 1),
       });
 
-      assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: 'N'}), [
+      assert.strictEqual(toText(box, {backgroundSymbol: 'N'}), [
         'xxx',
         'xxx',
         'xxx',
         'xxx',
       ].join('\n'));
-      assert.strictEqual(boxUtils.toText(newBox, {backgroundSymbol: 'N'}), [
+      assert.strictEqual(toText(newBox, {backgroundSymbol: 'N'}), [
         'xxN',
         'xxN',
         'xxN',
@@ -185,9 +188,9 @@ describe('lib/border-utils', function() {
 
   describe('drawTopSide', function() {
     it('can draw a border of 1 width', function() {
-      let box = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      let box = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       box.matrix = drawTopSide(box.matrix, 1, ['B'], 0, 2);
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         'BBB',
         'xxx',
         'xxx',
@@ -196,9 +199,9 @@ describe('lib/border-utils', function() {
     });
 
     it('can draw a border of 2 width', function() {
-      let box = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      let box = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       box.matrix = drawTopSide(box.matrix, 2, ['1', '2'], 0, 2);
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         '111',
         '222',
         'xxx',
@@ -207,18 +210,18 @@ describe('lib/border-utils', function() {
     });
 
     it('can draw a border in the narrow x range', function() {
-      let box = boxUtils.createBox({x: 0, y: 0, width: 4, height: 2}, {defaultSymbol: 'x'});
+      let box = createBox({x: 0, y: 0, width: 4, height: 2}, {defaultSymbol: 'x'});
       box.matrix = drawTopSide(box.matrix, 1, ['B'], 1, 2);
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         'xBBx',
         'xxxx',
       ].join('\n'));
     });
 
     it('should circulate short symbols', function() {
-      let box = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      let box = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       box.matrix = drawTopSide(box.matrix, 3, ['1', '2'], 0, 2);
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         '111',
         '222',
         '111',
@@ -227,18 +230,18 @@ describe('lib/border-utils', function() {
     });
 
     it('should not break original box', function() {
-      const box = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      const box = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       const newBox = Object.assign({}, box, {
         matrix: drawTopSide(box.matrix, 1, ['B'], 0, 2),
       });
 
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         'xxx',
         'xxx',
         'xxx',
         'xxx',
       ].join('\n'));
-      assert.strictEqual(boxUtils.toText(newBox), [
+      assert.strictEqual(toText(newBox), [
         'BBB',
         'xxx',
         'xxx',
@@ -249,9 +252,9 @@ describe('lib/border-utils', function() {
 
   describe('drawBottomSide', function() {
     it('can draw a border of 1 width', function() {
-      let box = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      let box = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       box.matrix = drawBottomSide(box.matrix, 1, ['B'], 0, 2);
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         'xxx',
         'xxx',
         'xxx',
@@ -260,9 +263,9 @@ describe('lib/border-utils', function() {
     });
 
     it('can draw a border of 2 width', function() {
-      let box = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      let box = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       box.matrix = drawBottomSide(box.matrix, 2, ['1', '2'], 0, 2);
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         'xxx',
         'xxx',
         '222',
@@ -271,18 +274,18 @@ describe('lib/border-utils', function() {
     });
 
     it('can draw a border in the narrow x range', function() {
-      let box = boxUtils.createBox({x: 0, y: 0, width: 4, height: 2}, {defaultSymbol: 'x'});
+      let box = createBox({x: 0, y: 0, width: 4, height: 2}, {defaultSymbol: 'x'});
       box.matrix = drawBottomSide(box.matrix, 1, ['B'], 1, 2);
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         'xxxx',
         'xBBx',
       ].join('\n'));
     });
 
     it('should circulate short symbols', function() {
-      let box = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      let box = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       box.matrix = drawBottomSide(box.matrix, 3, ['1', '2'], 0, 2);
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         'xxx',
         '111',
         '222',
@@ -291,18 +294,18 @@ describe('lib/border-utils', function() {
     });
 
     it('should not break original box', function() {
-      const box = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
+      const box = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
       const newBox = Object.assign({}, box, {
         matrix: drawBottomSide(box.matrix, 1, ['B'], 0, 2),
       });
 
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         'xxx',
         'xxx',
         'xxx',
         'xxx',
       ].join('\n'));
-      assert.strictEqual(boxUtils.toText(newBox), [
+      assert.strictEqual(toText(newBox), [
         'xxx',
         'xxx',
         'xxx',
@@ -313,9 +316,9 @@ describe('lib/border-utils', function() {
 
   describe('drawLeftSide', function() {
     it('can draw a border of 1 width', function() {
-      let box = boxUtils.createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
+      let box = createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
       box.matrix = drawLeftSide(box.matrix, 1, ['B'], 0, 2);
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         'Bxxx',
         'Bxxx',
         'Bxxx',
@@ -323,9 +326,9 @@ describe('lib/border-utils', function() {
     });
 
     it('can draw a border of 2 width', function() {
-      let box = boxUtils.createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
+      let box = createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
       box.matrix = drawLeftSide(box.matrix, 2, ['B'], 0, 2);
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         'BBxx',
         'BBxx',
         'BBxx',
@@ -333,9 +336,9 @@ describe('lib/border-utils', function() {
     });
 
     it('can draw a border in the narrow y range', function() {
-      let box = boxUtils.createBox({x: 0, y: 0, width: 2, height: 4}, {defaultSymbol: 'x'});
+      let box = createBox({x: 0, y: 0, width: 2, height: 4}, {defaultSymbol: 'x'});
       box.matrix = drawLeftSide(box.matrix, 1, ['B'], 1, 2);
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         'xx',
         'Bx',
         'Bx',
@@ -344,9 +347,9 @@ describe('lib/border-utils', function() {
     });
 
     it('should circulate short symbols', function() {
-      let box = boxUtils.createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
+      let box = createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
       box.matrix = drawLeftSide(box.matrix, 3, ['1', '2'], 0, 2);
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         '121x',
         '121x',
         '121x',
@@ -354,17 +357,17 @@ describe('lib/border-utils', function() {
     });
 
     it('should not break original box', function() {
-      const box = boxUtils.createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
+      const box = createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
       const newBox = Object.assign({}, box, {
         matrix: drawLeftSide(box.matrix, 1, ['B'], 0, 2),
       });
 
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         'xxxx',
         'xxxx',
         'xxxx',
       ].join('\n'));
-      assert.strictEqual(boxUtils.toText(newBox), [
+      assert.strictEqual(toText(newBox), [
         'Bxxx',
         'Bxxx',
         'Bxxx',
@@ -374,9 +377,9 @@ describe('lib/border-utils', function() {
 
   describe('drawRightSide', function() {
     it('can draw a border of 1 width', function() {
-      let box = boxUtils.createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
+      let box = createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
       box.matrix = drawRightSide(box.matrix, 1, ['B'], 0, 2);
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         'xxxB',
         'xxxB',
         'xxxB',
@@ -384,9 +387,9 @@ describe('lib/border-utils', function() {
     });
 
     it('can draw a border of 2 width', function() {
-      let box = boxUtils.createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
+      let box = createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
       box.matrix = drawRightSide(box.matrix, 2, ['B'], 0, 2);
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         'xxBB',
         'xxBB',
         'xxBB',
@@ -394,9 +397,9 @@ describe('lib/border-utils', function() {
     });
 
     it('can draw a border in the narrow y range', function() {
-      let box = boxUtils.createBox({x: 0, y: 0, width: 2, height: 4}, {defaultSymbol: 'x'});
+      let box = createBox({x: 0, y: 0, width: 2, height: 4}, {defaultSymbol: 'x'});
       box.matrix = drawRightSide(box.matrix, 1, ['B'], 1, 2);
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         'xx',
         'xB',
         'xB',
@@ -405,9 +408,9 @@ describe('lib/border-utils', function() {
     });
 
     it('should circulate short symbols', function() {
-      let box = boxUtils.createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
+      let box = createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
       box.matrix = drawRightSide(box.matrix, 3, ['1', '2'], 0, 2);
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         'x121',
         'x121',
         'x121',
@@ -415,17 +418,17 @@ describe('lib/border-utils', function() {
     });
 
     it('should not break original box', function() {
-      const box = boxUtils.createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
+      const box = createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
       const newBox = Object.assign({}, box, {
         matrix: drawRightSide(box.matrix, 1, ['B'], 0, 2),
       });
 
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         'xxxx',
         'xxxx',
         'xxxx',
       ].join('\n'));
-      assert.strictEqual(boxUtils.toText(newBox), [
+      assert.strictEqual(toText(newBox), [
         'xxxB',
         'xxxB',
         'xxxB',
@@ -435,17 +438,17 @@ describe('lib/border-utils', function() {
 
   describe('drawCorner', function() {
     it('can draw a cornar with a single symbol', function() {
-      let box1 = boxUtils.createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
+      let box1 = createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
       box1.matrix = drawCorner(box1.matrix, {x: 0, y: 0, width: 3, height: 2}, ['1']);
-      assert.strictEqual(boxUtils.toText(box1), [
+      assert.strictEqual(toText(box1), [
         '111x',
         '111x',
         'xxxx',
       ].join('\n'));
 
-      let box2 = boxUtils.createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
+      let box2 = createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
       box2.matrix = drawCorner(box2.matrix, {x: 1, y: 1, width: 3, height: 2}, ['1']);
-      assert.strictEqual(boxUtils.toText(box2), [
+      assert.strictEqual(toText(box2), [
         'xxxx',
         'x111',
         'x111',
@@ -453,9 +456,9 @@ describe('lib/border-utils', function() {
     });
 
     it('can draw a cornar with multiple symbols', function() {
-      let box = boxUtils.createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
+      let box = createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
       box.matrix = drawCorner(box.matrix, {x: 0, y: 0, width: 3, height: 2}, ['1', '2', '3', '4']);
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         '123x',
         '412x',
         'xxxx',
@@ -463,17 +466,17 @@ describe('lib/border-utils', function() {
     });
 
     it('should not break original box', function() {
-      const box = boxUtils.createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
+      const box = createBox({x: 0, y: 0, width: 4, height: 3}, {defaultSymbol: 'x'});
       const newBox = Object.assign({}, box, {
         matrix: drawCorner(box.matrix, {x: 0, y: 0, width: 1, height: 1}, ['1']),
       });
 
-      assert.strictEqual(boxUtils.toText(box), [
+      assert.strictEqual(toText(box), [
         'xxxx',
         'xxxx',
         'xxxx',
       ].join('\n'));
-      assert.strictEqual(boxUtils.toText(newBox), [
+      assert.strictEqual(toText(newBox), [
         '1xxx',
         'xxxx',
         'xxxx',
