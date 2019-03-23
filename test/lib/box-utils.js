@@ -42,32 +42,32 @@ describe('lib/box-utils', function() {
     });
   });
 
-  describe('_defaultSymbolRuler', function() {
+  describe('defaultSymbolRuler', function() {
     it('can measure single byte character', function() {
-      assert.strictEqual(boxUtils._defaultSymbolRuler('a'), 1);
+      assert.strictEqual(boxUtils.defaultSymbolRuler('a'), 1);
     });
 
     it('can measure multibyte character', function() {
-      assert.strictEqual(boxUtils._defaultSymbolRuler('あ'), 2);
+      assert.strictEqual(boxUtils.defaultSymbolRuler('あ'), 2);
     });
 
     it('can measure ANSI string', function() {
       assert.strictEqual(
-        boxUtils._defaultSymbolRuler(
+        boxUtils.defaultSymbolRuler(
           chalk.red('a')
         ),
         1
       );
 
       assert.strictEqual(
-        boxUtils._defaultSymbolRuler(
+        boxUtils.defaultSymbolRuler(
           chalk.red.underline('a')
         ),
         1
       );
 
       assert.strictEqual(
-        boxUtils._defaultSymbolRuler(
+        boxUtils.defaultSymbolRuler(
           chalk.red.underline.inverse('a')
         ),
         1
