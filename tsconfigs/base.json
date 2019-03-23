@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    /* Basic Options */
+    "jsx": "preserve",
+    "lib": [
+      "es2018"
+    ],
+    "module": "commonjs",
+    "newLine": "lf",
+    "target": "es5",
+    /* Strict Type-Checking Options */
+    "strict": true,
+    /* Additional Checks */
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true
+  }
+}
