@@ -1,26 +1,18 @@
-// @flow
-
-/*::
-import type {Coordinate} from './coordinate-utils';
-import type {Size} from './size-utils';
-
 export type Rectangle = {
-  x: $PropertyType<Coordinate, 'x'>,
-  y: $PropertyType<Coordinate, 'y'>,
-  width: $PropertyType<Size, 'width'>,
-  height: $PropertyType<Size, 'height'>,
-};
- */
+  x: Coordinate['x'],
+  y: Coordinate['y'],
+  width: Size['width'],
+  height: Size['height'],
+}
 
-
-function toCoordinate(rectangle/*: Rectangle*/) {
+export function toCoordinate(rectangle: Rectangle): Coordinate {
   return {
     x: rectangle.x,
     y: rectangle.y,
   };
 }
 
-function toSize(rectangle/*: Rectangle*/) {
+export function toSize(rectangle: Rectangle): Size {
   return {
     width: rectangle.width,
     height: rectangle.height,
@@ -30,10 +22,10 @@ function toSize(rectangle/*: Rectangle*/) {
 /**
  * Shrink a rectangle with margins
  */
-function shrinkRectangle(
-  rectangle/*: Rectangle*/,
-  margins/*: {top?: number, bottom?: number, left?: number, right?: number}*/ = {}
-)/*: Rectangle*/ {
+export function shrinkRectangle(
+  rectangle: Rectangle,
+  margins: {top?: number, bottom?: number, left?: number, right?: number} = {}
+): Rectangle {
   const {
     top, bottom, left, right
   } = Object.assign({}, {
@@ -64,9 +56,3 @@ function shrinkRectangle(
 
   return {x, y, width, height};
 }
-
-module.exports = {
-  shrinkRectangle,
-  toCoordinate,
-  toSize,
-};
