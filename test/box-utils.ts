@@ -1,73 +1,81 @@
-const assert = require('assert');
+import * as assert from 'assert';
+
+import {
+  Box,
+  createBox,
+  createBoxFromText,
+  defaultSymbolRuler,
+  setBorders,
+  toText,
+} from '../src/box-utils';
+
 const chalk = require('chalk');
 
-const boxUtils = require('../../lib/box-utils');
 
-
-describe('lib/box-utils', function() {
+describe('box-utils', function() {
   describe('createBox', function() {
     it('should not throw an error if arguments are valid', function() {
       assert.doesNotThrow(() => {
-        boxUtils.createBox({width: 3, height: 4}, {symbol: 'x'});
+        createBox({width: 3, height: 4}, {defaultSymbol: 'x'});
       });
     });
 
     it('should throw an error if matrix has no height', function() {
       assert.throws(() => {
-        boxUtils.createBox({width: 3, height: 0}, {symbol: 'x'});
+        createBox({width: 3, height: 0}, {defaultSymbol: 'x'});
       }, /size/);
     });
 
     it('should throw an error if matrix has no width', function() {
       assert.throws(() => {
-        boxUtils.createBox({width: 0, height: 4}, {symbol: 'x'});
+        createBox({width: 0, height: 4}, {defaultSymbol: 'x'});
       }, /size/);
     });
   });
 
   describe('createBoxFromText', function() {
     it('works (case: 1)', function() {
-      const box = boxUtils.createBoxFromText('AB');
+      const box = createBoxFromText('AB');
       //assert.strictEqual(box.asString(), 'AB');
     });
 
     it('works (case: 2)', function() {
-      const box = boxUtils.createBoxFromText('AB\nCD\nEF');
+      const box = createBoxFromText('AB\nCD\nEF');
       //assert.strictEqual(box.asString(), 'AB\nCD\nEF');
     });
 
     it('should remove the last new line character', function() {
-      const box = boxUtils.createBoxFromText('AB\nCD\nEF\n');
+      const box = createBoxFromText('AB\nCD\nEF\n');
       //assert.strictEqual(box.asString(), 'AB\nCD\nEF');
     });
   });
 
-  describe('_defaultSymbolRuler', function() {
+  describe('defaultSymbolRuler', function() {
     it('can measure single byte character', function() {
-      assert.strictEqual(boxUtils._defaultSymbolRuler('a'), 1);
+      assert.strictEqual(defaultSymbolRuler('a'), 1);
     });
 
     it('can measure multibyte character', function() {
-      assert.strictEqual(boxUtils._defaultSymbolRuler('あ'), 2);
+      assert.strictEqual(defaultSymbolRuler('あ'), 2);
     });
 
     it('can measure ANSI string', function() {
       assert.strictEqual(
-        boxUtils._defaultSymbolRuler(
+        defaultSymbolRuler(
           chalk.red('a')
         ),
         1
       );
 
       assert.strictEqual(
-        boxUtils._defaultSymbolRuler(
+        defaultSymbolRuler(
           chalk.red.underline('a')
         ),
         1
       );
 
       assert.strictEqual(
-        boxUtils._defaultSymbolRuler(
+        defaultSymbolRuler(
           chalk.red.underline.inverse('a')
         ),
         1
@@ -78,18 +86,18 @@ describe('lib/box-utils', function() {
   describe('toText', function() {
     describe('content pouring', function() {
       it('should overwrite the part of output where the content was poured', function() {
-        const box = boxUtils.createBox({width: 5, height: 2});
+        const box = createBox({width: 5, height: 2});
         box.content = 'foo';
-        assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+        assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
           'foo..',
           '.....',
         ].join('\n'));
       });
 
       it('can break lines by "\\n"', function() {
-        const box = boxUtils.createBox({width: 5, height: 3});
+        const box = createBox({width: 5, height: 3});
         box.content = 'hello\n\nworld';
-        assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+        assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
           'hello',
           '.....',
           'world',
@@ -97,9 +105,9 @@ describe('lib/box-utils', function() {
       });
 
       it('can break lines automatically', function() {
-        const box = boxUtils.createBox({width: 5, height: 3});
+        const box = createBox({width: 5, height: 3});
         box.content = 'helloworld!!';
-        assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+        assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
           'hello',
           'world',
           '!!...',
@@ -107,9 +115,9 @@ describe('lib/box-utils', function() {
       });
 
       it('should ignore overflowing content', function() {
-        const box = boxUtils.createBox({width: 5, height: 2});
+        const box = createBox({width: 5, height: 2});
         box.content = 'helloworld!!';
-        assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+        assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
           'hello',
           'world',
         ].join('\n'));
@@ -118,15 +126,15 @@ describe('lib/box-utils', function() {
 
     describe('borders', function() {
       describe('each sides/corners of 1 width', function() {
-        let box;
+        let box: Box;
 
         beforeEach(function() {
-          box = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: '.'});
+          box = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: '.'});
         });
 
         it('can set the top side border', function() {
-          box = boxUtils.setBorders(box, {topWidth: 1, topSymbols:['*']});
-          assert.strictEqual(boxUtils.toText(box), [
+          box = setBorders(box, {topWidth: 1, topSymbols:['*']});
+          assert.strictEqual(toText(box), [
             '***',
             '...',
             '...',
@@ -135,8 +143,8 @@ describe('lib/box-utils', function() {
         });
 
         it('can set the bottom side border', function() {
-          box = boxUtils.setBorders(box, {bottomWidth: 1, bottomSymbols:['*']});
-          assert.strictEqual(boxUtils.toText(box), [
+          box = setBorders(box, {bottomWidth: 1, bottomSymbols:['*']});
+          assert.strictEqual(toText(box), [
             '...',
             '...',
             '...',
@@ -145,8 +153,8 @@ describe('lib/box-utils', function() {
         });
 
         it('can set the left side border', function() {
-          box = boxUtils.setBorders(box, {leftWidth: 1, leftSymbols:['*']});
-          assert.strictEqual(boxUtils.toText(box), [
+          box = setBorders(box, {leftWidth: 1, leftSymbols:['*']});
+          assert.strictEqual(toText(box), [
             '*..',
             '*..',
             '*..',
@@ -155,8 +163,8 @@ describe('lib/box-utils', function() {
         });
 
         it('can set the right side border', function() {
-          box = boxUtils.setBorders(box, {rightWidth: 1, rightSymbols:['*']});
-          assert.strictEqual(boxUtils.toText(box), [
+          box = setBorders(box, {rightWidth: 1, rightSymbols:['*']});
+          assert.strictEqual(toText(box), [
             '..*',
             '..*',
             '..*',
@@ -165,8 +173,8 @@ describe('lib/box-utils', function() {
         });
 
         it('can set the top-left corner', function() {
-          box = boxUtils.setBorders(box, {topWidth: 1, leftWidth: 1, topLeftSymbols:['*']});
-          assert.strictEqual(boxUtils.toText(box), [
+          box = setBorders(box, {topWidth: 1, leftWidth: 1, topLeftSymbols:['*']});
+          assert.strictEqual(toText(box), [
             '*  ',
             ' ..',
             ' ..',
@@ -175,8 +183,8 @@ describe('lib/box-utils', function() {
         });
 
         it('can set the top-right corner', function() {
-          box = boxUtils.setBorders(box, {topWidth: 1, rightWidth: 1, topRightSymbols:['*']});
-          assert.strictEqual(boxUtils.toText(box), [
+          box = setBorders(box, {topWidth: 1, rightWidth: 1, topRightSymbols:['*']});
+          assert.strictEqual(toText(box), [
             '  *',
             '.. ',
             '.. ',
@@ -185,8 +193,8 @@ describe('lib/box-utils', function() {
         });
 
         it('can set the bottom-left corner', function() {
-          box = boxUtils.setBorders(box, {bottomWidth: 1, leftWidth: 1, bottomLeftSymbols:['*']});
-          assert.strictEqual(boxUtils.toText(box), [
+          box = setBorders(box, {bottomWidth: 1, leftWidth: 1, bottomLeftSymbols:['*']});
+          assert.strictEqual(toText(box), [
             ' ..',
             ' ..',
             ' ..',
@@ -195,8 +203,8 @@ describe('lib/box-utils', function() {
         });
 
         it('can set the bottom-right corner', function() {
-          box = boxUtils.setBorders(box, {bottomWidth: 1, rightWidth: 1, bottomRightSymbols:['*']});
-          assert.strictEqual(boxUtils.toText(box), [
+          box = setBorders(box, {bottomWidth: 1, rightWidth: 1, bottomRightSymbols:['*']});
+          assert.strictEqual(toText(box), [
             '.. ',
             '.. ',
             '.. ',
@@ -207,8 +215,8 @@ describe('lib/box-utils', function() {
 
       describe('borders in all sides', function() {
         it('works (case: 1)', function() {
-          let box = boxUtils.createBox({x: 0, y: 0, width: 3, height: 4});
-          box = boxUtils.setBorders(box, {
+          let box = createBox({x: 0, y: 0, width: 3, height: 4});
+          box = setBorders(box, {
             topWidth: 1,
             bottomWidth: 1,
             leftWidth: 1,
@@ -223,7 +231,7 @@ describe('lib/box-utils', function() {
             bottomRightSymbols: ['+'],
           });
 
-          assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+          assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
             '+-+',
             '|.|',
             '|.|',
@@ -232,8 +240,8 @@ describe('lib/box-utils', function() {
         });
 
         it('works (case: 2)', function() {
-          let box = boxUtils.createBox({x: 0, y: 0, width: 7, height: 6});
-          box = boxUtils.setBorders(box, {
+          let box = createBox({x: 0, y: 0, width: 7, height: 6});
+          box = setBorders(box, {
             topWidth: 1,
             bottomWidth: 4,
             leftWidth: 2,
@@ -248,7 +256,7 @@ describe('lib/box-utils', function() {
             bottomRightSymbols: ['4'],
           });
 
-          assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+          assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
             '11TT222',
             'LL..RRR',
             '33BB444',
@@ -261,9 +269,9 @@ describe('lib/box-utils', function() {
 
       describe('content pouring inside of borders', function() {
         it('works', function() {
-          let box = boxUtils.createBox({x: 0, y: 0, width: 7, height: 6});
+          let box = createBox({x: 0, y: 0, width: 7, height: 6});
 
-          box = boxUtils.setBorders(box, {
+          box = setBorders(box, {
             topWidth: 1,
             bottomWidth: 1,
             leftWidth: 1,
@@ -280,7 +288,7 @@ describe('lib/box-utils', function() {
 
           box.content = 'へlloworlど\nふー\nbar';
 
-          assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+          assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
             '+-----+',
             '|へllo|',
             '|worl.|',
@@ -294,12 +302,12 @@ describe('lib/box-utils', function() {
 
     describe('children', function() {
       describe('the box that has a child', function() {
-        let box;
-        let child;
+        let box: Box;
+        let child: Box;
 
         beforeEach(function() {
-          box = boxUtils.createBox({x: 0, y: 0, width: 7, height: 4});
-          child = boxUtils.createBox({x: 0, y: 0, width: 3, height: 2}, {defaultSymbol: 'c'});
+          box = createBox({x: 0, y: 0, width: 7, height: 4});
+          child = createBox({x: 0, y: 0, width: 3, height: 2}, {defaultSymbol: 'c'});
           box.children.push(child);
         });
 
@@ -307,7 +315,7 @@ describe('lib/box-utils', function() {
           child.x = 2;
           child.y = 1;
 
-          assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+          assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
             '.......',
             '..ccc..',
             '..ccc..',
@@ -318,7 +326,7 @@ describe('lib/box-utils', function() {
         it('applies the content of the child', function() {
           child.content = '1234';
 
-          assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+          assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
             '123....',
             '4cc....',
             '.......',
@@ -329,7 +337,7 @@ describe('lib/box-utils', function() {
         it('applies the multibyte content of the child', function() {
           child.content = 'あ\n1い';
 
-          assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+          assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
             'あc....',
             '1い....',
             '.......',
@@ -342,7 +350,7 @@ describe('lib/box-utils', function() {
           child.x = 1;
           child.y = 1;
 
-          assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+          assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
             '1234567',
             'acccefg',
             'AcccEFG',
@@ -355,7 +363,7 @@ describe('lib/box-utils', function() {
           child.x = 1;
           child.y = 0;
 
-          assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+          assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
             '.cccう.',
             '1ccc.か',
             '.......',
@@ -365,21 +373,21 @@ describe('lib/box-utils', function() {
       });
 
       describe('the box that has two children', function() {
-        let box;
-        let child1;
-        let child2;
+        let box: Box;
+        let child1: Box;
+        let child2: Box;
 
         beforeEach(function() {
-          box = boxUtils.createBox({x: 0, y: 0, width: 3, height: 3});
-          child1 = boxUtils.createBox({x: 0, y: 0, width: 2, height: 2}, {defaultSymbol: '1'});
-          child2 = boxUtils.createBox({x: 0, y: 0, width: 1, height: 1}, {defaultSymbol: '2'});
+          box = createBox({x: 0, y: 0, width: 3, height: 3});
+          child1 = createBox({x: 0, y: 0, width: 2, height: 2}, {defaultSymbol: '1'});
+          child2 = createBox({x: 0, y: 0, width: 1, height: 1}, {defaultSymbol: '2'});
           box.children.push(child1);
           box.children.push(child2);
         });
 
         describe('the children have same zIndex', function() {
           it('puts the box added later at a higher position', function() {
-            assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+            assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
               '21.',
               '11.',
               '...',
@@ -391,7 +399,7 @@ describe('lib/box-utils', function() {
           it('puts the box of high zIndex at a higher position', function() {
             child1.zIndex = 1;
 
-            assert.strictEqual(boxUtils.toText(box, {backgroundSymbol: '.'}), [
+            assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
               '11.',
               '11.',
               '...',

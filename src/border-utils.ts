@@ -1,22 +1,22 @@
-// @flow
-
-const matrixUtils = require('./matrix-utils');
-
-/*::
-import type {
+import {
   Element,
   ElementSymbol,
   Matrix,
+  getMaxX,
+  getMaxY,
 } from './matrix-utils';
-import type {Rectangle} from './rectangle-utils';
- */
+import {Rectangle} from './rectangle-utils';
 
 
-const getByCirculatedIndex = (ary/*: any[]*/, index/*: number*/)/*: any*/ => {
-  return ary[(ary.length + index) % ary.length];
+function getByCirculatedIndex<ArrayElement>(ary: ArrayElement[], index: number): ArrayElement {
+  const found = ary[(ary.length + index) % ary.length];
+  if (found === undefined) {
+    throw new Error('Can not find an element');
+  }
+  return found;
 };
 
-const clearTopSide = (matrix/*: Matrix*/, width/*: number*/)/*: Matrix*/ => {
+export function clearTopSide(matrix: Matrix, width: number): Matrix {
   return matrix.map((row, y) => {
     if (y < width) {
       return row.map(element => Object.assign({}, element, {symbol: null}));
@@ -25,8 +25,8 @@ const clearTopSide = (matrix/*: Matrix*/, width/*: number*/)/*: Matrix*/ => {
   });
 };
 
-const clearBottomSide = (matrix/*: Matrix*/, width/*: number*/)/*: Matrix*/ => {
-  const maxY = matrixUtils.getMaxY(matrix);
+export function clearBottomSide(matrix: Matrix, width: number): Matrix {
+  const maxY = getMaxY(matrix);
 
   return matrix.map((row, y) => {
     if (y > maxY - width) {
@@ -36,7 +36,7 @@ const clearBottomSide = (matrix/*: Matrix*/, width/*: number*/)/*: Matrix*/ => {
   });
 };
 
-const clearLeftSide = (matrix/*: Matrix*/, width/*: number*/)/*: Matrix*/ => {
+export function clearLeftSide(matrix: Matrix, width: number): Matrix {
   return matrix.map(row => {
     const newRow = row.slice();
     for (let x = 0; x < width; x += 1) {
@@ -46,8 +46,8 @@ const clearLeftSide = (matrix/*: Matrix*/, width/*: number*/)/*: Matrix*/ => {
   });
 };
 
-const clearRightSide = (matrix/*: Matrix*/, width/*: number*/)/*: Matrix*/ => {
-  const maxX = matrixUtils.getMaxX(matrix);
+export function clearRightSide(matrix: Matrix, width: number): Matrix {
+  const maxX = getMaxX(matrix);
 
   return matrix.map(row => {
     const newRow = row.slice();
@@ -58,19 +58,19 @@ const clearRightSide = (matrix/*: Matrix*/, width/*: number*/)/*: Matrix*/ => {
   });
 };
 
-const drawTopSide = (
-  matrix/*: Matrix*/,
-  borderWidth/*: number*/,
-  symbols/*: (ElementSymbol | null)[]*/,
-  fromX/*: number*/,
-  toX/*: number*/
-)/*: Matrix*/ => {
+export function drawTopSide(
+  matrix: Matrix,
+  borderWidth: number,
+  symbols: (ElementSymbol | null)[],
+  fromX: number,
+  toX: number
+): Matrix {
   return matrix.map((row, y) => {
     if (y < borderWidth) {
       return row.map((element, x) => {
         if (x >= fromX && x <= toX && symbols.length > 0) {
           return Object.assign({}, element, {
-            symbol: getByCirculatedIndex(symbols, y),
+            symbol: getByCirculatedIndex<ElementSymbol | null>(symbols, y),
           });
         }
         return element;
@@ -80,21 +80,21 @@ const drawTopSide = (
   });
 };
 
-const drawBottomSide = (
-  matrix/*: Matrix*/,
-  borderWidth/*: number*/,
-  symbols/*: (ElementSymbol | null)[]*/,
-  fromX/*: number*/,
-  toX/*: number*/
-)/*: Matrix*/ => {
-  const maxY = matrixUtils.getMaxY(matrix);
+export function drawBottomSide(
+  matrix: Matrix,
+  borderWidth: number,
+  symbols: (ElementSymbol | null)[],
+  fromX: number,
+  toX: number
+): Matrix {
+  const maxY = getMaxY(matrix);
 
   return matrix.map((row, y) => {
     if (y > maxY - borderWidth) {
       return row.map((element, x) => {
         if (x >= fromX && x <= toX && symbols.length > 0) {
           return Object.assign({}, element, {
-            symbol: getByCirculatedIndex(symbols, maxY - y),
+            symbol: getByCirculatedIndex<ElementSymbol | null>(symbols, maxY - y),
           });
         }
         return element;
@@ -104,19 +104,19 @@ const drawBottomSide = (
   });
 };
 
-const drawLeftSide = (
-  matrix/*: Matrix*/,
-  borderWidth/*: number*/,
-  symbols/*: (ElementSymbol | null)[]*/,
-  fromY/*: number*/,
-  toY/*: number*/
-)/*: Matrix*/ => {
+export function drawLeftSide(
+  matrix: Matrix,
+  borderWidth: number,
+  symbols: (ElementSymbol | null)[],
+  fromY: number,
+  toY: number
+): Matrix {
   return matrix.map((row, y) => {
     if (y >= fromY && y <= toY) {
       return row.map((element, x) => {
         if (x < borderWidth && symbols.length > 0) {
           return Object.assign({}, element, {
-            symbol: getByCirculatedIndex(symbols, x),
+            symbol: getByCirculatedIndex<ElementSymbol | null>(symbols, x),
           });
         }
         return element;
@@ -126,21 +126,21 @@ const drawLeftSide = (
   });
 };
 
-const drawRightSide = (
-  matrix/*: Matrix*/,
-  borderWidth/*: number*/,
-  symbols/*: (ElementSymbol | null)[]*/,
-  fromY/*: number*/,
-  toY/*: number*/
-)/*: Matrix*/ => {
-  const maxX = matrixUtils.getMaxX(matrix);
+export function drawRightSide(
+  matrix: Matrix,
+  borderWidth: number,
+  symbols: (ElementSymbol | null)[],
+  fromY: number,
+  toY: number
+): Matrix {
+  const maxX = getMaxX(matrix);
 
   return matrix.map((row, y) => {
     if (y >= fromY && y <= toY) {
       return row.map((element, x) => {
         if (x > maxX - borderWidth && symbols.length > 0) {
           return Object.assign({}, element, {
-            symbol: getByCirculatedIndex(symbols, maxX - x),
+            symbol: getByCirculatedIndex<ElementSymbol | null>(symbols, maxX - x),
           });
         }
         return element;
@@ -150,11 +150,11 @@ const drawRightSide = (
   });
 };
 
-const drawCorner = (
-  matrix/*: Matrix*/,
-  rectangle/*: Rectangle*/,
-  symbols/*: (ElementSymbol | null)[]*/
-)/*: Matrix*/ => {
+export function drawCorner(
+  matrix: Matrix,
+  rectangle: Rectangle,
+  symbols: (ElementSymbol | null)[]
+): Matrix {
   let counter = 0;
 
   return matrix.map((row, y) => {
@@ -172,16 +172,4 @@ const drawCorner = (
     }
     return row;
   });
-};
-
-module.exports = {
-  clearBottomSide,
-  clearLeftSide,
-  clearRightSide,
-  clearTopSide,
-  drawBottomSide,
-  drawCorner,
-  drawLeftSide,
-  drawRightSide,
-  drawTopSide,
 };

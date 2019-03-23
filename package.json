@@ -2,10 +2,12 @@
   "name": "tilto",
   "version": "0.0.1",
   "description": "A TUI (Text User Interface) renderer",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.js",
   "scripts": {
-    "flow": "$(npm bin)/flow",
-    "test": "$(npm bin)/mocha --recursive"
+    "build": "$(npm bin)/tsc --project ./tsconfigs/build.json",
+    "test": "$(npm bin)/mocha --require './setup/ts-node-reigister-for-test.js' 'test/**/*.ts'",
+    "typecheck": "$(npm bin)/tsc --project ./tsconfigs/test.json"
   },
   "repository": {
     "type": "git",
@@ -27,17 +29,19 @@
     "eastasianwidth": "^0.1.1"
   },
   "devDependencies": {
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^11.11.6",
     "chalk": "^2.3.0",
-    "flow-bin": "^0.61.0",
     "keypress": "^0.2.1",
     "log-update": "^2.3.0",
-    "mocha": "^3.5.0"
+    "mocha": "^3.5.0",
+    "ts-node": "^8.0.3",
+    "typescript": "^3.3.4000"
   },
   "files": [
     "LICENSE",
     "README.md",
-    "index.js",
-    "lib",
+    "dist",
     "package.json"
   ],
   "engines": {
