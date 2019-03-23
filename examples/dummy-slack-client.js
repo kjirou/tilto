@@ -1,5 +1,5 @@
-const tilto = require('../index');
-
+require('../setup/ts-node-reigister-for-test');
+const tilto = require('../src');
 
 let root = tilto.createBox({width: 80, height: 20});
 
