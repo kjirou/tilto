@@ -42,6 +42,7 @@
     "LICENSE",
     "README.md",
     "dist",
+    "examples",
     "package.json"
   ],
   "engines": {
