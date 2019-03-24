@@ -9,6 +9,8 @@ import {
   toSize,
 } from './rectangle-utils';
 
+const sliceAnsiString = require('slice-ansi-string');
+
 export type ElementSymbol = string;
 export type Element = {
   x: number,
@@ -267,32 +269,21 @@ export function cropMatrix(matrix: Matrix, rectangle: Rectangle): Matrix {
   return newMatrix;
 }
 
-// TODO: Surrogate pairs
 export function parseContentToSymbols(content: string): (ElementSymbol | '\n')[] {
-  return content.split('');
-  // TODO: ANSI string
-  //       slice-ansi の挙動がバグなのか仕様を勘違いしているのか解析できなかった
-  //const symbols = [];
-  //let pointer = 0;
-  //let symbol;
-  //
-  //while (true) {
-  //  symbol = sliceAnsi(content, pointer, pointer + 1);
-  //  // "slice-ansi" returns "" if fullWidth string is sliced with `sliceAnsi('あ', 0, 1)`
-  //  if (symbol === '') {
-  //    const fullWidthSymbol = sliceAnsi(content, pointer, pointer + 2);
-  //    if (fullWidthSymbol === '') {
-  //      break;
-  //    }
-  //    symbols.push(fullWidthSymbol);
-  //    pointer += 2;
-  //  } else {
-  //    symbols.push(symbol);
-  //    pointer += 1;
-  //  }
-  //}
-  //
-  //return symbols;
+  const symbols = [];
+  let pointer = 0;
+  let symbol;
+
+  while (true) {
+    symbol = sliceAnsiString(content, pointer, pointer + 1) as string;
+    if (symbol === '') {
+      break;
+    }
+    symbols.push(symbol);
+    pointer += 1;
+  }
+
+  return symbols;
 }
 
 // TODO: consider word-wrap/word-break

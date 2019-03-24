@@ -1,3 +1,4 @@
+import * as ansiStyles from 'ansi-styles';
 import * as assert from 'assert';
 
 import {
@@ -6,11 +7,11 @@ import {
 } from '../src/box-utils';
 import {
   Matrix,
-  parseContentToSymbols,
   createMatrix,
   createMatrixFromText,
   cropMatrix,
   overwriteMatrix,
+  parseContentToSymbols,
   pourContent,
   toText,
 } from '../src/matrix-utils';
@@ -193,16 +194,43 @@ describe('matrix-utils', function() {
     });
   });
 
-  //describe('parseContentToSymbols', function() {
-  //  it('works', function() {
-  //    const content = 'a' + chalk.red('bc') + 'd';
-  //    const symbols = parseContentToSymbols(content);
-  //    assert.strictEqual(symbols[0], 'a');
-  //    assert.strictEqual(symbols[1], chalk.red('b'));
-  //    assert.strictEqual(symbols[2], chalk.red('c'));
-  //    assert.strictEqual(symbols[3], 'd');
-  //  });
-  //});
+  describe('parseContentToSymbols', function() {
+    it('can parse non-ansi ascii strings', function() {
+      assert.deepStrictEqual(parseContentToSymbols('abc'), ['a', 'b', 'c']);
+      assert.deepStrictEqual(parseContentToSymbols('ab\nc'), ['a', 'b', '\n', 'c']);
+    });
+
+    it('can parse non-ansi multibyte strings', function() {
+      assert.deepStrictEqual(parseContentToSymbols('あいう'), ['あ', 'い', 'う']);
+      assert.deepStrictEqual(parseContentToSymbols('aいuえo'), ['a', 'い', 'u', 'え', 'o']);
+    });
+
+    it('can parse non-ansi surrogate pairs', function() {
+      const surrogatePair = '\ud867\ude3d';
+      assert.deepStrictEqual(parseContentToSymbols(surrogatePair + surrogatePair), [surrogatePair, surrogatePair]);
+      assert.deepStrictEqual(
+        parseContentToSymbols(`a${surrogatePair}あ${surrogatePair}`),
+        ['a', surrogatePair, 'あ', surrogatePair]
+      );
+    });
+
+    it('can parse ansi multibyte strings', function() {
+      const {red, bgBlue} = ansiStyles;
+
+      assert.deepStrictEqual(
+        parseContentToSymbols(`a${red.open}bc${red.close}d`),
+        ['a', `${red.open}b${red.close}`, `${red.open}c${red.close}`, 'd']
+      );
+      assert.deepStrictEqual(
+        parseContentToSymbols(`あ${red.open}いc${red.close}`),
+        ['あ', `${red.open}い${red.close}`, `${red.open}c${red.close}`]
+      );
+      assert.deepStrictEqual(
+        parseContentToSymbols(`a${red.open}b${bgBlue.open}c${bgBlue.close}${red.close}d`),
+        ['a', `${red.open}b${red.close}`, `${red.open}${bgBlue.open}c${bgBlue.close}${red.close}`, 'd']
+      );
+    });
+  });
 
   describe('pourContent', function() {
     let matrix: Matrix;
