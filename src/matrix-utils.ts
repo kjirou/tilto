@@ -66,7 +66,7 @@ export function createMatrixFromText(text: string): Matrix {
       if (element) {
         element.symbol = symbols[y][x];
       } else {
-        throw new Error('It is a branch only for "flow", so it does not pass here at run-time.');
+        throw new Error('The `element` must exist.');
       }
     }
   }
@@ -142,7 +142,7 @@ export function overwriteMatrix(
         if (newElement) {
           return newElement;
         } else {
-          throw new Error('It is a branch only for "flow", so it does not pass here at run-time.');
+          throw new Error('The `newElement` must exist.');
         }
       }
       return element;
