@@ -11,7 +11,7 @@ import {
   createMatrixFromText,
   cropMatrix,
   overwriteMatrix,
-  parseContentToSymbols,
+  parseContent,
   pourContent,
   toText,
 } from '../src/matrix-utils';
@@ -194,22 +194,22 @@ describe('matrix-utils', function() {
     });
   });
 
-  describe('parseContentToSymbols', function() {
+  describe('parseContent', function() {
     it('can parse non-ansi ascii strings', function() {
-      assert.deepStrictEqual(parseContentToSymbols('abc'), ['a', 'b', 'c']);
-      assert.deepStrictEqual(parseContentToSymbols('ab\nc'), ['a', 'b', '\n', 'c']);
+      assert.deepStrictEqual(parseContent('abc'), ['a', 'b', 'c']);
+      assert.deepStrictEqual(parseContent('ab\nc'), ['a', 'b', '\n', 'c']);
     });
 
     it('can parse non-ansi multibyte strings', function() {
-      assert.deepStrictEqual(parseContentToSymbols('あいう'), ['あ', 'い', 'う']);
-      assert.deepStrictEqual(parseContentToSymbols('aいuえo'), ['a', 'い', 'u', 'え', 'o']);
+      assert.deepStrictEqual(parseContent('あいう'), ['あ', 'い', 'う']);
+      assert.deepStrictEqual(parseContent('aいuえo'), ['a', 'い', 'u', 'え', 'o']);
     });
 
     it('can parse non-ansi surrogate pairs', function() {
       const surrogatePair = '\ud867\ude3d';
-      assert.deepStrictEqual(parseContentToSymbols(surrogatePair + surrogatePair), [surrogatePair, surrogatePair]);
+      assert.deepStrictEqual(parseContent(surrogatePair + surrogatePair), [surrogatePair, surrogatePair]);
       assert.deepStrictEqual(
-        parseContentToSymbols(`a${surrogatePair}あ${surrogatePair}`),
+        parseContent(`a${surrogatePair}あ${surrogatePair}`),
         ['a', surrogatePair, 'あ', surrogatePair]
       );
     });
@@ -218,15 +218,15 @@ describe('matrix-utils', function() {
       const {red, bgBlue} = ansiStyles;
 
       assert.deepStrictEqual(
-        parseContentToSymbols(`a${red.open}bc${red.close}d`),
+        parseContent(`a${red.open}bc${red.close}d`),
         ['a', `${red.open}b${red.close}`, `${red.open}c${red.close}`, 'd']
       );
       assert.deepStrictEqual(
-        parseContentToSymbols(`あ${red.open}いc${red.close}`),
+        parseContent(`あ${red.open}いc${red.close}`),
         ['あ', `${red.open}い${red.close}`, `${red.open}c${red.close}`]
       );
       assert.deepStrictEqual(
-        parseContentToSymbols(`a${red.open}b${bgBlue.open}c${bgBlue.close}${red.close}d`),
+        parseContent(`a${red.open}b${bgBlue.open}c${bgBlue.close}${red.close}d`),
         ['a', `${red.open}b${red.close}`, `${red.open}${bgBlue.open}c${bgBlue.close}${red.close}`, 'd']
       );
     });

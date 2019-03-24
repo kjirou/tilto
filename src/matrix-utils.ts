@@ -13,15 +13,27 @@ const sliceAnsiString = require('slice-ansi-string');
 const stripAnsi = require('strip-ansi');
 
 export type ElementSymbol = string;
+export type ElementStyle = {
+  foregroundColor: string,
+  backgroundColor: string,
+};
 export type Element = {
   x: number,
   y: number,
   // null  .. シンボルがないことを示す。一文字分の背景が表示される。
   // false .. マルチバイト文字が左elementに存在することを示す。レンダリング時に無視されて詰められる。
   symbol: ElementSymbol | null | false,
+  style: ElementStyle,
 };
 export type Matrix = Element[][];
 export type SymbolRuler = (symbol: ElementSymbol) => 0 | 1 | 2;
+
+function createDefaultElementStyle(): ElementStyle {
+  return {
+    foregroundColor: 'default',
+    backgroundColor: 'default',
+  };
+}
 
 export function createMatrix(size: Size, defaultSymbol: ElementSymbol | null = null): Matrix {
   const matrix = [];
@@ -32,6 +44,7 @@ export function createMatrix(size: Size, defaultSymbol: ElementSymbol | null = n
         y,
         x,
         symbol: defaultSymbol,
+        style: createDefaultElementStyle(),
       });
     }
     matrix.push(row);
@@ -270,8 +283,13 @@ export function cropMatrix(matrix: Matrix, rectangle: Rectangle): Matrix {
   return newMatrix;
 }
 
-export function parseContentToSymbols(content: string): (ElementSymbol | '\n')[] {
-  const symbols = [];
+export function parseContent(content: string): {
+  isLineBreaking: boolean,
+  symbol: ElementSymbol,
+  style: ElementStyle,
+}[] {
+  const pourableElements = [];
+
   // This pointer is considering ANSI escape code.
   // Therefore, it can not be used with `str.slice()` and so on.
   let pointer = 0;
@@ -284,15 +302,25 @@ export function parseContentToSymbols(content: string): (ElementSymbol | '\n')[]
 
     const symbol = stripAnsi(symbolWithAnsi) as string;
     if (symbol === '\n') {
-      symbols.push(symbol);
+      pourableElements.push({
+        isLineBreaking: true,
+        symbol: ' ',  // Anything is fine
+        style: createDefaultElementStyle(),  // Anything is fine
+      });
     } else {
-      symbols.push(symbolWithAnsi);
+      // TODO: ここで symbolWithAnsi からカラーコードを抽出する
+
+      pourableElements.push({
+        isLineBreaking: false,
+        symbol: symbol,
+        style: createDefaultElementStyle(),
+      });
     }
 
     pointer += 1;
   }
 
-  return symbols;
+  return pourableElements;
 }
 
 // TODO: consider word-wrap/word-break
@@ -308,10 +336,10 @@ export function pourContent(
   let yPointer = 0;
   let xPointer = 0;
 
-  parseContentToSymbols(content).forEach(symbol => {
-    const symbolWidth = symbolRuler(symbol);
+  parseContent(content).forEach(pourableElement => {
+    const symbolWidth = symbolRuler(pourableElement.symbol);
 
-    if (symbol === '\n') {
+    if (pourableElement.isLineBreaking) {
       yPointer += 1;
       xPointer = 0;
     } else if (symbolWidth === 2 && maxWidth === 1) {
@@ -334,7 +362,7 @@ export function pourContent(
 
         const element1 = getElement(newMatrix, {x: xPointer, y: yPointer});
         if (element1) {
-          newMatrix[yPointer][xPointer] = Object.assign({}, element1, {symbol});
+          newMatrix[yPointer][xPointer] = Object.assign({}, element1, {symbol: pourableElement.symbol});
         }
         xPointer += 1
 
@@ -351,7 +379,7 @@ export function pourContent(
 
         const element = getElement(newMatrix, {x: xPointer, y: yPointer});
         if (element) {
-          newMatrix[yPointer][xPointer] = Object.assign({}, element, {symbol});
+          newMatrix[yPointer][xPointer] = Object.assign({}, element, {symbol: pourableElement.symbol});
         }
 
         xPointer += 1;
