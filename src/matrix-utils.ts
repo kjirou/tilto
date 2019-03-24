@@ -14,10 +14,7 @@ export type Element = {
   x: number,
   y: number,
   // null  .. シンボルがないことを示す
-  // false .. コンテンツ流し込み時に詰めることを表現するために使う内部用の値。
-  //          Matrix に対して OutputBufferMatrix というここだけ変えた型を定義して分離しようとしたが、
-  //          Flow が Comment Types で Generic Types が定義できないという問題が有り、
-  //          似たような複数の型に対して処理を書くのが難しいので一旦止めた。
+  // false .. コンテンツ流し込み時に詰めることを表現するために使う内部用の値
   symbol: ElementSymbol | null | false,
 };
 export type Matrix = Element[][];
