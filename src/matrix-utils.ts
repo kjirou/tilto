@@ -13,8 +13,8 @@ export type ElementSymbol = string;
 export type Element = {
   x: number,
   y: number,
-  // null  .. シンボルがないことを示す
-  // false .. コンテンツ流し込み時に詰めることを表現するために使う内部用の値
+  // null  .. シンボルがないことを示す。一文字分の背景が表示される。
+  // false .. マルチバイト文字が左elementに存在することを示す。レンダリング時に無視されて詰められる。
   symbol: ElementSymbol | null | false,
 };
 export type Matrix = Element[][];
@@ -152,23 +152,66 @@ export function overwriteMatrix(
     });
   });
 
-  // Delete separated multibyte fragments in this order
   //
-  // M = Multibyte symbol
-  // f = false symbol
+  // Delete separated multibyte fragments in following cases.
   //
-  // 1)
-  //    |(overwrited)|
-  //    |f           |
-  // 2)
-  //    |(overwrited)|
-  //    |           M|
-  // 3)
-  //    |(overwrited)|
-  //   M|            |
-  // 4)
-  //    |(overwrited)|
-  //    |            |f
+  // 1) A case that a multibyte fragment exist on the left edge of the replacer.
+  //
+  //     (e.g.)  | first x - 1 | first x | <- replacer's position
+  //    ---------+-------------+---------+
+  //    original |     "a"     |   "b"   |
+  //    replacer |    (None)   |  false  |
+  //    current  |     "a"     |  false  |
+  //    fix      |     "a"     |   null  |
+  //
+  // 2) A case that a multibyte fragment exist on the right edge of the replacer.
+  //
+  //     (e.g.)  |   last x   | last.x + 1 | <- replacer's position
+  //    ---------+------------+------------+
+  //    original |     "a"    |     "b"    |
+  //    replacer |  multibyte |   (None)   |
+  //    current  |  multibyte |     "b"    |
+  //    fix      |     null   |     "b"    |
+  //
+  // 3) A case that a multibyte fragment exist on the left side of the replacer.
+  //
+  //     (e.g.)  | first x - 1 | first x | <- replacer's position
+  //    ---------+-------------+---------+
+  //    original |  multibyte  |  false  |
+  //    replacer |    (None)   |   "a"   |
+  //    current  |  multibyte  |   "a"   |
+  //    fix      |     null    |   "a"   |
+  //
+  // 4) A case that a multibyte fragment exist on the right side of the replacer.
+  //
+  //     (e.g.)  |   last x   | last.x + 1 | <- replacer's position
+  //    ---------+------------+------------+
+  //    original |  multibyte |   false    |
+  //    replacer |     "a"    |   (None)   |
+  //    current  |     "a"    |   false    |
+  //    fix      |     "a"    |    null    |
+  //
+  // Complex cases)
+  //
+  //     (e.g.)  | first x - 1 | first x | <- replacer's position
+  //    ---------+-------------+---------+
+  //    original |  multibyte  |  false  |
+  //    replacer |    (None)   |  false  |
+  //    current  |  multibyte  |  false  |
+  //    fix in 1 |  multibyte  |   null  |
+  //    fix in 3 |     null    |   null  |
+  //
+  //     (e.g.)  |   last x   | last.x + 1 | <- replacer's position
+  //    ---------+------------+------------+
+  //    original |  multibyte |   false    |
+  //    replacer |  multibyte |   (None)   |
+  //    current  |  multibyte |   false    |
+  //    fix in 2 |     null   |   false    |
+  //    fix in 4 |     null   |   false    |
+  //
+  //    These cases are somewhat unnatural because they eliminate multibyte characters that need not be erased.
+  //    However, these situations are edge cases because basically the `replacer` often has borders.
+  //
   newMatrix = newMatrix.map((row, y) => {
     return row.map((element, x) => {
       // 1)
