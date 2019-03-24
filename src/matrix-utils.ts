@@ -13,11 +13,8 @@ export type ElementSymbol = string;
 export type Element = {
   x: number,
   y: number,
-  // null  .. シンボルがないことを示す
-  // false .. コンテンツ流し込み時に詰めることを表現するために使う内部用の値。
-  //          Matrix に対して OutputBufferMatrix というここだけ変えた型を定義して分離しようとしたが、
-  //          Flow が Comment Types で Generic Types が定義できないという問題が有り、
-  //          似たような複数の型に対して処理を書くのが難しいので一旦止めた。
+  // null  .. シンボルがないことを示す。一文字分の背景が表示される。
+  // false .. マルチバイト文字が左elementに存在することを示す。レンダリング時に無視されて詰められる。
   symbol: ElementSymbol | null | false,
 };
 export type Matrix = Element[][];
@@ -37,6 +34,19 @@ export function createMatrix(size: Size, defaultSymbol: ElementSymbol | null = n
     matrix.push(row);
   }
   return matrix;
+}
+
+/**
+ * Validate that the matrix is not empty and is rectangular
+ */
+export function validateMatrix(matrix: Matrix): boolean {
+  return (
+    Array.isArray(matrix) &&
+    matrix.length > 0 &&
+    Array.isArray(matrix[0]) &&
+    matrix[0].length > 0 &&
+    matrix.every(row => row.length === matrix[0].length)
+  );
 }
 
 export function getElement(matrix: Matrix, coordinate: Coordinate): Element | null {
@@ -69,7 +79,7 @@ export function createMatrixFromText(text: string): Matrix {
       if (element) {
         element.symbol = symbols[y][x];
       } else {
-        throw new Error('It is a branch only for "flow", so it does not pass here at run-time.');
+        throw new Error('The `element` must exist.');
       }
     }
   }
@@ -111,16 +121,6 @@ export function getMaxY(matrix: Matrix): number {
   return getHeight(matrix) - 1;
 }
 
-export function validateMatrix(matrix: Matrix): boolean {
-  return (
-    Array.isArray(matrix) &&
-    matrix.length > 0 &&
-    Array.isArray(matrix[0]) &&
-    matrix[0].length > 0 &&
-    matrix.every(row => row.length === matrix[0].length)
-  );
-}
-
 // TODO: Negative coordinates
 export function overwriteMatrix(
   matrix: Matrix,
@@ -145,30 +145,73 @@ export function overwriteMatrix(
         if (newElement) {
           return newElement;
         } else {
-          throw new Error('It is a branch only for "flow", so it does not pass here at run-time.');
+          throw new Error('The `newElement` must exist.');
         }
       }
       return element;
     });
   });
 
-  // Delete separated multibyte fragments in this order
   //
-  // M = Multibyte symbol
-  // f = false symbol
+  // Delete separated multibyte fragments in following cases.
   //
-  // 1)
-  //    |(overwrited)|
-  //    |f           |
-  // 2)
-  //    |(overwrited)|
-  //    |           M|
-  // 3)
-  //    |(overwrited)|
-  //   M|            |
-  // 4)
-  //    |(overwrited)|
-  //    |            |f
+  // 1) A case that a multibyte fragment exist on the left edge of the replacer.
+  //
+  //     (e.g.)  | first x - 1 | first x | <- replacer's position
+  //    ---------+-------------+---------+
+  //    original |     "a"     |   "b"   |
+  //    replacer |    (None)   |  false  |
+  //    current  |     "a"     |  false  |
+  //    fix      |     "a"     |   null  |
+  //
+  // 2) A case that a multibyte fragment exist on the right edge of the replacer.
+  //
+  //     (e.g.)  |   last x   | last.x + 1 | <- replacer's position
+  //    ---------+------------+------------+
+  //    original |     "a"    |     "b"    |
+  //    replacer |  multibyte |   (None)   |
+  //    current  |  multibyte |     "b"    |
+  //    fix      |     null   |     "b"    |
+  //
+  // 3) A case that a multibyte fragment exist on the left side of the replacer.
+  //
+  //     (e.g.)  | first x - 1 | first x | <- replacer's position
+  //    ---------+-------------+---------+
+  //    original |  multibyte  |  false  |
+  //    replacer |    (None)   |   "a"   |
+  //    current  |  multibyte  |   "a"   |
+  //    fix      |     null    |   "a"   |
+  //
+  // 4) A case that a multibyte fragment exist on the right side of the replacer.
+  //
+  //     (e.g.)  |   last x   | last.x + 1 | <- replacer's position
+  //    ---------+------------+------------+
+  //    original |  multibyte |   false    |
+  //    replacer |     "a"    |   (None)   |
+  //    current  |     "a"    |   false    |
+  //    fix      |     "a"    |    null    |
+  //
+  // Complex cases)
+  //
+  //     (e.g.)  | first x - 1 | first x | <- replacer's position
+  //    ---------+-------------+---------+
+  //    original |  multibyte  |  false  |
+  //    replacer |    (None)   |  false  |
+  //    current  |  multibyte  |  false  |
+  //    fix in 1 |  multibyte  |   null  |
+  //    fix in 3 |     null    |   null  |
+  //
+  //     (e.g.)  |   last x   | last.x + 1 | <- replacer's position
+  //    ---------+------------+------------+
+  //    original |  multibyte |   false    |
+  //    replacer |  multibyte |   (None)   |
+  //    current  |  multibyte |   false    |
+  //    fix in 2 |     null   |   false    |
+  //    fix in 4 |     null   |   false    |
+  //
+  //    These cases are somewhat unnatural because they eliminate multibyte characters that need not be erased.
+  //    However, these situations are edge cases because basically the `replacer` often has borders.
+  //
   newMatrix = newMatrix.map((row, y) => {
     return row.map((element, x) => {
       // 1)
