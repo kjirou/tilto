@@ -108,6 +108,9 @@ export function getMaxY(matrix: Matrix): number {
   return getHeight(matrix) - 1;
 }
 
+/**
+ * Validate that the matrix is not empty and is rectangular
+ */
 export function validateMatrix(matrix: Matrix): boolean {
   return (
     Array.isArray(matrix) &&
