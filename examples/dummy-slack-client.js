@@ -1,5 +1,9 @@
 const tilto = require('../dist');
 
+const ANSI_RED = '\u001b[31m';
+const ANSI_GREEN = '\u001b[32m';
+const ANSI_RESET = '\u001b[0m';
+
 let root = tilto.createBox({width: 80, height: 20});
 
 let sideBar = tilto.createBox({width: 20, height: 20});
@@ -7,9 +11,9 @@ sideBar = tilto.setBorderType(sideBar, 'default');
 sideBar.content = `Channels
 #elona
 #ftl
-#rimworld
+${ANSI_GREEN}#rimworld
 #stellaris
-#skyrim
+#skyrim${ANSI_RESET}
 #tome4
 
 Direct Messages
@@ -37,7 +41,7 @@ kjirou 1:17PM
 　ふああああああああああああああああああ！
 
 kjirou 2:33PM
-　ああああああああああああああああああああああ！
+　この${ANSI_RED}一部は赤い${ANSI_RESET}です！
 　ぶるあああああああああああああ！
 
 kjirou 3:12PM
