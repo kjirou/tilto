@@ -36,6 +36,19 @@ export function createMatrix(size: Size, defaultSymbol: ElementSymbol | null = n
   return matrix;
 }
 
+/**
+ * Validate that the matrix is not empty and is rectangular
+ */
+export function validateMatrix(matrix: Matrix): boolean {
+  return (
+    Array.isArray(matrix) &&
+    matrix.length > 0 &&
+    Array.isArray(matrix[0]) &&
+    matrix[0].length > 0 &&
+    matrix.every(row => row.length === matrix[0].length)
+  );
+}
+
 export function getElement(matrix: Matrix, coordinate: Coordinate): Element | null {
   const row = matrix[coordinate.y];
   if (!row) {
@@ -106,19 +119,6 @@ export function getMaxX(matrix: Matrix): number {
 
 export function getMaxY(matrix: Matrix): number {
   return getHeight(matrix) - 1;
-}
-
-/**
- * Validate that the matrix is not empty and is rectangular
- */
-export function validateMatrix(matrix: Matrix): boolean {
-  return (
-    Array.isArray(matrix) &&
-    matrix.length > 0 &&
-    Array.isArray(matrix[0]) &&
-    matrix[0].length > 0 &&
-    matrix.every(row => row.length === matrix[0].length)
-  );
 }
 
 // TODO: Negative coordinates
