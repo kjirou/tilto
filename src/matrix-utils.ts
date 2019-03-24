@@ -10,6 +10,7 @@ import {
 } from './rectangle-utils';
 
 const sliceAnsiString = require('slice-ansi-string');
+const stripAnsi = require('strip-ansi');
 
 export type ElementSymbol = string;
 export type Element = {
@@ -271,15 +272,23 @@ export function cropMatrix(matrix: Matrix, rectangle: Rectangle): Matrix {
 
 export function parseContentToSymbols(content: string): (ElementSymbol | '\n')[] {
   const symbols = [];
+  // This pointer is considering ANSI escape code.
+  // Therefore, it can not be used with `str.slice()` and so on.
   let pointer = 0;
-  let symbol;
 
   while (true) {
-    symbol = sliceAnsiString(content, pointer, pointer + 1) as string;
-    if (symbol === '') {
+    const symbolWithAnsi = sliceAnsiString(content, pointer, pointer + 1) as ElementSymbol;
+    if (symbolWithAnsi === '') {
       break;
     }
-    symbols.push(symbol);
+
+    const symbol = stripAnsi(symbolWithAnsi) as string;
+    if (symbol === '\n') {
+      symbols.push(symbol);
+    } else {
+      symbols.push(symbolWithAnsi);
+    }
+
     pointer += 1;
   }
 

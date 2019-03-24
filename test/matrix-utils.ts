@@ -230,6 +230,9 @@ describe('matrix-utils', function() {
         ['a', `${red.open}b${red.close}`, `${red.open}${bgBlue.open}c${bgBlue.close}${red.close}`, 'd']
       );
     });
+
+    // TODO: To change the data structure immediately.
+    it('can parse ansi strings included newline characters');
   });
 
   describe('pourContent', function() {
