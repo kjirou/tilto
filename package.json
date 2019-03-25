@@ -31,6 +31,7 @@
     "slice-ansi-string": "^1.0.1"
   },
   "devDependencies": {
+    "@types/ansi-regex": "^4.0.0",
     "@types/ansi-styles": "^3.2.1",
     "@types/mocha": "^5.2.6",
     "@types/node": "^11.11.6",
