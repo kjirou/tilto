@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/kjirou/tilto#readme",
   "dependencies": {
+    "ansi-regex": "^4.1.0",
     "eastasianwidth": "^0.2.0",
     "slice-ansi-string": "^1.0.1"
   },
