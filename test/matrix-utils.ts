@@ -1,5 +1,6 @@
-import * as ansiStyles from 'ansi-styles';
 import * as assert from 'assert';
+
+const ansiStyles = require('ansi-styles');
 
 import {
   createBoxFromText,
