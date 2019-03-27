@@ -20,8 +20,6 @@ import {
   renderMatrix,
 } from '../src/matrix-utils';
 
-const chalk = require('chalk');
-
 
 describe('matrix-utils', function() {
   describe('overwriteMatrix', function() {
