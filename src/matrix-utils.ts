@@ -1,6 +1,10 @@
+import * as ansiRegex from 'ansi-regex';
+import * as stripAnsi from 'strip-ansi';
+
 import {
   Coordinate,
   Size,
+  stringToArray,
 } from './utils';
 import {
   Rectangle,
@@ -9,16 +13,46 @@ import {
   toSize,
 } from './rectangle-utils';
 
+const ansiStyles = require('ansi-styles');
+const sliceAnsiString = require('slice-ansi-string');
+
 export type ElementSymbol = string;
+export type ElementStyle = {
+  foregroundColor: string,  // '' は設定なしを示す
+  backgroundColor: string,  // '' は設定なしを示す
+  bold: boolean,
+  dim: boolean,
+  italic: boolean,
+  underline: boolean,
+  inverse: boolean,
+  hidden: boolean,
+  strikethrough: boolean,
+};
 export type Element = {
   x: number,
   y: number,
+  // string (=ElementSymbol) .. 1文字の文字列。制御文字を含まない。
   // null  .. シンボルがないことを示す。一文字分の背景が表示される。
   // false .. マルチバイト文字が左elementに存在することを示す。レンダリング時に無視されて詰められる。
   symbol: ElementSymbol | null | false,
+  style: ElementStyle,
 };
 export type Matrix = Element[][];
 export type SymbolRuler = (symbol: ElementSymbol) => 0 | 1 | 2;
+
+export function createDefaultElementStyle(): ElementStyle {
+  return {
+    foregroundColor: '',
+    backgroundColor: '',
+    bold: false,
+    dim: false,
+    italic: false,
+    underline: false,
+    inverse: false,
+    hidden: false,
+    strikethrough: false,
+  };
+}
 
 export function createMatrix(size: Size, defaultSymbol: ElementSymbol | null = null): Matrix {
   const matrix = [];
@@ -29,6 +63,7 @@ export function createMatrix(size: Size, defaultSymbol: ElementSymbol | null = n
         y,
         x,
         symbol: defaultSymbol,
+        style: createDefaultElementStyle(),
       });
     }
     matrix.push(row);
@@ -57,15 +92,20 @@ export function getElement(matrix: Matrix, coordinate: Coordinate): Element | nu
   return row[coordinate.x] || null;
 }
 
-function parseTextToSymbols(text: string): ElementSymbol[][] {
-  return text
-    .replace(/\n+$/, '')
-    .split('\n')
-    .map(row => row.split(''));
-}
-
-// TODO: multibytes
+/**
+ * A function that makes it easy to create a matrix from text mainly for testing.
+ *
+ * @param text Text consisting only of ASCII characters.
+ *             It also needs to be rectangular.
+ */
 export function createMatrixFromText(text: string): Matrix {
+  function parseTextToSymbols(text: string): ElementSymbol[][] {
+    return text
+      .replace(/\n+$/, '')
+      .split('\n')
+      .map(row => row.split(''));
+  }
+
   const symbols = parseTextToSymbols(text);
 
   const matrix = createMatrix({
@@ -86,21 +126,6 @@ export function createMatrixFromText(text: string): Matrix {
 
   return matrix;
 }
-
-export function toText(matrix: Matrix, backgroundSymbol: ElementSymbol): string {
-  return matrix
-    .map(row => {
-      return row.map(element => {
-        if (element.symbol === false) {
-          return '';
-        } else if (element.symbol === null) {
-          return backgroundSymbol;
-        }
-        return element.symbol;
-      }).join('');
-    })
-    .join('\n');
-};
 
 export function getWidth(matrix: Matrix): number {
   if (matrix.length === 0) {
@@ -207,7 +232,7 @@ export function overwriteMatrix(
   //    replacer |  multibyte |   (None)   |
   //    current  |  multibyte |   false    |
   //    fix in 2 |     null   |   false    |
-  //    fix in 4 |     null   |   false    |
+  //    fix in 4 |     null   |    null    |
   //
   //    These cases are somewhat unnatural because they eliminate multibyte characters that need not be erased.
   //    However, these situations are edge cases because basically the `replacer` often has borders.
@@ -267,32 +292,145 @@ export function cropMatrix(matrix: Matrix, rectangle: Rectangle): Matrix {
   return newMatrix;
 }
 
-// TODO: Surrogate pairs
-export function parseContentToSymbols(content: string): (ElementSymbol | '\n')[] {
-  return content.split('');
-  // TODO: ANSI string
-  //       slice-ansi の挙動がバグなのか仕様を勘違いしているのか解析できなかった
-  //const symbols = [];
-  //let pointer = 0;
-  //let symbol;
-  //
-  //while (true) {
-  //  symbol = sliceAnsi(content, pointer, pointer + 1);
-  //  // "slice-ansi" returns "" if fullWidth string is sliced with `sliceAnsi('あ', 0, 1)`
-  //  if (symbol === '') {
-  //    const fullWidthSymbol = sliceAnsi(content, pointer, pointer + 2);
-  //    if (fullWidthSymbol === '') {
-  //      break;
-  //    }
-  //    symbols.push(fullWidthSymbol);
-  //    pointer += 2;
-  //  } else {
-  //    symbols.push(symbol);
-  //    pointer += 1;
-  //  }
-  //}
-  //
-  //return symbols;
+/**
+ * @param character A single character with or without ANSI escape codes.
+ *                  It is mainly assumed to pass the return value of "slice-ansi-string".
+ */
+export function decodeAnsiStyles(character: string): Partial<ElementStyle> {
+  const characterWithoutAnsi = stripAnsi(character);
+  if (stringToArray(characterWithoutAnsi).length !== 1) {
+    throw new Error('It should be used for single characters.');
+  }
+
+  const ansiEscapeCodes = character.match(ansiRegex()) || [];
+  const styleData: Partial<ElementStyle> = {};
+
+  // From https://github.com/chalk/ansi-styles#colors
+  const foregroundColorNames = [
+    'black',
+    'red',
+    'green',
+    'yellow',
+    'blue',
+    'magenta',
+    'cyan',
+    'white',
+    // NOTE: "blackBright" will be added in the following commit.
+    //       https://github.com/chalk/ansi-styles/commit/fb5b656d9fce745881c36deb8ff800b5080d9f89
+    'grey',
+    //'blackBright',
+    'redBright',
+    'greenBright',
+    'yellowBright',
+    'blueBright',
+    'magentaBright',
+    'cyanBright',
+    'whiteBright',
+  ];
+  ansiEscapeCodes.some(code => {
+    const foundName = foregroundColorNames.find(name => {
+      return code === (ansiStyles.color[name] && ansiStyles.color[name].open);
+    });
+    if (foundName) {
+      styleData.foregroundColor = foundName;
+      return true;
+    }
+    return false;
+  });
+
+  // From https://github.com/chalk/ansi-styles#background-colors
+  const backgroundColorNames = [
+    'bgBlack',
+    'bgRed',
+    'bgGreen',
+    'bgYellow',
+    'bgBlue',
+    'bgMagenta',
+    'bgCyan',
+    'bgWhite',
+    'bgBlackBright',
+    'bgRedBright',
+    'bgGreenBright',
+    'bgYellowBright',
+    'bgBlueBright',
+    'bgMagentaBright',
+    'bgCyanBright',
+    'bgWhiteBright',
+  ];
+  ansiEscapeCodes.some(code => {
+    const foundName = backgroundColorNames.find(name => {
+      return code === (ansiStyles.bgColor[name] && ansiStyles.bgColor[name].open);
+    });
+    if (foundName) {
+      styleData.backgroundColor = foundName;
+      return true;
+    }
+    return false;
+  });
+
+  // From) https://github.com/chalk/ansi-styles#modifiers
+  ansiEscapeCodes.forEach(code => {
+    if (code === ansiStyles.bold.open) {
+      styleData.bold = true;
+    } else if (code === ansiStyles.dim.open) {
+      styleData.dim = true;
+    } else if (code === ansiStyles.italic.open) {
+      styleData.italic = true;
+    } else if (code === ansiStyles.underline.open) {
+      styleData.underline = true;
+    } else if (code === ansiStyles.inverse.open) {
+      styleData.inverse = true;
+    } else if (code === ansiStyles.hidden.open) {
+      styleData.hidden = true;
+    } else if (code === ansiStyles.strikethrough.open) {
+      styleData.strikethrough = true;
+    }
+  });
+
+  return styleData;
+}
+
+export type PourableElement = {
+  isLineBreaking: boolean,
+  symbol: ElementSymbol,
+  style: ElementStyle,
+};
+
+export function parseContent(content: string): PourableElement[] {
+  const pourableElements = [];
+
+  // This pointer is considering ANSI escape code.
+  // Therefore, it can not be used with `str.slice()` and so on.
+  let pointer = 0;
+
+  while (true) {
+    const symbolWithAnsi = sliceAnsiString(content, pointer, pointer + 1) as ElementSymbol;
+    if (symbolWithAnsi === '') {
+      break;
+    }
+
+    const symbol = stripAnsi(symbolWithAnsi) as string;
+    if (symbol === '\n') {
+      pourableElements.push({
+        isLineBreaking: true,
+        symbol: '',  // Anything is fine
+        style: createDefaultElementStyle(),  // Anything is fine
+      });
+    } else {
+      pourableElements.push({
+        isLineBreaking: false,
+        symbol: symbol,
+        style: Object.assign(
+          createDefaultElementStyle(),
+          decodeAnsiStyles(symbolWithAnsi)
+        ),
+      });
+    }
+
+    pointer += 1;
+  }
+
+  return pourableElements;
 }
 
 // TODO: consider word-wrap/word-break
@@ -308,10 +446,10 @@ export function pourContent(
   let yPointer = 0;
   let xPointer = 0;
 
-  parseContentToSymbols(content).forEach(symbol => {
-    const symbolWidth = symbolRuler(symbol);
+  parseContent(content).forEach(pourableElement => {
+    const symbolWidth = symbolRuler(pourableElement.symbol);
 
-    if (symbol === '\n') {
+    if (pourableElement.isLineBreaking) {
       yPointer += 1;
       xPointer = 0;
     } else if (symbolWidth === 2 && maxWidth === 1) {
@@ -334,7 +472,10 @@ export function pourContent(
 
         const element1 = getElement(newMatrix, {x: xPointer, y: yPointer});
         if (element1) {
-          newMatrix[yPointer][xPointer] = Object.assign({}, element1, {symbol});
+          newMatrix[yPointer][xPointer] = Object.assign({}, element1, {
+            symbol: pourableElement.symbol,
+            style: pourableElement.style,
+          });
         }
         xPointer += 1
 
@@ -351,7 +492,10 @@ export function pourContent(
 
         const element = getElement(newMatrix, {x: xPointer, y: yPointer});
         if (element) {
-          newMatrix[yPointer][xPointer] = Object.assign({}, element, {symbol});
+          newMatrix[yPointer][xPointer] = Object.assign({}, element, {
+            symbol: pourableElement.symbol,
+            style: pourableElement.style,
+          });
         }
 
         xPointer += 1;
@@ -361,3 +505,53 @@ export function pourContent(
 
   return newMatrix;
 }
+
+function renderElement(element: Element): string {
+  const {symbol, style} = element;
+
+  const modifiers = [];
+  if (style.foregroundColor) {
+    modifiers.push(ansiStyles.color[style.foregroundColor].open);
+  }
+  if (style.backgroundColor) {
+    modifiers.push(ansiStyles.color[style.backgroundColor].open);
+  }
+  if (style.bold) {
+    modifiers.push(ansiStyles.bold.open);
+  }
+  if (style.dim) {
+    modifiers.push(ansiStyles.dim.open);
+  }
+  if (style.italic) {
+    modifiers.push(ansiStyles.italic.open);
+  }
+  if (style.underline) {
+    modifiers.push(ansiStyles.underline.open);
+  }
+  if (style.inverse) {
+    modifiers.push(ansiStyles.inverse.open);
+  }
+  if (style.hidden) {
+    modifiers.push(ansiStyles.hidden.open);
+  }
+  if (style.strikethrough) {
+    modifiers.push(ansiStyles.strikethrough.open);
+  }
+
+  return modifiers.join('') + symbol + (modifiers.length > 0 ? ansiStyles.reset.close : '');
+}
+
+export function renderMatrix(matrix: Matrix, backgroundSymbol: ElementSymbol): string {
+  return matrix
+    .map(row => {
+      return row.map(element => {
+        if (element.symbol === false) {
+          return '';
+        } else if (element.symbol === null) {
+          return backgroundSymbol;
+        }
+        return renderElement(element);
+      }).join('');
+    })
+    .join('\n');
+};

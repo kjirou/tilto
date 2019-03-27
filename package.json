@@ -26,11 +26,16 @@
   },
   "homepage": "https://github.com/kjirou/tilto#readme",
   "dependencies": {
-    "eastasianwidth": "^0.2.0"
+    "ansi-regex": "^4.1.0",
+    "eastasianwidth": "^0.2.0",
+    "slice-ansi-string": "^1.0.1",
+    "strip-ansi": "^5.2.0"
   },
   "devDependencies": {
+    "@types/ansi-regex": "^4.0.0",
     "@types/mocha": "^5.2.6",
     "@types/node": "^11.11.6",
+    "ansi-styles": "^3.2.1",
     "chalk": "^2.3.0",
     "keypress": "^0.2.1",
     "log-update": "^3.1.0",
