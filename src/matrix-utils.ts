@@ -277,7 +277,7 @@ export function overwriteMatrix(
   //    replacer |  multibyte |   (None)   |
   //    current  |  multibyte |   false    |
   //    fix in 2 |     null   |   false    |
-  //    fix in 4 |     null   |   false    |
+  //    fix in 4 |     null   |    null    |
   //
   //    These cases are somewhat unnatural because they eliminate multibyte characters that need not be erased.
   //    However, these situations are edge cases because basically the `replacer` often has borders.
