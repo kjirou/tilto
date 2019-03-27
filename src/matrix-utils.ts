@@ -20,6 +20,13 @@ export type ElementSymbol = string;
 export type ElementStyle = {
   foregroundColor: string,
   backgroundColor: string,
+  bold: boolean,
+  dim: boolean,
+  italic: boolean,
+  underline: boolean,
+  inverse: boolean,
+  hidden: boolean,
+  strikethrough: boolean,
 };
 export type Element = {
   x: number,
@@ -36,6 +43,13 @@ function createDefaultElementStyle(): ElementStyle {
   return {
     foregroundColor: 'default',
     backgroundColor: 'default',
+    bold: false,
+    dim: false,
+    italic: false,
+    underline: false,
+    inverse: false,
+    hidden: false,
+    strikethrough: false,
   };
 }
 
@@ -291,23 +305,14 @@ export function cropMatrix(matrix: Matrix, rectangle: Rectangle): Matrix {
  * @param character A single character with or without ANSI escape codes.
  *                  It is mainly assumed to pass the return value of "slice-ansi-string".
  */
-export function decodeAnsiStyles(character: string): {
-  foregroundColor: string | void,
-  backgroundColor: string | void,
-  bold: boolean,
-  dim: boolean,
-  italic: boolean,
-  underline: boolean,
-  inverse: boolean,
-  hidden: boolean,
-  strikethrough: boolean,
-} {
+export function decodeAnsiStyles(character: string): Partial<ElementStyle> {
   const characterWithoutAnsi = stripAnsi(character);
   if (stringToArray(characterWithoutAnsi).length !== 1) {
     throw new Error('It should be used for single characters.');
   }
 
   const ansiEscapeCodes = character.match(ansiRegex()) || [];
+  const styleData: Partial<ElementStyle> = {};
 
   // From https://github.com/chalk/ansi-styles#colors
   const foregroundColorNames = [
@@ -331,13 +336,12 @@ export function decodeAnsiStyles(character: string): {
     'cyanBright',
     'whiteBright',
   ];
-  let foregroundColor = undefined;
   ansiEscapeCodes.some(code => {
     const foundName = foregroundColorNames.find(name => {
       return code === (ansiStyles.color[name] && ansiStyles.color[name].open);
     });
     if (foundName) {
-      foregroundColor = foundName;
+      styleData.foregroundColor = foundName;
       return true;
     }
     return false;
@@ -362,60 +366,37 @@ export function decodeAnsiStyles(character: string): {
     'bgCyanBright',
     'bgWhiteBright',
   ];
-  let backgroundColor = undefined;
   ansiEscapeCodes.some(code => {
     const foundName = backgroundColorNames.find(name => {
       return code === (ansiStyles.bgColor[name] && ansiStyles.bgColor[name].open);
     });
     if (foundName) {
-      backgroundColor = foundName;
+      styleData.backgroundColor = foundName;
       return true;
     }
     return false;
   });
 
   // From) https://github.com/chalk/ansi-styles#modifiers
-  const modifiers = {
-    bold: false,
-    dim: false,
-    italic: false,
-    underline: false,
-    inverse: false,
-    hidden: false,
-    strikethrough: false,
-  };
   ansiEscapeCodes.forEach(code => {
     if (code === ansiStyles.bold.open) {
-      modifiers.bold = true;
+      styleData.bold = true;
     } else if (code === ansiStyles.dim.open) {
-      modifiers.dim = true;
+      styleData.dim = true;
     } else if (code === ansiStyles.italic.open) {
-      modifiers.italic = true;
+      styleData.italic = true;
     } else if (code === ansiStyles.underline.open) {
-      modifiers.underline = true;
+      styleData.underline = true;
     } else if (code === ansiStyles.inverse.open) {
-      modifiers.inverse = true;
+      styleData.inverse = true;
     } else if (code === ansiStyles.hidden.open) {
-      modifiers.hidden = true;
+      styleData.hidden = true;
     } else if (code === ansiStyles.strikethrough.open) {
-      modifiers.strikethrough = true;
+      styleData.strikethrough = true;
     }
   });
 
-  return Object.assign(
-    {
-      foregroundColor,
-      backgroundColor,
-      bold: false,
-      dim: false,
-      italic: false,
-      underline: false,
-      inverse: false,
-      hidden: false,
-      strikethrough: false,
-    },
-    modifiers
-  );
+  return styleData;
 }
 
 export function parseContent(content: string): {

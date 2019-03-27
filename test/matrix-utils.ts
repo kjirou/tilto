@@ -198,17 +198,7 @@ describe('matrix-utils', function() {
 
   describe('decodeAnsiStyles', function() {
     it('can decode a non-ansi string', function() {
-      assert.deepStrictEqual(decodeAnsiStyles('a'), {
-        foregroundColor: undefined,
-        backgroundColor: undefined,
-        bold: false,
-        dim: false,
-        italic: false,
-        underline: false,
-        inverse: false,
-        hidden: false,
-        strikethrough: false,
-      });
+      assert.deepStrictEqual(decodeAnsiStyles('a'), {});
     });
 
     it('should throw an error when it receives a not single character string', function() {
