@@ -479,12 +479,12 @@ describe('matrix-utils', function() {
     });
 
     it('can render single byte ANSI characters', function() {
-      const matrix = createMatrix({width: 2, height: 2}, null);
-      matrix[0][0].symbol = chalk.red('a');
-      matrix[1][1].symbol = chalk.red.underline.inverse('b');
+      const {blue, reset, underline} = ansiStyles;
+      let matrix = createMatrix({width: 2, height: 2}, null);
+      matrix = pourContent(matrix, `a${blue.open}${underline.open}bc${reset.close}d`, defaultSymbolRuler);
       assert.strictEqual(renderMatrix(matrix, '.'), [
-        chalk.red('a') + '.',
-        '.' + chalk.red.underline.inverse('b'),
+        `a${blue.open}${underline.open}b${reset.close}`,
+        `${blue.open}${underline.open}c${reset.close}d`,
       ].join('\n'));
     });
   });
