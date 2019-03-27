@@ -1,4 +1,5 @@
 import * as ansiRegex from 'ansi-regex';
+import * as stripAnsi from 'strip-ansi';
 
 import {
   Coordinate,
@@ -14,7 +15,6 @@ import {
 
 const ansiStyles = require('ansi-styles');
 const sliceAnsiString = require('slice-ansi-string');
-const stripAnsi = require('strip-ansi');
 
 export type ElementSymbol = string;
 export type ElementStyle = {
