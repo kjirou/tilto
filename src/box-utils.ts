@@ -257,7 +257,7 @@ function applyBoxSettingsToMatrix(box: Box): Matrix {
     newMatrix, contentAreaMatrix, toCoordinate(contentArea), box.symbolRuler);
 }
 
-export function toText(
+export function renderBox(
   box: Box,
   options: {
     backgroundSymbol?: ElementSymbol,

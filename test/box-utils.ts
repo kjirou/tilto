@@ -6,7 +6,7 @@ import {
   createBoxFromText,
   defaultSymbolRuler,
   setBorders,
-  toText,
+  renderBox,
 } from '../src/box-utils';
 
 const chalk = require('chalk');
@@ -83,12 +83,12 @@ describe('box-utils', function() {
     });
   });
 
-  describe('toText', function() {
+  describe('renderBox', function() {
     describe('content pouring', function() {
       it('should overwrite the part of output where the content was poured', function() {
         const box = createBox({width: 5, height: 2});
         box.content = 'foo';
-        assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
+        assert.strictEqual(renderBox(box, {backgroundSymbol: '.'}), [
           'foo..',
           '.....',
         ].join('\n'));
@@ -97,7 +97,7 @@ describe('box-utils', function() {
       it('can break lines by "\\n"', function() {
         const box = createBox({width: 5, height: 3});
         box.content = 'hello\n\nworld';
-        assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
+        assert.strictEqual(renderBox(box, {backgroundSymbol: '.'}), [
           'hello',
           '.....',
           'world',
@@ -107,7 +107,7 @@ describe('box-utils', function() {
       it('can break lines automatically', function() {
         const box = createBox({width: 5, height: 3});
         box.content = 'helloworld!!';
-        assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
+        assert.strictEqual(renderBox(box, {backgroundSymbol: '.'}), [
           'hello',
           'world',
           '!!...',
@@ -117,7 +117,7 @@ describe('box-utils', function() {
       it('should ignore overflowing content', function() {
         const box = createBox({width: 5, height: 2});
         box.content = 'helloworld!!';
-        assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
+        assert.strictEqual(renderBox(box, {backgroundSymbol: '.'}), [
           'hello',
           'world',
         ].join('\n'));
@@ -134,7 +134,7 @@ describe('box-utils', function() {
 
         it('can set the top side border', function() {
           box = setBorders(box, {topWidth: 1, topSymbols:['*']});
-          assert.strictEqual(toText(box), [
+          assert.strictEqual(renderBox(box), [
             '***',
             '...',
             '...',
@@ -144,7 +144,7 @@ describe('box-utils', function() {
 
         it('can set the bottom side border', function() {
           box = setBorders(box, {bottomWidth: 1, bottomSymbols:['*']});
-          assert.strictEqual(toText(box), [
+          assert.strictEqual(renderBox(box), [
             '...',
             '...',
             '...',
@@ -154,7 +154,7 @@ describe('box-utils', function() {
 
         it('can set the left side border', function() {
           box = setBorders(box, {leftWidth: 1, leftSymbols:['*']});
-          assert.strictEqual(toText(box), [
+          assert.strictEqual(renderBox(box), [
             '*..',
             '*..',
             '*..',
@@ -164,7 +164,7 @@ describe('box-utils', function() {
 
         it('can set the right side border', function() {
           box = setBorders(box, {rightWidth: 1, rightSymbols:['*']});
-          assert.strictEqual(toText(box), [
+          assert.strictEqual(renderBox(box), [
             '..*',
             '..*',
             '..*',
@@ -174,7 +174,7 @@ describe('box-utils', function() {
 
         it('can set the top-left corner', function() {
           box = setBorders(box, {topWidth: 1, leftWidth: 1, topLeftSymbols:['*']});
-          assert.strictEqual(toText(box), [
+          assert.strictEqual(renderBox(box), [
             '*  ',
             ' ..',
             ' ..',
@@ -184,7 +184,7 @@ describe('box-utils', function() {
 
         it('can set the top-right corner', function() {
           box = setBorders(box, {topWidth: 1, rightWidth: 1, topRightSymbols:['*']});
-          assert.strictEqual(toText(box), [
+          assert.strictEqual(renderBox(box), [
             '  *',
             '.. ',
             '.. ',
@@ -194,7 +194,7 @@ describe('box-utils', function() {
 
         it('can set the bottom-left corner', function() {
           box = setBorders(box, {bottomWidth: 1, leftWidth: 1, bottomLeftSymbols:['*']});
-          assert.strictEqual(toText(box), [
+          assert.strictEqual(renderBox(box), [
             ' ..',
             ' ..',
             ' ..',
@@ -204,7 +204,7 @@ describe('box-utils', function() {
 
         it('can set the bottom-right corner', function() {
           box = setBorders(box, {bottomWidth: 1, rightWidth: 1, bottomRightSymbols:['*']});
-          assert.strictEqual(toText(box), [
+          assert.strictEqual(renderBox(box), [
             '.. ',
             '.. ',
             '.. ',
@@ -231,7 +231,7 @@ describe('box-utils', function() {
             bottomRightSymbols: ['+'],
           });
 
-          assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
+          assert.strictEqual(renderBox(box, {backgroundSymbol: '.'}), [
             '+-+',
             '|.|',
             '|.|',
@@ -256,7 +256,7 @@ describe('box-utils', function() {
             bottomRightSymbols: ['4'],
           });
 
-          assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
+          assert.strictEqual(renderBox(box, {backgroundSymbol: '.'}), [
             '11TT222',
             'LL..RRR',
             '33BB444',
@@ -288,7 +288,7 @@ describe('box-utils', function() {
 
           box.content = 'へlloworlど\nふー\nbar';
 
-          assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
+          assert.strictEqual(renderBox(box, {backgroundSymbol: '.'}), [
             '+-----+',
             '|へllo|',
             '|worl.|',
@@ -315,7 +315,7 @@ describe('box-utils', function() {
           child.x = 2;
           child.y = 1;
 
-          assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
+          assert.strictEqual(renderBox(box, {backgroundSymbol: '.'}), [
             '.......',
             '..ccc..',
             '..ccc..',
@@ -326,7 +326,7 @@ describe('box-utils', function() {
         it('applies the content of the child', function() {
           child.content = '1234';
 
-          assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
+          assert.strictEqual(renderBox(box, {backgroundSymbol: '.'}), [
             '123....',
             '4cc....',
             '.......',
@@ -337,7 +337,7 @@ describe('box-utils', function() {
         it('applies the multibyte content of the child', function() {
           child.content = 'あ\n1い';
 
-          assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
+          assert.strictEqual(renderBox(box, {backgroundSymbol: '.'}), [
             'あc....',
             '1い....',
             '.......',
@@ -350,7 +350,7 @@ describe('box-utils', function() {
           child.x = 1;
           child.y = 1;
 
-          assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
+          assert.strictEqual(renderBox(box, {backgroundSymbol: '.'}), [
             '1234567',
             'acccefg',
             'AcccEFG',
@@ -363,7 +363,7 @@ describe('box-utils', function() {
           child.x = 1;
           child.y = 0;
 
-          assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
+          assert.strictEqual(renderBox(box, {backgroundSymbol: '.'}), [
             '.cccう.',
             '1ccc.か',
             '.......',
@@ -387,7 +387,7 @@ describe('box-utils', function() {
 
         describe('the children have same zIndex', function() {
           it('puts the box added later at a higher position', function() {
-            assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
+            assert.strictEqual(renderBox(box, {backgroundSymbol: '.'}), [
               '21.',
               '11.',
               '...',
@@ -399,7 +399,7 @@ describe('box-utils', function() {
           it('puts the box of high zIndex at a higher position', function() {
             child1.zIndex = 1;
 
-            assert.strictEqual(toText(box, {backgroundSymbol: '.'}), [
+            assert.strictEqual(renderBox(box, {backgroundSymbol: '.'}), [
               '11.',
               '11.',
               '...',
