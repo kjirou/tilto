@@ -21,7 +21,7 @@ import {
   getWidth,
   overwriteMatrix,
   pourContent,
-  toText as toTextImportedFromMatrixUtils,
+  renderMatrix,
   validateMatrix,
 } from './matrix-utils';
 import {
@@ -269,5 +269,5 @@ export function toText(
 
   const preparedMatrix = applyBoxSettingsToMatrix(box);
 
-  return toTextImportedFromMatrixUtils(preparedMatrix, actualOptions.backgroundSymbol);
+  return renderMatrix(preparedMatrix, actualOptions.backgroundSymbol);
 }

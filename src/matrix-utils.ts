@@ -122,56 +122,6 @@ export function createMatrixFromText(text: string): Matrix {
   return matrix;
 }
 
-function renderElement(element: Element): string {
-  const {symbol, style} = element;
-
-  const modifiers = [];
-  if (style.foregroundColor) {
-    modifiers.push(ansiStyles.color[style.foregroundColor].open);
-  }
-  if (style.backgroundColor) {
-    modifiers.push(ansiStyles.color[style.backgroundColor].open);
-  }
-  if (style.bold) {
-    modifiers.push(ansiStyles.bold.open);
-  }
-  if (style.dim) {
-    modifiers.push(ansiStyles.dim.open);
-  }
-  if (style.italic) {
-    modifiers.push(ansiStyles.italic.open);
-  }
-  if (style.underline) {
-    modifiers.push(ansiStyles.underline.open);
-  }
-  if (style.inverse) {
-    modifiers.push(ansiStyles.inverse.open);
-  }
-  if (style.hidden) {
-    modifiers.push(ansiStyles.hidden.open);
-  }
-  if (style.strikethrough) {
-    modifiers.push(ansiStyles.strikethrough.open);
-  }
-
-  return modifiers.join('') + symbol + (modifiers.length > 0 ? ansiStyles.reset.close : '');
-}
-
-export function toText(matrix: Matrix, backgroundSymbol: ElementSymbol): string {
-  return matrix
-    .map(row => {
-      return row.map(element => {
-        if (element.symbol === false) {
-          return '';
-        } else if (element.symbol === null) {
-          return backgroundSymbol;
-        }
-        return renderElement(element);
-      }).join('');
-    })
-    .join('\n');
-};
-
 export function getWidth(matrix: Matrix): number {
   if (matrix.length === 0) {
     return 0;
@@ -550,3 +500,53 @@ export function pourContent(
 
   return newMatrix;
 }
+
+function renderElement(element: Element): string {
+  const {symbol, style} = element;
+
+  const modifiers = [];
+  if (style.foregroundColor) {
+    modifiers.push(ansiStyles.color[style.foregroundColor].open);
+  }
+  if (style.backgroundColor) {
+    modifiers.push(ansiStyles.color[style.backgroundColor].open);
+  }
+  if (style.bold) {
+    modifiers.push(ansiStyles.bold.open);
+  }
+  if (style.dim) {
+    modifiers.push(ansiStyles.dim.open);
+  }
+  if (style.italic) {
+    modifiers.push(ansiStyles.italic.open);
+  }
+  if (style.underline) {
+    modifiers.push(ansiStyles.underline.open);
+  }
+  if (style.inverse) {
+    modifiers.push(ansiStyles.inverse.open);
+  }
+  if (style.hidden) {
+    modifiers.push(ansiStyles.hidden.open);
+  }
+  if (style.strikethrough) {
+    modifiers.push(ansiStyles.strikethrough.open);
+  }
+
+  return modifiers.join('') + symbol + (modifiers.length > 0 ? ansiStyles.reset.close : '');
+}
+
+export function renderMatrix(matrix: Matrix, backgroundSymbol: ElementSymbol): string {
+  return matrix
+    .map(row => {
+      return row.map(element => {
+        if (element.symbol === false) {
+          return '';
+        } else if (element.symbol === null) {
+          return backgroundSymbol;
+        }
+        return renderElement(element);
+      }).join('');
+    })
+    .join('\n');
+};

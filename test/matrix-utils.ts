@@ -17,60 +17,19 @@ import {
   overwriteMatrix,
   parseContent,
   pourContent,
-  toText,
+  renderMatrix,
 } from '../src/matrix-utils';
 
 const chalk = require('chalk');
 
 
 describe('matrix-utils', function() {
-  describe('toText', function() {
-    it('works', function() {
-      const matrix = createMatrix({width: 2, height: 3}, '.');
-      assert.strictEqual(toText(matrix, 'x'), [
-        '..',
-        '..',
-        '..',
-      ].join('\n'));
-    });
-
-    it('replaces null symbols to the default symbol', function() {
-      const matrix = createMatrix({width: 2, height: 3}, null);
-      assert.strictEqual(toText(matrix, 'x'), [
-        'xx',
-        'xx',
-        'xx',
-      ].join('\n'));
-    });
-
-    it('replaces false symbols to blank', function() {
-      const matrix = createMatrix({width: 2, height: 3}, null);
-      matrix[0][0].symbol = false;
-      matrix[2][1].symbol = false;
-      assert.strictEqual(toText(matrix, '.'), [
-        '.',
-        '..',
-        '.',
-      ].join('\n'));
-    });
-
-    it('can render single byte ANSI characters', function() {
-      const matrix = createMatrix({width: 2, height: 2}, null);
-      matrix[0][0].symbol = chalk.red('a');
-      matrix[1][1].symbol = chalk.red.underline.inverse('b');
-      assert.strictEqual(toText(matrix, '.'), [
-        chalk.red('a') + '.',
-        '.' + chalk.red.underline.inverse('b'),
-      ].join('\n'));
-    });
-  });
-
   describe('overwriteMatrix', function() {
     it('works', function() {
       let matrix = createMatrix({width: 5, height: 7}, '.');
       const replacer = createMatrix({width: 2, height: 3}, 'x');
       matrix = overwriteMatrix(matrix, replacer, {x: 1, y: 2}, (symbol) => 1);
-      assert.strictEqual(toText(matrix, ''), [
+      assert.strictEqual(renderMatrix(matrix, ''), [
         '.....',
         '.....',
         '.xx..',
@@ -115,7 +74,7 @@ describe('matrix-utils', function() {
         replacer[0][0].symbol = false;
         const newMatrix = overwriteMatrix(matrix, replacer, {x: 2, y: 1}, defaultSymbolRuler);
 
-        assert.strictEqual(toText(newMatrix, '-'), [
+        assert.strictEqual(renderMatrix(newMatrix, '-'), [
           '....',
           '..-x',
           '..xx',
@@ -126,7 +85,7 @@ describe('matrix-utils', function() {
         replacer[1][1].symbol = 'あ';
         const newMatrix = overwriteMatrix(matrix, replacer, {x: 0, y: 0}, defaultSymbolRuler);
 
-        assert.strictEqual(toText(newMatrix, '-'), [
+        assert.strictEqual(renderMatrix(newMatrix, '-'), [
           'xx..',
           'x-..',
           '....',
@@ -137,7 +96,7 @@ describe('matrix-utils', function() {
         matrix[1][0].symbol = 'あ';
         const newMatrix = overwriteMatrix(matrix, replacer, {x: 1, y: 1}, defaultSymbolRuler);
 
-        assert.strictEqual(toText(newMatrix, '-'), [
+        assert.strictEqual(renderMatrix(newMatrix, '-'), [
           '....',
           '-xx.',
           '.xx.',
@@ -148,7 +107,7 @@ describe('matrix-utils', function() {
         matrix[2][2].symbol = false;
         const newMatrix = overwriteMatrix(matrix, replacer, {x: 0, y: 1}, defaultSymbolRuler);
 
-        assert.strictEqual(toText(newMatrix, '-'), [
+        assert.strictEqual(renderMatrix(newMatrix, '-'), [
           '....',
           'xx..',
           'xx-.',
@@ -429,7 +388,7 @@ describe('matrix-utils', function() {
 
     it('works', function() {
       matrix = pourContent(matrix, '12345\nabc', () => 1);
-      assert.strictEqual(toText(matrix, '.'), [
+      assert.strictEqual(renderMatrix(matrix, '.'), [
         '1234',
         '5...',
         'abc.',
@@ -440,7 +399,7 @@ describe('matrix-utils', function() {
       matrix = pourContent(matrix, '1234aaa567aaa8aaa9', function(symbol) {
         return symbol === 'a' ? 0 : 1;
       });
-      assert.strictEqual(toText(matrix, '.'), [
+      assert.strictEqual(renderMatrix(matrix, '.'), [
         '1234',
         '5678',
         '9...',
@@ -450,7 +409,7 @@ describe('matrix-utils', function() {
     describe('multibytes characters', function() {
       it('reduces space considering the width of multibytes', function() {
         matrix = pourContent(matrix, 'あ\n\nいうえ', defaultSymbolRuler);
-        assert.strictEqual(toText(matrix, '.'), [
+        assert.strictEqual(renderMatrix(matrix, '.'), [
           'あ..',
           '....',
           'いう',
@@ -459,7 +418,7 @@ describe('matrix-utils', function() {
 
       it('breaks the line automatically', function() {
         matrix = pourContent(matrix, 'あいうえおかき', defaultSymbolRuler);
-        assert.strictEqual(toText(matrix, '.'), [
+        assert.strictEqual(renderMatrix(matrix, '.'), [
           'あい',
           'うえ',
           'おか',
@@ -468,7 +427,7 @@ describe('matrix-utils', function() {
 
       it('breaks the line automatically even when the width is not enough', function() {
         matrix = pourContent(matrix, '1あい2う3え', defaultSymbolRuler);
-        assert.strictEqual(toText(matrix, '.'), [
+        assert.strictEqual(renderMatrix(matrix, '.'), [
           '1あ.',
           'い2.',
           'う3.',
@@ -478,7 +437,7 @@ describe('matrix-utils', function() {
       it('cuts the content if a multibyte character appear when the width is 1', function() {
         matrix = createMatrix({width: 1, height: 5}, null);
         matrix = pourContent(matrix, '12あ34', defaultSymbolRuler);
-        assert.strictEqual(toText(matrix, '.'), [
+        assert.strictEqual(renderMatrix(matrix, '.'), [
           '1',
           '2',
           '.',
@@ -486,6 +445,47 @@ describe('matrix-utils', function() {
           '.',
         ].join('\n'));
       });
+    });
+  });
+
+  describe('renderMatrix', function() {
+    it('works', function() {
+      const matrix = createMatrix({width: 2, height: 3}, '.');
+      assert.strictEqual(renderMatrix(matrix, 'x'), [
+        '..',
+        '..',
+        '..',
+      ].join('\n'));
+    });
+
+    it('replaces null symbols to the default symbol', function() {
+      const matrix = createMatrix({width: 2, height: 3}, null);
+      assert.strictEqual(renderMatrix(matrix, 'x'), [
+        'xx',
+        'xx',
+        'xx',
+      ].join('\n'));
+    });
+
+    it('replaces false symbols to blank', function() {
+      const matrix = createMatrix({width: 2, height: 3}, null);
+      matrix[0][0].symbol = false;
+      matrix[2][1].symbol = false;
+      assert.strictEqual(renderMatrix(matrix, '.'), [
+        '.',
+        '..',
+        '.',
+      ].join('\n'));
+    });
+
+    it('can render single byte ANSI characters', function() {
+      const matrix = createMatrix({width: 2, height: 2}, null);
+      matrix[0][0].symbol = chalk.red('a');
+      matrix[1][1].symbol = chalk.red.underline.inverse('b');
+      assert.strictEqual(renderMatrix(matrix, '.'), [
+        chalk.red('a') + '.',
+        '.' + chalk.red.underline.inverse('b'),
+      ].join('\n'));
     });
   });
 });
