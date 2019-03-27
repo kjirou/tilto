@@ -312,13 +312,19 @@ describe('matrix-utils', function() {
           Object.assign(createPourableElement(), {symbol: 'c'}),
         ]
       );
+    });
+
+    it('can parse ansi strings included some newline characters', function() {
       assert.deepStrictEqual(
-        parseContent('ab\nc'),
+        parseContent('\na\n\nbc\n'),
         [
-          Object.assign(createPourableElement(), {symbol: 'a'}),
-          Object.assign(createPourableElement(), {symbol: 'b'}),
           Object.assign(createPourableElement(), {isLineBreaking: true}),
+          Object.assign(createPourableElement(), {symbol: 'a'}),
+          Object.assign(createPourableElement(), {isLineBreaking: true}),
+          Object.assign(createPourableElement(), {isLineBreaking: true}),
+          Object.assign(createPourableElement(), {symbol: 'b'}),
           Object.assign(createPourableElement(), {symbol: 'c'}),
+          Object.assign(createPourableElement(), {isLineBreaking: true}),
         ]
       );
     });
@@ -412,9 +418,6 @@ describe('matrix-utils', function() {
         ]
       );
     });
-
-    // TODO: To change the data structure immediately.
-    it('can parse ansi strings included newline characters');
   });
 
   describe('pourContent', function() {
