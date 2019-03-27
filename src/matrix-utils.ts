@@ -18,8 +18,8 @@ const sliceAnsiString = require('slice-ansi-string');
 
 export type ElementSymbol = string;
 export type ElementStyle = {
-  foregroundColor: string,
-  backgroundColor: string,
+  foregroundColor: string,  // '' は設定なしを示す
+  backgroundColor: string,  // '' は設定なしを示す
   bold: boolean,
   dim: boolean,
   italic: boolean,
@@ -31,6 +31,7 @@ export type ElementStyle = {
 export type Element = {
   x: number,
   y: number,
+  // string (=ElementSymbol) .. 1文字の文字列。制御文字を含まない。
   // null  .. シンボルがないことを示す。一文字分の背景が表示される。
   // false .. マルチバイト文字が左elementに存在することを示す。レンダリング時に無視されて詰められる。
   symbol: ElementSymbol | null | false,
@@ -39,10 +40,10 @@ export type Element = {
 export type Matrix = Element[][];
 export type SymbolRuler = (symbol: ElementSymbol) => 0 | 1 | 2;
 
-function createDefaultElementStyle(): ElementStyle {
+export function createDefaultElementStyle(): ElementStyle {
   return {
-    foregroundColor: 'default',
-    backgroundColor: 'default',
+    foregroundColor: '',
+    backgroundColor: '',
     bold: false,
     dim: false,
     italic: false,
@@ -121,6 +122,41 @@ export function createMatrixFromText(text: string): Matrix {
   return matrix;
 }
 
+function renderElement(element: Element): string {
+  const {symbol, style} = element;
+
+  const modifiers = [];
+  if (style.foregroundColor) {
+    modifiers.push(ansiStyles.color[style.foregroundColor].open);
+  }
+  if (style.backgroundColor) {
+    modifiers.push(ansiStyles.color[style.backgroundColor].open);
+  }
+  if (style.bold) {
+    modifiers.push(ansiStyles.bold.open);
+  }
+  if (style.dim) {
+    modifiers.push(ansiStyles.dim.open);
+  }
+  if (style.italic) {
+    modifiers.push(ansiStyles.italic.open);
+  }
+  if (style.underline) {
+    modifiers.push(ansiStyles.underline.open);
+  }
+  if (style.inverse) {
+    modifiers.push(ansiStyles.inverse.open);
+  }
+  if (style.hidden) {
+    modifiers.push(ansiStyles.hidden.open);
+  }
+  if (style.strikethrough) {
+    modifiers.push(ansiStyles.strikethrough.open);
+  }
+
+  return modifiers.join('') + symbol + (modifiers.length > 0 ? ansiStyles.reset.close : '');
+}
+
 export function toText(matrix: Matrix, backgroundSymbol: ElementSymbol): string {
   return matrix
     .map(row => {
@@ -130,7 +166,7 @@ export function toText(matrix: Matrix, backgroundSymbol: ElementSymbol): string 
         } else if (element.symbol === null) {
           return backgroundSymbol;
         }
-        return element.symbol;
+        return renderElement(element);
       }).join('');
     })
     .join('\n');
@@ -399,11 +435,13 @@ export function decodeAnsiStyles(character: string): Partial<ElementStyle> {
   return styleData;
 }
 
-export function parseContent(content: string): {
+export type PourableElement = {
   isLineBreaking: boolean,
   symbol: ElementSymbol,
   style: ElementStyle,
-}[] {
+};
+
+export function parseContent(content: string): PourableElement[] {
   const pourableElements = [];
 
   // This pointer is considering ANSI escape code.
@@ -420,16 +458,17 @@ export function parseContent(content: string): {
     if (symbol === '\n') {
       pourableElements.push({
         isLineBreaking: true,
-        symbol: ' ',  // Anything is fine
+        symbol: '',  // Anything is fine
         style: createDefaultElementStyle(),  // Anything is fine
       });
     } else {
-      // TODO: ここで symbolWithAnsi からカラーコードを抽出する
-
       pourableElements.push({
         isLineBreaking: false,
         symbol: symbol,
-        style: createDefaultElementStyle(),
+        style: Object.assign(
+          createDefaultElementStyle(),
+          decodeAnsiStyles(symbolWithAnsi)
+        ),
       });
     }
 
@@ -478,7 +517,10 @@ export function pourContent(
 
         const element1 = getElement(newMatrix, {x: xPointer, y: yPointer});
         if (element1) {
-          newMatrix[yPointer][xPointer] = Object.assign({}, element1, {symbol: pourableElement.symbol});
+          newMatrix[yPointer][xPointer] = Object.assign({}, element1, {
+            symbol: pourableElement.symbol,
+            style: pourableElement.style,
+          });
         }
         xPointer += 1
 
@@ -495,7 +537,10 @@ export function pourContent(
 
         const element = getElement(newMatrix, {x: xPointer, y: yPointer});
         if (element) {
-          newMatrix[yPointer][xPointer] = Object.assign({}, element, {symbol: pourableElement.symbol});
+          newMatrix[yPointer][xPointer] = Object.assign({}, element, {
+            symbol: pourableElement.symbol,
+            style: pourableElement.style,
+          });
         }
 
         xPointer += 1;
