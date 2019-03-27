@@ -92,15 +92,20 @@ export function getElement(matrix: Matrix, coordinate: Coordinate): Element | nu
   return row[coordinate.x] || null;
 }
 
-function parseTextToSymbols(text: string): ElementSymbol[][] {
-  return text
-    .replace(/\n+$/, '')
-    .split('\n')
-    .map(row => row.split(''));
-}
-
-// TODO: multibytes
+/**
+ * A function that makes it easy to create a matrix from text mainly for testing.
+ *
+ * @param text Text consisting only of ASCII characters.
+ *             It also needs to be rectangular.
+ */
 export function createMatrixFromText(text: string): Matrix {
+  function parseTextToSymbols(text: string): ElementSymbol[][] {
+    return text
+      .replace(/\n+$/, '')
+      .split('\n')
+      .map(row => row.split(''));
+  }
+
   const symbols = parseTextToSymbols(text);
 
   const matrix = createMatrix({
