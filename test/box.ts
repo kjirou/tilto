@@ -9,7 +9,7 @@ import {
   renderBox,
 } from '../src/box';
 
-const chalk = require('chalk');
+const ansiStyles = require('ansi-styles');
 
 
 describe('box', function() {
@@ -60,23 +60,18 @@ describe('box', function() {
     });
 
     it('can measure ANSI string', function() {
+      const {red, underline} = ansiStyles;
+
       assert.strictEqual(
         defaultSymbolRuler(
-          chalk.red('a')
+          red.open + 'a' + red.close
         ),
         1
       );
 
       assert.strictEqual(
         defaultSymbolRuler(
-          chalk.red.underline('a')
-        ),
-        1
-      );
-
-      assert.strictEqual(
-        defaultSymbolRuler(
-          chalk.red.underline.inverse('a')
+          underline.open + 'a' + underline.close
         ),
         1
       );
