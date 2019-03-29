@@ -8,7 +8,7 @@ import {
   drawLeftSide,
   drawRightSide,
   drawTopSide,
-} from './border-utils';
+} from './border';
 import {
   Element,
   ElementSymbol,
@@ -23,13 +23,13 @@ import {
   pourContent,
   renderMatrix,
   validateMatrix,
-} from './matrix-utils';
+} from './matrix';
 import {
   Rectangle,
   shrinkRectangle,
   toCoordinate,
   toSize,
-} from './rectangle-utils';
+} from './rectangle';
 
 const eaw = require('eastasianwidth');
 const stripAnsi = require('strip-ansi');

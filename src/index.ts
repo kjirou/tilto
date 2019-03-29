@@ -1,38 +1,38 @@
 import * as utils from './utils';
-import * as boxUtils from './box-utils';
-import * as matrixUtils from './matrix-utils';
-import * as rectangleUtils from './rectangle-utils';
+import * as boxModule from './box';
+import * as matrixModule from './matrix';
+import * as rectangleModule from './rectangle';
 
 export type BorderType = 'default';
-export type Box = boxUtils.Box;
+export type Box = boxModule.Box;
 export type Coordinate = utils.Coordinate;
-export type Element = matrixUtils.Element;
-export type Matrix = matrixUtils.Matrix;
-export type Rectangle = rectangleUtils.Rectangle;
+export type Element = matrixModule.Element;
+export type Matrix = matrixModule.Matrix;
+export type Rectangle = rectangleModule.Rectangle;
 export type Size = utils.Size;
-export type SymbolRuler = matrixUtils.SymbolRuler;
+export type SymbolRuler = matrixModule.SymbolRuler;
 
-export const createBox = boxUtils.createBox;
-export const createBoxFromText = boxUtils.createBoxFromText;
-export const createMatrix = matrixUtils.createMatrix;
-export const createMatrixFromText = matrixUtils.createMatrixFromText;
-export const render = boxUtils.renderBox;
-export const setBorders = boxUtils.setBorders;
+export const createBox = boxModule.createBox;
+export const createBoxFromText = boxModule.createBoxFromText;
+export const createMatrix = matrixModule.createMatrix;
+export const createMatrixFromText = matrixModule.createMatrixFromText;
+export const render = boxModule.renderBox;
+export const setBorders = boxModule.setBorders;
 
 export function getWidth(box: Box): number {
-  return matrixUtils.getWidth(box.matrix);
+  return matrixModule.getWidth(box.matrix);
 }
 
 export function getHeight(box: Box): number {
-  return matrixUtils.getHeight(box.matrix);
+  return matrixModule.getHeight(box.matrix);
 }
 
 export function getMaxX(box: Box): number {
-  return matrixUtils.getMaxX(box.matrix);
+  return matrixModule.getMaxX(box.matrix);
 }
 
 export function getMaxY(box: Box): number {
-  return matrixUtils.getMaxY(box.matrix);
+  return matrixModule.getMaxY(box.matrix);
 }
 
 export function setBorderType(box: Box, borderType: BorderType): Box {

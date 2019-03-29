@@ -5,7 +5,7 @@ const ansiStyles = require('ansi-styles');
 import {
   createBoxFromText,
   defaultSymbolRuler,
-} from '../src/box-utils';
+} from '../src/box';
 import {
   Matrix,
   PourableElement,
@@ -18,10 +18,10 @@ import {
   parseContent,
   pourContent,
   renderMatrix,
-} from '../src/matrix-utils';
+} from '../src/matrix';
 
 
-describe('matrix-utils', function() {
+describe('matrix', function() {
   describe('overwriteMatrix', function() {
     it('works', function() {
       let matrix = createMatrix({width: 5, height: 7}, '.');
