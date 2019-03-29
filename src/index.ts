@@ -1,5 +1,5 @@
 import * as utils from './utils';
-import * as boxUtils from './box-utils';
+import * as boxUtils from './box';
 import * as matrixUtils from './matrix';
 import * as rectangleUtils from './rectangle';
 

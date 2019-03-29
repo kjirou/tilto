@@ -7,12 +7,12 @@ import {
   defaultSymbolRuler,
   setBorders,
   renderBox,
-} from '../src/box-utils';
+} from '../src/box';
 
 const chalk = require('chalk');
 
 
-describe('box-utils', function() {
+describe('box', function() {
   describe('createBox', function() {
     it('should not throw an error if arguments are valid', function() {
       assert.doesNotThrow(() => {

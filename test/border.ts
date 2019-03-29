@@ -14,7 +14,7 @@ import {
 import {
   createBox,
   renderBox,
-} from '../src/box-utils';
+} from '../src/box';
 
 
 describe('border', function() {

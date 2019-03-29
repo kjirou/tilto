@@ -5,7 +5,7 @@ const ansiStyles = require('ansi-styles');
 import {
   createBoxFromText,
   defaultSymbolRuler,
-} from '../src/box-utils';
+} from '../src/box';
 import {
   Matrix,
   PourableElement,
