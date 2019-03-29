@@ -8,7 +8,7 @@ import {
   drawLeftSide,
   drawRightSide,
   drawTopSide,
-} from './border-utils';
+} from './border';
 import {
   Element,
   ElementSymbol,

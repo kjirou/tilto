@@ -10,14 +10,14 @@ import {
   drawLeftSide,
   drawRightSide,
   drawTopSide,
-} from '../src/border-utils';
+} from '../src/border';
 import {
   createBox,
   renderBox,
 } from '../src/box-utils';
 
 
-describe('border-utils', function() {
+describe('border', function() {
   describe('clearTopSide', function() {
     it('works', function() {
       let box1 = createBox({x: 0, y: 0, width: 3, height: 4}, {defaultSymbol: 'x'});
