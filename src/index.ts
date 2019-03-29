@@ -1,6 +1,6 @@
 import * as utils from './utils';
 import * as boxUtils from './box-utils';
-import * as matrixUtils from './matrix-utils';
+import * as matrixUtils from './matrix';
 import * as rectangleUtils from './rectangle';
 
 export type BorderType = 'default';

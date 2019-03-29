@@ -23,7 +23,7 @@ import {
   pourContent,
   renderMatrix,
   validateMatrix,
-} from './matrix-utils';
+} from './matrix';
 import {
   Rectangle,
   shrinkRectangle,

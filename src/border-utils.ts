@@ -4,7 +4,7 @@ import {
   Matrix,
   getMaxX,
   getMaxY,
-} from './matrix-utils';
+} from './matrix';
 import {Rectangle} from './rectangle';
 
 
