@@ -11,7 +11,7 @@ import {
   shrinkRectangle,
   toCoordinate,
   toSize,
-} from './rectangle-utils';
+} from './rectangle';
 
 const ansiStyles = require('ansi-styles');
 const sliceAnsiString = require('slice-ansi-string');

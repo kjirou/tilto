@@ -29,7 +29,7 @@ import {
   shrinkRectangle,
   toCoordinate,
   toSize,
-} from './rectangle-utils';
+} from './rectangle';
 
 const eaw = require('eastasianwidth');
 const stripAnsi = require('strip-ansi');

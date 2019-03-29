@@ -5,7 +5,7 @@ import {
   getMaxX,
   getMaxY,
 } from './matrix-utils';
-import {Rectangle} from './rectangle-utils';
+import {Rectangle} from './rectangle';
 
 
 function getByCirculatedIndex<ArrayElement>(ary: ArrayElement[], index: number): ArrayElement {
