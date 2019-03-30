@@ -536,7 +536,8 @@ export function pourElementsVirtually(
 export function pourContent(
   matrix: Matrix,
   content: string,
-  symbolRuler: SymbolRuler
+  symbolRuler: SymbolRuler,
+  startingY: number = 0
 ): Matrix {
   const width = getWidth(matrix);
   const height = getHeight(matrix);
@@ -551,11 +552,13 @@ export function pourContent(
   );
 
   pouredElements.forEach(pouredElement => {
-    if (pouredElement.y > maxY) {
+    const y = pouredElement.y - startingY;
+
+    if (y < 0 || y > maxY) {
       return;
     }
 
-    Object.assign(newMatrix[pouredElement.y][pouredElement.x], {
+    Object.assign(newMatrix[y][pouredElement.x], {
       symbol: pouredElement.symbol,
       style: pouredElement.style,
     });

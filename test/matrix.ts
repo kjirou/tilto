@@ -413,6 +413,22 @@ describe('matrix', function() {
       ].join('\n'));
     });
 
+    it('can specify the starting Y', function() {
+      const result1 = pourContent(matrix, '0\n1\n2\n3\n4\n5', (() => 1), 1);
+      assert.strictEqual(renderMatrix(result1, '.'), [
+        '1...',
+        '2...',
+        '3...',
+      ].join('\n'));
+
+      const result2 = pourContent(matrix, '0\n1\n2\n3\n4\n5', (() => 1), 4);
+      assert.strictEqual(renderMatrix(result2, '.'), [
+        '4...',
+        '5...',
+        '....',
+      ].join('\n'));
+    });
+
     describe('multibytes characters', function() {
       it('reduces space considering the width of multibytes', function() {
         matrix = pourContent(matrix, 'あ\n\nいうえ', defaultSymbolRuler);
