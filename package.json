@@ -34,7 +34,7 @@
   "devDependencies": {
     "@types/ansi-regex": "^4.0.0",
     "@types/mocha": "^5.2.6",
-    "@types/node": "^11.11.6",
+    "@types/node": "^11.12.1",
     "ansi-styles": "^3.2.1",
     "keypress": "^0.2.1",
     "log-update": "^3.1.0",
