@@ -39,6 +39,13 @@ export type Element = {
 };
 export type Matrix = Element[][];
 export type SymbolRuler = (symbol: ElementSymbol) => 0 | 1 | 2;
+export type PourableElement = {
+  isLineBreaking: boolean,
+  symbol: ElementSymbol,
+  style: ElementStyle,
+  x?: number,
+  y?: number,
+};
 
 export function createDefaultElementStyle(): ElementStyle {
   return {
@@ -399,12 +406,6 @@ export function decodeAnsiStyles(character: string): Partial<ElementStyle> {
   return styleData;
 }
 
-export type PourableElement = {
-  isLineBreaking: boolean,
-  symbol: ElementSymbol,
-  style: ElementStyle,
-};
-
 export function parseContent(content: string): PourableElement[] {
   const pourableElements = [];
 
@@ -442,74 +443,120 @@ export function parseContent(content: string): PourableElement[] {
   return pourableElements;
 }
 
-// TODO: consider word-wrap/word-break
-export function pourContent(
-  matrix: Matrix,
-  content: string,
-  symbolRuler: SymbolRuler
-): Matrix {
-  const maxWidth = getWidth(matrix);
-  const maxHeight = getHeight(matrix);
+/**
+ * Try to pour elements to a certain width
+ */
+export function pourElementsVirtually(
+  pourableElements: PourableElement[],
+  symbolRuler: SymbolRuler,
+  matrixWidth: number
+): PourableElement[] {
+  const newPourableElements: PourableElement[] = [];
 
-  let newMatrix = matrix.map(row => row.slice());
+  let isFinished = false;
   let yPointer = 0;
   let xPointer = 0;
 
-  parseContent(content).forEach(pourableElement => {
+  pourableElements.forEach(pourableElement => {
+    if (isFinished) {
+      return;
+    }
+
     const symbolWidth = symbolRuler(pourableElement.symbol);
 
     if (pourableElement.isLineBreaking) {
       yPointer += 1;
       xPointer = 0;
-    } else if (symbolWidth === 2 && maxWidth === 1) {
-      yPointer += maxHeight;  // It intentionally overflows
+    } else if (symbolWidth === 2 && matrixWidth === 1) {
+      // The content can not pour anymore.
+      isFinished = true;
     } else {
       if (symbolWidth === 2) {
         if (
           // |abcd|P => |abcd|
           // |....|     |P...|
           // (P = pointer)
-          xPointer === maxWidth ||
+          xPointer === matrixWidth ||
           // |abcP| => |abcd|
           // |....|    |P...|
           // (P = pointer)
-          xPointer + 1 === maxWidth
+          xPointer + 1 === matrixWidth
         ) {
           yPointer += 1;
           xPointer = 0;
         }
 
-        const element1 = getElement(newMatrix, {x: xPointer, y: yPointer});
-        if (element1) {
-          newMatrix[yPointer][xPointer] = Object.assign({}, element1, {
-            symbol: pourableElement.symbol,
-            style: pourableElement.style,
-          });
-        }
+        newPourableElements.push(
+          Object.assign({}, pourableElement, {
+            x: xPointer,
+            y: yPointer,
+          })
+        );
+
         xPointer += 1
 
-        const element2 = getElement(newMatrix, {x: xPointer, y: yPointer});
-        if (element2) {
-          newMatrix[yPointer][xPointer] = Object.assign({}, element2, {symbol: false});
-        }
+        newPourableElements.push(
+          Object.assign({}, pourableElement, {
+            symbol: false,
+            x: xPointer,
+            y: yPointer,
+          })
+        );
+
         xPointer += 1
       } else if (symbolWidth === 1) {
-        if (xPointer === maxWidth) {
+        if (xPointer === matrixWidth) {
           yPointer += 1;
           xPointer = 0;
         }
 
-        const element = getElement(newMatrix, {x: xPointer, y: yPointer});
-        if (element) {
-          newMatrix[yPointer][xPointer] = Object.assign({}, element, {
-            symbol: pourableElement.symbol,
-            style: pourableElement.style,
-          });
-        }
+        newPourableElements.push(
+          Object.assign({}, pourableElement, {
+            x: xPointer,
+            y: yPointer,
+          })
+        );
 
         xPointer += 1;
       }
     }
+  });
+
+  return newPourableElements;
+}
+
+// TODO: consider word-wrap/word-break
+export function pourContent(
+  matrix: Matrix,
+  content: string,
+  symbolRuler: SymbolRuler
+): Matrix {
+  const width = getWidth(matrix);
+  const height = getHeight(matrix);
+  const maxY = getMaxY(matrix);
+
+  // Reset the matrix to background only.
+  const newMatrix = createMatrix({width, height}, null);
+
+  const pourableElements = pourElementsVirtually(
+    parseContent(content),
+    symbolRuler,
+    width
+  );
+
+  pourableElements.forEach(pourableElement => {
+    if (pourableElement.y === undefined || pourableElement.x === undefined) {
+      throw new Error('The "x" and "y" should be set by an other process.');
+    }
+
+    if (pourableElement.y > maxY) {
+      return;
+    }
+
+    Object.assign(newMatrix[pourableElement.y][pourableElement.x], {
+      symbol: pourableElement.symbol,
+      style: pourableElement.style,
+    });
   });
 
   return newMatrix;
