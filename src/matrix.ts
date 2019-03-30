@@ -532,7 +532,6 @@ export function pourElementsVirtually(
   return newPourableElements;
 }
 
-// TODO: consider word-wrap/word-break
 export function pourContent(
   matrix: Matrix,
   content: string,
