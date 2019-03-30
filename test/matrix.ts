@@ -264,13 +264,14 @@ describe('matrix', function() {
       return {
         isLineBreaking: false,
         symbol: '',
+        symbolWidth: 1,
         style: createDefaultElementStyle(),
       };
     };
 
     it('can parse non-ansi ascii strings', function() {
       assert.deepStrictEqual(
-        parseContent('abc'),
+        parseContent('abc', () => 1),
         [
           Object.assign(createPourableElement(), {symbol: 'a'}),
           Object.assign(createPourableElement(), {symbol: 'b'}),
@@ -281,7 +282,7 @@ describe('matrix', function() {
 
     it('can parse ansi strings included some newline characters', function() {
       assert.deepStrictEqual(
-        parseContent('\na\n\nbc\n'),
+        parseContent('\na\n\nbc\n', () => 1),
         [
           Object.assign(createPourableElement(), {isLineBreaking: true}),
           Object.assign(createPourableElement(), {symbol: 'a'}),
@@ -296,7 +297,7 @@ describe('matrix', function() {
 
     it('can parse non-ansi multibyte strings', function() {
       assert.deepStrictEqual(
-        parseContent('あいう'),
+        parseContent('あいう', () => 1),
         [
           Object.assign(createPourableElement(), {symbol: 'あ'}),
           Object.assign(createPourableElement(), {symbol: 'い'}),
@@ -304,7 +305,7 @@ describe('matrix', function() {
         ]
       );
       assert.deepStrictEqual(
-        parseContent('あiうeお'),
+        parseContent('あiうeお', () => 1),
         [
           Object.assign(createPourableElement(), {symbol: 'あ'}),
           Object.assign(createPourableElement(), {symbol: 'i'}),
@@ -318,14 +319,14 @@ describe('matrix', function() {
     it('can parse non-ansi surrogate pairs', function() {
       const surrogatePair = '\ud867\ude3d';
       assert.deepStrictEqual(
-        parseContent(`${surrogatePair}${surrogatePair}`),
+        parseContent(`${surrogatePair}${surrogatePair}`, () => 1),
         [
           Object.assign(createPourableElement(), {symbol: surrogatePair}),
           Object.assign(createPourableElement(), {symbol: surrogatePair}),
         ]
       );
       assert.deepStrictEqual(
-        parseContent(`a${surrogatePair}あ${surrogatePair}`),
+        parseContent(`a${surrogatePair}あ${surrogatePair}`, () => 1),
         [
           Object.assign(createPourableElement(), {symbol: 'a'}),
           Object.assign(createPourableElement(), {symbol: surrogatePair}),
@@ -339,7 +340,7 @@ describe('matrix', function() {
       const {red, bgBlue} = ansiStyles;
 
       assert.deepStrictEqual(
-        parseContent(`a${red.open}bc${red.close}d`),
+        parseContent(`a${red.open}bc${red.close}d`, () => 1),
         [
           Object.assign(createPourableElement(), {symbol: 'a'}),
           Object.assign(createPourableElement(), {
@@ -354,7 +355,7 @@ describe('matrix', function() {
         ]
       );
       assert.deepStrictEqual(
-        parseContent(`あ${red.open}いc${red.close}`),
+        parseContent(`あ${red.open}いc${red.close}`, () => 1),
         [
           Object.assign(createPourableElement(), {symbol: 'あ'}),
           Object.assign(createPourableElement(), {
@@ -368,7 +369,7 @@ describe('matrix', function() {
         ]
       );
       assert.deepStrictEqual(
-        parseContent(`a${red.open}b${bgBlue.open}c${bgBlue.close}${red.close}d`),
+        parseContent(`a${red.open}b${bgBlue.open}c${bgBlue.close}${red.close}d`, () => 1),
         [
           Object.assign(createPourableElement(), {symbol: 'a'}),
           Object.assign(createPourableElement(), {

@@ -42,6 +42,7 @@ export type SymbolRuler = (symbol: ElementSymbol) => 0 | 1 | 2;
 export type PourableElement = {
   isLineBreaking: boolean,
   symbol: ElementSymbol,
+  symbolWidth: number,
   style: ElementStyle,
   x?: number,
   y?: number,
@@ -406,7 +407,7 @@ export function decodeAnsiStyles(character: string): Partial<ElementStyle> {
   return styleData;
 }
 
-export function parseContent(content: string): PourableElement[] {
+export function parseContent(content: string, symbolRuler: SymbolRuler): PourableElement[] {
   const pourableElements = [];
 
   // This pointer is considering ANSI escape code.
@@ -420,16 +421,19 @@ export function parseContent(content: string): PourableElement[] {
     }
 
     const symbol = stripAnsi(symbolWithAnsi) as string;
+    const symbolWidth = symbolRuler(symbol);
     if (symbol === '\n') {
       pourableElements.push({
         isLineBreaking: true,
         symbol: '',  // Anything is fine
+        symbolWidth,
         style: createDefaultElementStyle(),  // Anything is fine
       });
     } else {
       pourableElements.push({
         isLineBreaking: false,
         symbol: symbol,
+        symbolWidth,
         style: Object.assign(
           createDefaultElementStyle(),
           decodeAnsiStyles(symbolWithAnsi)
@@ -448,7 +452,6 @@ export function parseContent(content: string): PourableElement[] {
  */
 export function pourElementsVirtually(
   pourableElements: PourableElement[],
-  symbolRuler: SymbolRuler,
   matrixWidth: number
 ): PourableElement[] {
   const newPourableElements: PourableElement[] = [];
@@ -462,16 +465,14 @@ export function pourElementsVirtually(
       return;
     }
 
-    const symbolWidth = symbolRuler(pourableElement.symbol);
-
     if (pourableElement.isLineBreaking) {
       yPointer += 1;
       xPointer = 0;
-    } else if (symbolWidth === 2 && matrixWidth === 1) {
+    } else if (pourableElement.symbolWidth === 2 && matrixWidth === 1) {
       // The content can not pour anymore.
       isFinished = true;
     } else {
-      if (symbolWidth === 2) {
+      if (pourableElement.symbolWidth === 2) {
         if (
           // |abcd|P => |abcd|
           // |....|     |P...|
@@ -504,7 +505,7 @@ export function pourElementsVirtually(
         );
 
         xPointer += 1
-      } else if (symbolWidth === 1) {
+      } else if (pourableElement.symbolWidth === 1) {
         if (xPointer === matrixWidth) {
           yPointer += 1;
           xPointer = 0;
@@ -539,8 +540,7 @@ export function pourContent(
   const newMatrix = createMatrix({width, height}, null);
 
   const pourableElements = pourElementsVirtually(
-    parseContent(content),
-    symbolRuler,
+    parseContent(content, symbolRuler),
     width
   );
 
