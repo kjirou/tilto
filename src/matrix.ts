@@ -146,6 +146,15 @@ export function getMaxY(matrix: Matrix): number {
   return getHeight(matrix) - 1;
 }
 
+export function matrixToRectangle(matrix: Matrix): Rectangle {
+  return {
+    x: 0,
+    y: 0,
+    width: getWidth(matrix),
+    height: getHeight(matrix),
+  };
+}
+
 // TODO: Negative coordinates
 export function overwriteMatrix(
   matrix: Matrix,

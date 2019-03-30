@@ -14,6 +14,7 @@ import {
   createMatrixFromText,
   cropMatrix,
   decodeAnsiStyles,
+  matrixToRectangle,
   overwriteMatrix,
   parseContent,
   pourContent,
@@ -22,6 +23,13 @@ import {
 
 
 describe('matrix', function() {
+  describe('matrixToRectangle', function() {
+    it('can cast from a matrix to a rectangle', function() {
+      const rectangle = matrixToRectangle(createMatrix({width: 1, height: 2}));
+      assert.deepStrictEqual(rectangle, {x: 0, y: 0, width: 1, height: 2});
+    });
+  });
+
   describe('overwriteMatrix', function() {
     it('works', function() {
       let matrix = createMatrix({width: 5, height: 7}, '.');

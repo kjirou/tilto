@@ -19,6 +19,7 @@ import {
   cropMatrix,
   getHeight,
   getWidth,
+  matrixToRectangle,
   overwriteMatrix,
   pourContent,
   renderMatrix,
@@ -202,15 +203,7 @@ function drawBorders(matrix: Matrix, borders: Borders): Matrix {
 }
 
 function computeContentArea(box: Box): Rectangle {
-  const maxHeight = getHeight(box.matrix);
-  const maxWidth = getWidth(box.matrix);
-
-  let contentArea = {
-    x: 0,
-    y: 0,
-    width: maxWidth,
-    height: maxHeight,
-  };
+  let contentArea = matrixToRectangle(box.matrix);
 
   contentArea = shrinkRectangle(contentArea, {
     top: box.borders.topWidth,
