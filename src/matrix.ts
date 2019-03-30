@@ -44,8 +44,14 @@ export type PourableElement = {
   symbol: ElementSymbol,
   symbolWidth: number,
   style: ElementStyle,
-  x?: number,
-  y?: number,
+};
+export type PouredElement = {
+  isLineBreaking: PourableElement['isLineBreaking'],
+  symbol: PourableElement['symbol'],
+  symbolWidth: PourableElement['symbolWidth'],
+  style: PourableElement['style'],
+  x: number,
+  y: number,
 };
 
 export function createDefaultElementStyle(): ElementStyle {
@@ -453,8 +459,8 @@ export function parseContent(content: string, symbolRuler: SymbolRuler): Pourabl
 export function pourElementsVirtually(
   pourableElements: PourableElement[],
   matrixWidth: number
-): PourableElement[] {
-  const newPourableElements: PourableElement[] = [];
+): PouredElement[] {
+  const newPourableElements: PouredElement[] = [];
 
   let isFinished = false;
   let yPointer = 0;
@@ -539,23 +545,19 @@ export function pourContent(
   // Reset the matrix to background only.
   const newMatrix = createMatrix({width, height}, null);
 
-  const pourableElements = pourElementsVirtually(
+  const pouredElements = pourElementsVirtually(
     parseContent(content, symbolRuler),
     width
   );
 
-  pourableElements.forEach(pourableElement => {
-    if (pourableElement.y === undefined || pourableElement.x === undefined) {
-      throw new Error('The "x" and "y" should be set by an other process.');
-    }
-
-    if (pourableElement.y > maxY) {
+  pouredElements.forEach(pouredElement => {
+    if (pouredElement.y > maxY) {
       return;
     }
 
-    Object.assign(newMatrix[pourableElement.y][pourableElement.x], {
-      symbol: pourableElement.symbol,
-      style: pourableElement.style,
+    Object.assign(newMatrix[pouredElement.y][pouredElement.x], {
+      symbol: pouredElement.symbol,
+      style: pouredElement.style,
     });
   });
 
