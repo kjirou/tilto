@@ -6,8 +6,8 @@ const keypress = require('keypress');
 
 let root = tilto.createBox({width: 40, height: 20});
 
-let statusBar = tilto.createBox({width: 40, height: 3});
-statusBar = tilto.setBorderType(statusBar, 'default');
+const statusBar = tilto.createBox({width: 40, height: 3});
+statusBar.borders = tilto.createBordersByType('default');
 statusBar.content = '[C]lear | [Q]uit';
 
 let textarea = tilto.createBox({y: 3, width: 40, height: 17});

@@ -7,13 +7,13 @@ import * as assert from 'assert';
 
 import {
   createBox,
+  createBordersByType,
   createElementBody,
   getHeight,
   getMaxX,
   getMaxY,
   getWidth,
   render,
-  setBorderType,
 } from '../src/index';
 
 const ansiStyles = require('ansi-styles');
@@ -37,10 +37,10 @@ describe('index', function() {
     });
 
     describe('borders', function() {
-      describe('setBorderType', function() {
+      describe('createBordersByType', function() {
         it('can render the "default" type', function() {
-          let box = createBox({width: 5, height: 4});
-          box = setBorderType(box, 'default');
+          const box = createBox({width: 5, height: 4});
+          box.borders = createBordersByType('default');
 
           assert.strictEqual(
             render(box),
@@ -169,10 +169,10 @@ describe('index', function() {
 
     describe('complex cases', function() {
       it('should apply scroll bars after borders', function() {
-        let box = createBox({width: 5, height: 4});
-        box = setBorderType(box, 'default');
-        box.content = 'abc';
+        const box = createBox({width: 5, height: 4});
+        box.borders = createBordersByType('default');
         box.scroll = {y: 0};
+        box.content = 'abc';
         assert.strictEqual(
           render(box),
           [
@@ -185,8 +185,8 @@ describe('index', function() {
       });
 
       it('should ignore borders if there is no place', function() {
-        let box1 = createBox({width: 1, height: 2});
-        box1 = setBorderType(box1, 'default');
+        const box1 = createBox({width: 1, height: 2});
+        box1.borders = createBordersByType('default');
         assert.strictEqual(
           render(box1),
           [
@@ -195,8 +195,8 @@ describe('index', function() {
           ].join('\n')
         );
 
-        let box2 = createBox({width: 2, height: 1});
-        box2 = setBorderType(box2, 'default');
+        const box2 = createBox({width: 2, height: 1});
+        box2.borders = createBordersByType('default');
         assert.strictEqual(
           render(box2),
           '  '
@@ -204,8 +204,8 @@ describe('index', function() {
       });
 
       it('should ignore scroll bars if there is no place', function() {
-        let box = createBox({width: 2, height: 3});
-        box = setBorderType(box, 'default');
+        const box = createBox({width: 2, height: 3});
+        box.borders = createBordersByType('default');
         box.scroll = {y: 0};
         assert.strictEqual(
           render(box),

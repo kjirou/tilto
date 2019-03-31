@@ -6,8 +6,8 @@ const ANSI_RESET = '\u001b[0m';
 
 let root = tilto.createBox({width: 80, height: 20});
 
-let sideBar = tilto.createBox({width: 20, height: 20});
-sideBar = tilto.setBorderType(sideBar, 'default');
+const sideBar = tilto.createBox({width: 20, height: 20});
+sideBar.borders = tilto.createBordersByType('default');
 sideBar.content = `Channels
 #elona
 #ftl

@@ -1,9 +1,11 @@
 import * as utils from './utils';
+import * as borderModule from './border';
 import * as boxModule from './box';
 import * as matrixModule from './matrix';
 import * as rectangleModule from './rectangle';
 
 export type BorderType = 'default';
+export type Borders = borderModule.Borders;
 export type Box = boxModule.Box;
 export type Coordinate = utils.Coordinate;
 export type ElementBody = matrixModule.ElementBody;
@@ -35,25 +37,22 @@ export function getMaxY(box: Box): number {
   return matrixModule.getMaxY(box.matrix);
 }
 
-export function setBorderType(box: Box, borderType: BorderType): Box {
+export function createBordersByType(borderType: BorderType): Borders {
   switch (borderType) {
   case 'default':
-    return Object.assign({}, box, {
-      borders: {
-        topWidth: 1,
-        bottomWidth: 1,
-        leftWidth: 1,
-        rightWidth: 1,
-        topSymbols: ['-'],
-        bottomSymbols: ['-'],
-        leftSymbols: ['|'],
-        rightSymbols: ['|'],
-        topLeftSymbols: ['+'],
-        topRightSymbols: ['+'],
-        bottomLeftSymbols: ['+'],
-        bottomRightSymbols: ['+'],
-      },
-    });
+    return {
+      topWidth: 1,
+      bottomWidth: 1,
+      leftWidth: 1,
+      rightWidth: 1,
+      topSymbols: ['-'],
+      bottomSymbols: ['-'],
+      leftSymbols: ['|'],
+      rightSymbols: ['|'],
+      topLeftSymbols: ['+'],
+      topRightSymbols: ['+'],
+      bottomLeftSymbols: ['+'],
+      bottomRightSymbols: ['+'],
+    };
   }
-  return box;
 }
