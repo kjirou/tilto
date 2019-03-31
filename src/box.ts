@@ -15,7 +15,7 @@ import {
   ElementSymbol,
   Matrix,
   SymbolRuler,
-  createDefaultElementStyle,
+  createElementBody,
   createMatrix,
   createMatrixFromText,
   cropMatrix,
@@ -81,17 +81,11 @@ export function defaultSymbolRuler(symbol: ElementSymbol): 0 | 1 | 2 {
 };
 
 function createDefaultTrackElement(): ElementBody {
-  return {
-    symbol: '|',
-    style: createDefaultElementStyle(),
-  };
+  return createElementBody('|');
 };
 
 function createDefaultThumbElement(): ElementBody {
-  return {
-    symbol: '#',
-    style: createDefaultElementStyle(),
-  };
+  return createElementBody('#');
 };
 
 export function createBox(

@@ -2,6 +2,7 @@ import * as assert from 'assert';
 
 import {
   createDefaultElementStyle,
+  createElementBody,
   createMatrix,
   parseContent,
   renderMatrix,
@@ -13,14 +14,8 @@ import {
 const ansiStyles = require('ansi-styles');
 
 describe('scroll-bar', function() {
-  const trackElementBody = {
-    symbol: '|',
-    style: createDefaultElementStyle(),
-  };
-  const thumbElementBody = {
-    symbol: '#',
-    style: createDefaultElementStyle(),
-  };
+  const trackElementBody = createElementBody('|');
+  const thumbElementBody = createElementBody('#');
 
   describe('placeScrollBar', function() {
     it('should draw a scroll bar the same as the height of the matrix if there is no content', function() {

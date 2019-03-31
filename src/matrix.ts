@@ -70,17 +70,28 @@ export function createDefaultElementStyle(): ElementStyle {
   };
 }
 
+export function createElementBody(symbol: ElementBody['symbol']): ElementBody {
+  return {
+    symbol,
+    style: createDefaultElementStyle(),
+  };
+}
+
+function createElement(y: Coordinate['y'], x: Coordinate['x'], symbol: Element['symbol']): Element {
+  return {
+    y,
+    x,
+    symbol,
+    style: createDefaultElementStyle(),
+  };
+}
+
 export function createMatrix(size: Size, defaultSymbol: ElementSymbol | null = null): Matrix {
   const matrix = [];
   for (let y = 0; y < size.height; y += 1) {
     const row = [];
     for (let x = 0; x < size.width; x += 1) {
-      row.push({
-        y,
-        x,
-        symbol: defaultSymbol,
-        style: createDefaultElementStyle(),
-      });
+      row.push(createElement(y, x, defaultSymbol));
     }
     matrix.push(row);
   }

@@ -3,7 +3,6 @@ import {
   Matrix,
   PourableElement,
   SymbolRuler,
-  createDefaultElementStyle,
   matrixToRectangle,
   pourElementsVirtually,
 } from './matrix';
