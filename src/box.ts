@@ -315,7 +315,8 @@ function applyBoxSettingsToMatrix(box: Box): Matrix {
 
   let contentAreaMatrix = cropMatrix(filtered.matrix, filtered.contentArea);
   if (box.content !== '') {
-    contentAreaMatrix = pourContent(contentAreaMatrix, box.content, box.symbolRuler);
+    const scrollY = box.scroll ? box.scroll.y : 0;
+    contentAreaMatrix = pourContent(contentAreaMatrix, box.content, box.symbolRuler, scrollY);
   }
 
   (box.children || [])
