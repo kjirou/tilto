@@ -17,6 +17,7 @@ const ansiStyles = require('ansi-styles');
 const sliceAnsiString = require('slice-ansi-string');
 
 export type ElementSymbol = string;
+export type SymbolRuler = (symbol: ElementSymbol) => 0 | 1 | 2;
 export type ElementStyle = {
   foregroundColor: string,  // '' は設定なしを示す
   backgroundColor: string,  // '' は設定なしを示す
@@ -28,6 +29,10 @@ export type ElementStyle = {
   hidden: boolean,
   strikethrough: boolean,
 };
+export type ElementBody = {
+  symbol: ElementSymbol | null,
+  style: ElementStyle,
+};
 export type Element = {
   x: number,
   y: number,
@@ -38,7 +43,6 @@ export type Element = {
   style: ElementStyle,
 };
 export type Matrix = Element[][];
-export type SymbolRuler = (symbol: ElementSymbol) => 0 | 1 | 2;
 export type PourableElement = {
   isLineBreaking: boolean,
   symbol: ElementSymbol,
@@ -459,7 +463,10 @@ export function parseContent(content: string, symbolRuler: SymbolRuler): Pourabl
 export function pourElementsVirtually(
   pourableElements: PourableElement[],
   matrixWidth: number
-): PouredElement[] {
+): {
+  pouredElements: PouredElement[],
+  contentHeight: number,
+} {
   const newPourableElements: PouredElement[] = [];
 
   let isFinished = false;
@@ -529,7 +536,11 @@ export function pourElementsVirtually(
     }
   });
 
-  return newPourableElements;
+  return {
+    pouredElements: newPourableElements,
+    // No content is regarded as zero height.
+    contentHeight: (yPointer === 0 && xPointer === 0) ? 0 : yPointer + 1,
+  };
 }
 
 export function pourContent(
@@ -545,7 +556,7 @@ export function pourContent(
   // Reset the matrix to background only.
   const newMatrix = createMatrix({width, height}, null);
 
-  const pouredElements = pourElementsVirtually(
+  const {pouredElements} = pourElementsVirtually(
     parseContent(content, symbolRuler),
     width
   );
