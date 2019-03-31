@@ -10,7 +10,7 @@ export type Rectangle = {
   height: Size['height'],
 }
 
-export function toCoordinate(rectangle: Rectangle): Coordinate {
+export function rectangleToCoordinate(rectangle: Rectangle): Coordinate {
   return {
     x: rectangle.x,
     y: rectangle.y,

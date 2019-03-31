@@ -27,9 +27,9 @@ import {
 } from './matrix';
 import {
   Rectangle,
+  rectangleToCoordinate,
   rectangleToSize,
   shrinkRectangle,
-  toCoordinate,
 } from './rectangle';
 
 const eaw = require('eastasianwidth');
@@ -247,7 +247,7 @@ function applyBoxSettingsToMatrix(box: Box): Matrix {
     });
 
   return overwriteMatrix(
-    newMatrix, contentAreaMatrix, toCoordinate(contentArea), box.symbolRuler);
+    newMatrix, contentAreaMatrix, rectangleToCoordinate(contentArea), box.symbolRuler);
 }
 
 export function renderBox(

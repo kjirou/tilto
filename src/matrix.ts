@@ -9,7 +9,6 @@ import {
 import {
   Rectangle,
   shrinkRectangle,
-  toCoordinate,
 } from './rectangle';
 
 const ansiStyles = require('ansi-styles');
