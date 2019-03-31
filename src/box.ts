@@ -11,9 +11,11 @@ import {
 } from './border';
 import {
   Element,
+  ElementBody,
   ElementSymbol,
   Matrix,
   SymbolRuler,
+  createDefaultElementStyle,
   createMatrix,
   createMatrixFromText,
   cropMatrix,
@@ -21,6 +23,7 @@ import {
   getWidth,
   matrixToRectangle,
   overwriteMatrix,
+  parseContent,
   pourContent,
   renderMatrix,
   validateMatrix,
@@ -31,6 +34,12 @@ import {
   rectangleToSize,
   shrinkRectangle,
 } from './rectangle';
+import {
+  placeScrollBar,
+} from './scroll-bar';
+import {
+  validateSize,
+} from './utils';
 
 const eaw = require('eastasianwidth');
 const stripAnsi = require('strip-ansi');
@@ -55,6 +64,11 @@ export type Box = {
   // Now neither ANSI characters nor surrogate-pairs is considered.
   content: string,
   matrix: Matrix,
+  scroll?: {
+    thumbElement?: ElementBody,
+    trackElement?: ElementBody,
+    y: number,
+  },
   symbolRuler: SymbolRuler,
   x: number,
   y: number,
@@ -64,6 +78,20 @@ export type Box = {
 export function defaultSymbolRuler(symbol: ElementSymbol): 0 | 1 | 2 {
   const escapedSymbol = stripAnsi(symbol);
   return eaw.characterLength(escapedSymbol);
+};
+
+function createDefaultTrackElement(): ElementBody {
+  return {
+    symbol: '|',
+    style: createDefaultElementStyle(),
+  };
+};
+
+function createDefaultThumbElement(): ElementBody {
+  return {
+    symbol: '#',
+    style: createDefaultElementStyle(),
+  };
 };
 
 export function createBox(
@@ -202,30 +230,91 @@ function drawBorders(matrix: Matrix, borders: Borders): Matrix {
   return newMatrix;
 }
 
-function computeContentArea(box: Box): Rectangle {
-  let contentArea = matrixToRectangle(box.matrix);
-
-  contentArea = shrinkRectangle(contentArea, {
-    top: box.borders.topWidth,
-    bottom: box.borders.bottomWidth,
-    left: box.borders.leftWidth,
-    right: box.borders.rightWidth,
-  });
-
-  return contentArea;
-}
-
 // TODO: cache
 function applyBoxSettingsToMatrix(box: Box): Matrix {
-  const contentArea = computeContentArea(box);
+  const pourableElements = parseContent(box.content, box.symbolRuler);
 
-  let newMatrix = drawBorders(box.matrix, box.borders);
+  type FilterResult = {
+    matrix: Matrix,
+    contentArea: Rectangle,
+    errorOccured: boolean,
+  };
+  const filters: ((preResult: FilterResult) => FilterResult)[] = [];
 
-  let contentAreaMatrix = cropMatrix(newMatrix, contentArea);
-  if (!contentAreaMatrix) {
-    return box.matrix;
+  // Borders
+  filters.push(
+    ({matrix, contentArea}) => {
+      const newContentArea = shrinkRectangle(contentArea, {
+        top: box.borders.topWidth,
+        bottom: box.borders.bottomWidth,
+        left: box.borders.leftWidth,
+        right: box.borders.rightWidth,
+      });
+
+      if (validateSize(rectangleToSize(newContentArea)) === false) {
+        return {
+          matrix,
+          contentArea,
+          errorOccured: true,
+        };
+      }
+
+      return {
+        matrix: drawBorders(matrix, box.borders),
+        contentArea: newContentArea,
+        errorOccured: false,
+      };
+    }
+  );
+
+  // A scroll bar
+  if (box.scroll !== undefined) {
+    const scrollSettings = box.scroll;  // To avoid TypeScript's undefined check
+
+    filters.push(
+      ({matrix, contentArea}) => {
+        const size = rectangleToSize(contentArea);
+
+        if (validateSize(size) === false || size.width < 1) {
+          return {
+            matrix,
+            contentArea,
+            errorOccured: true,
+          };
+        }
+
+        const placed = placeScrollBar(
+          matrix,
+          pourableElements,
+          scrollSettings.y,
+          scrollSettings.trackElement || createDefaultTrackElement(),
+          scrollSettings.thumbElement || createDefaultThumbElement()
+        );
+
+        return {
+          matrix: placed.matrix,
+          contentArea: placed.contentArea,
+          errorOccured: false,
+        };
+      }
+    );
   }
 
+  const filtered = filters.reduce(
+    (result, filter) => {
+      if (result.errorOccured) {
+        return result;
+      }
+      return filter(result);
+    },
+    {
+      matrix: box.matrix,
+      contentArea: matrixToRectangle(box.matrix),
+      errorOccured: false,
+    }
+  );
+
+  let contentAreaMatrix = cropMatrix(filtered.matrix, filtered.contentArea);
   if (box.content !== '') {
     contentAreaMatrix = pourContent(contentAreaMatrix, box.content, box.symbolRuler);
   }
@@ -247,7 +336,11 @@ function applyBoxSettingsToMatrix(box: Box): Matrix {
     });
 
   return overwriteMatrix(
-    newMatrix, contentAreaMatrix, rectangleToCoordinate(contentArea), box.symbolRuler);
+    filtered.matrix,
+    contentAreaMatrix,
+    rectangleToCoordinate(filtered.contentArea),
+    box.symbolRuler
+  );
 }
 
 export function renderBox(
