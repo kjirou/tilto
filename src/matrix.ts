@@ -554,8 +554,7 @@ export function pourElementsVirtually(
 
 export function pourContent(
   matrix: Matrix,
-  content: string,
-  symbolRuler: SymbolRuler,
+  pourableElements: PourableElement[],
   startingY: number
 ): Matrix {
   const width = getWidth(matrix);
@@ -565,10 +564,7 @@ export function pourContent(
   // Reset the matrix to background only.
   const newMatrix = createMatrix({width, height}, null);
 
-  const {pouredElements} = pourElementsVirtually(
-    parseContent(content, symbolRuler),
-    width
-  );
+  const {pouredElements} = pourElementsVirtually(pourableElements, width);
 
   pouredElements.forEach(pouredElement => {
     const y = pouredElement.y - startingY;

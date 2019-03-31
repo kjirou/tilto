@@ -201,7 +201,7 @@ function applyBoxSettingsToMatrix(box: Box): Matrix {
 
     filters.push(
       ({matrix, contentAreaMatrix, contentArea, contentAreaCoordinate}) => {
-        const placedMatrix = pourContent(contentAreaMatrix, box.content, box.symbolRuler, scrollY);
+        const placedMatrix = pourContent(contentAreaMatrix, pourableElements, scrollY);
 
         return {
           matrix: overwriteMatrix(matrix, placedMatrix, contentAreaCoordinate, box.symbolRuler),
