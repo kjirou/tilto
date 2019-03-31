@@ -323,7 +323,7 @@ describe('box', function() {
 
           assert.strictEqual(renderBox(box, {backgroundSymbol: '.'}), [
             '123....',
-            '4cc....',
+            '4......',
             '.......',
             '.......',
           ].join('\n'));
@@ -333,7 +333,7 @@ describe('box', function() {
           child.content = 'あ\n1い';
 
           assert.strictEqual(renderBox(box, {backgroundSymbol: '.'}), [
-            'あc....',
+            'あ.....',
             '1い....',
             '.......',
             '.......',

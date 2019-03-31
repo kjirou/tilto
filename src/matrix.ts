@@ -9,14 +9,13 @@ import {
 import {
   Rectangle,
   shrinkRectangle,
-  toCoordinate,
-  toSize,
 } from './rectangle';
 
 const ansiStyles = require('ansi-styles');
 const sliceAnsiString = require('slice-ansi-string');
 
 export type ElementSymbol = string;
+export type SymbolRuler = (symbol: ElementSymbol) => 0 | 1 | 2;
 export type ElementStyle = {
   foregroundColor: string,  // '' は設定なしを示す
   backgroundColor: string,  // '' は設定なしを示す
@@ -28,6 +27,10 @@ export type ElementStyle = {
   hidden: boolean,
   strikethrough: boolean,
 };
+export type ElementBody = {
+  symbol: ElementSymbol | null,
+  style: ElementStyle,
+};
 export type Element = {
   x: number,
   y: number,
@@ -38,7 +41,20 @@ export type Element = {
   style: ElementStyle,
 };
 export type Matrix = Element[][];
-export type SymbolRuler = (symbol: ElementSymbol) => 0 | 1 | 2;
+export type PourableElement = {
+  isLineBreaking: boolean,
+  symbol: ElementSymbol,
+  symbolWidth: number,
+  style: ElementStyle,
+};
+export type PouredElement = {
+  isLineBreaking: PourableElement['isLineBreaking'],
+  symbol: PourableElement['symbol'],
+  symbolWidth: PourableElement['symbolWidth'],
+  style: PourableElement['style'],
+  x: number,
+  y: number,
+};
 
 export function createDefaultElementStyle(): ElementStyle {
   return {
@@ -54,17 +70,28 @@ export function createDefaultElementStyle(): ElementStyle {
   };
 }
 
+export function createElementBody(symbol: ElementBody['symbol']): ElementBody {
+  return {
+    symbol,
+    style: createDefaultElementStyle(),
+  };
+}
+
+function createElement(y: Coordinate['y'], x: Coordinate['x'], symbol: Element['symbol']): Element {
+  return {
+    y,
+    x,
+    symbol,
+    style: createDefaultElementStyle(),
+  };
+}
+
 export function createMatrix(size: Size, defaultSymbol: ElementSymbol | null = null): Matrix {
   const matrix = [];
   for (let y = 0; y < size.height; y += 1) {
     const row = [];
     for (let x = 0; x < size.width; x += 1) {
-      row.push({
-        y,
-        x,
-        symbol: defaultSymbol,
-        style: createDefaultElementStyle(),
-      });
+      row.push(createElement(y, x, defaultSymbol));
     }
     matrix.push(row);
   }
@@ -144,6 +171,15 @@ export function getMaxX(matrix: Matrix): number {
 
 export function getMaxY(matrix: Matrix): number {
   return getHeight(matrix) - 1;
+}
+
+export function matrixToRectangle(matrix: Matrix): Rectangle {
+  return {
+    x: 0,
+    y: 0,
+    width: getWidth(matrix),
+    height: getHeight(matrix),
+  };
 }
 
 // TODO: Negative coordinates
@@ -390,13 +426,7 @@ export function decodeAnsiStyles(character: string): Partial<ElementStyle> {
   return styleData;
 }
 
-export type PourableElement = {
-  isLineBreaking: boolean,
-  symbol: ElementSymbol,
-  style: ElementStyle,
-};
-
-export function parseContent(content: string): PourableElement[] {
+export function parseContent(content: string, symbolRuler: SymbolRuler): PourableElement[] {
   const pourableElements = [];
 
   // This pointer is considering ANSI escape code.
@@ -410,16 +440,19 @@ export function parseContent(content: string): PourableElement[] {
     }
 
     const symbol = stripAnsi(symbolWithAnsi) as string;
+    const symbolWidth = symbolRuler(symbol);
     if (symbol === '\n') {
       pourableElements.push({
         isLineBreaking: true,
         symbol: '',  // Anything is fine
+        symbolWidth,
         style: createDefaultElementStyle(),  // Anything is fine
       });
     } else {
       pourableElements.push({
         isLineBreaking: false,
         symbol: symbol,
+        symbolWidth,
         style: Object.assign(
           createDefaultElementStyle(),
           decodeAnsiStyles(symbolWithAnsi)
@@ -433,74 +466,121 @@ export function parseContent(content: string): PourableElement[] {
   return pourableElements;
 }
 
-// TODO: consider word-wrap/word-break
-export function pourContent(
-  matrix: Matrix,
-  content: string,
-  symbolRuler: SymbolRuler
-): Matrix {
-  const maxWidth = getWidth(matrix);
-  const maxHeight = getHeight(matrix);
+/**
+ * Try to pour elements to a certain width
+ */
+export function pourElementsVirtually(
+  pourableElements: PourableElement[],
+  matrixWidth: number
+): {
+  pouredElements: PouredElement[],
+  contentHeight: number,
+} {
+  const newPourableElements: PouredElement[] = [];
 
-  let newMatrix = matrix.map(row => row.slice());
+  let isFinished = false;
   let yPointer = 0;
   let xPointer = 0;
 
-  parseContent(content).forEach(pourableElement => {
-    const symbolWidth = symbolRuler(pourableElement.symbol);
+  pourableElements.forEach(pourableElement => {
+    if (isFinished) {
+      return;
+    }
 
     if (pourableElement.isLineBreaking) {
       yPointer += 1;
       xPointer = 0;
-    } else if (symbolWidth === 2 && maxWidth === 1) {
-      yPointer += maxHeight;  // It intentionally overflows
+    } else if (pourableElement.symbolWidth === 2 && matrixWidth === 1) {
+      // The content can not pour anymore.
+      isFinished = true;
     } else {
-      if (symbolWidth === 2) {
+      if (pourableElement.symbolWidth === 2) {
         if (
           // |abcd|P => |abcd|
           // |....|     |P...|
           // (P = pointer)
-          xPointer === maxWidth ||
+          xPointer === matrixWidth ||
           // |abcP| => |abcd|
           // |....|    |P...|
           // (P = pointer)
-          xPointer + 1 === maxWidth
+          xPointer + 1 === matrixWidth
         ) {
           yPointer += 1;
           xPointer = 0;
         }
 
-        const element1 = getElement(newMatrix, {x: xPointer, y: yPointer});
-        if (element1) {
-          newMatrix[yPointer][xPointer] = Object.assign({}, element1, {
-            symbol: pourableElement.symbol,
-            style: pourableElement.style,
-          });
-        }
+        newPourableElements.push(
+          Object.assign({}, pourableElement, {
+            x: xPointer,
+            y: yPointer,
+          })
+        );
+
         xPointer += 1
 
-        const element2 = getElement(newMatrix, {x: xPointer, y: yPointer});
-        if (element2) {
-          newMatrix[yPointer][xPointer] = Object.assign({}, element2, {symbol: false});
-        }
+        newPourableElements.push(
+          Object.assign({}, pourableElement, {
+            symbol: false,
+            x: xPointer,
+            y: yPointer,
+          })
+        );
+
         xPointer += 1
-      } else if (symbolWidth === 1) {
-        if (xPointer === maxWidth) {
+      } else if (pourableElement.symbolWidth === 1) {
+        if (xPointer === matrixWidth) {
           yPointer += 1;
           xPointer = 0;
         }
 
-        const element = getElement(newMatrix, {x: xPointer, y: yPointer});
-        if (element) {
-          newMatrix[yPointer][xPointer] = Object.assign({}, element, {
-            symbol: pourableElement.symbol,
-            style: pourableElement.style,
-          });
-        }
+        newPourableElements.push(
+          Object.assign({}, pourableElement, {
+            x: xPointer,
+            y: yPointer,
+          })
+        );
 
         xPointer += 1;
       }
     }
+  });
+
+  return {
+    pouredElements: newPourableElements,
+    // No content is regarded as zero height.
+    contentHeight: (yPointer === 0 && xPointer === 0) ? 0 : yPointer + 1,
+  };
+}
+
+export function pourContent(
+  matrix: Matrix,
+  content: string,
+  symbolRuler: SymbolRuler,
+  startingY: number
+): Matrix {
+  const width = getWidth(matrix);
+  const height = getHeight(matrix);
+  const maxY = getMaxY(matrix);
+
+  // Reset the matrix to background only.
+  const newMatrix = createMatrix({width, height}, null);
+
+  const {pouredElements} = pourElementsVirtually(
+    parseContent(content, symbolRuler),
+    width
+  );
+
+  pouredElements.forEach(pouredElement => {
+    const y = pouredElement.y - startingY;
+
+    if (y < 0 || y > maxY) {
+      return;
+    }
+
+    Object.assign(newMatrix[y][pouredElement.x], {
+      symbol: pouredElement.symbol,
+      style: pouredElement.style,
+    });
   });
 
   return newMatrix;
@@ -514,7 +594,7 @@ function renderElement(element: Element): string {
     modifiers.push(ansiStyles.color[style.foregroundColor].open);
   }
   if (style.backgroundColor) {
-    modifiers.push(ansiStyles.color[style.backgroundColor].open);
+    modifiers.push(ansiStyles.bgColor[style.backgroundColor].open);
   }
   if (style.bold) {
     modifiers.push(ansiStyles.bold.open);
