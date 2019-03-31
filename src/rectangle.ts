@@ -39,21 +39,20 @@ export function shrinkRectangle(
     right: 0,
   }, margins);
 
-  const maxY = rectangle.y + rectangle.height;
-  const maxX = rectangle.x + rectangle.width;
-  const maxHeight = rectangle.height;
-  const maxWidth = rectangle.width;
+  if (top < 0 || bottom < 0 || left < 0 || right < 0) {
+    throw new Error('Can not receive negative margins');
+  }
 
   const y = rectangle.y + top;
-  const height = maxHeight - top - bottom;
+  const height = rectangle.height - top - bottom;
   const x = rectangle.x + left;
-  const width = maxWidth - left - right;
+  const width = rectangle.width - left - right;
 
   if (
-    (y < 0 || y > maxY) ||
-    (x < 0 || x > maxX) ||
-    (height < 0 || height > maxHeight) ||
-    (width < 0 || width > maxWidth)
+    y < 0 ||
+    x < 0 ||
+    height < 0 ||
+    width < 0
   ) {
     throw new Error('Invalid margin sizes');
   }
