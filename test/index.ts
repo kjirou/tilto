@@ -2,6 +2,7 @@ import * as assert from 'assert';
 
 import {
   createBox,
+  createElementBody,
   getHeight,
   getMaxX,
   getMaxY,
@@ -51,6 +52,22 @@ describe('index', function() {
           [
             '22|',
             '33#',
+          ].join('\n')
+        );
+      });
+
+      it('can change the appearance of the scroll bar', function() {
+        box.content = '\n\n\n';
+        box.scroll = {
+          y: 0,
+          trackElement: createElementBody('a'),
+          thumbElement: createElementBody('b'),
+        };
+        assert.strictEqual(
+          render(box),
+          [
+            '  b',
+            '  a',
           ].join('\n')
         );
       });
