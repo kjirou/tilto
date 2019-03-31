@@ -1,4 +1,15 @@
-const tilto = require('../dist');
+const fs = require('fs');
+const path = require('path');
+
+let tilto;
+if (fs.existsSync(path.join(__dirname, '../dist/index.js'))) {
+  tilto = require('../dist');
+} else {
+  require('../setup/ts-node-reigister-for-test');
+  tilto = require('../src');
+}
+
+// ========
 
 const logUpdate = require('log-update');
 const keypress = require('keypress');
