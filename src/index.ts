@@ -13,7 +13,6 @@ export type Size = utils.Size;
 export type SymbolRuler = matrixModule.SymbolRuler;
 
 export const createBox = boxModule.createBox;
-export const createBoxFromText = boxModule.createBoxFromText;
 export const createElementBody = matrixModule.createElementBody;
 export const createMatrix = matrixModule.createMatrix;
 export const createMatrixFromText = matrixModule.createMatrixFromText;

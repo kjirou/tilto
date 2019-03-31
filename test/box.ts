@@ -3,7 +3,6 @@ import * as assert from 'assert';
 import {
   Box,
   createBox,
-  createBoxFromText,
   defaultSymbolRuler,
   setBorders,
   renderBox,
@@ -30,23 +29,6 @@ describe('box', function() {
       assert.throws(() => {
         createBox({width: 0, height: 4}, {defaultSymbol: 'x'});
       }, /size/);
-    });
-  });
-
-  describe('createBoxFromText', function() {
-    it('works (case: 1)', function() {
-      const box = createBoxFromText('AB');
-      //assert.strictEqual(box.asString(), 'AB');
-    });
-
-    it('works (case: 2)', function() {
-      const box = createBoxFromText('AB\nCD\nEF');
-      //assert.strictEqual(box.asString(), 'AB\nCD\nEF');
-    });
-
-    it('should remove the last new line character', function() {
-      const box = createBoxFromText('AB\nCD\nEF\n');
-      //assert.strictEqual(box.asString(), 'AB\nCD\nEF');
     });
   });
 

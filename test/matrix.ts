@@ -3,7 +3,6 @@ import * as assert from 'assert';
 const ansiStyles = require('ansi-styles');
 
 import {
-  createBoxFromText,
   defaultSymbolRuler,
 } from '../src/box';
 import {
@@ -123,13 +122,12 @@ describe('matrix', function() {
   });
 
   describe('cropMatrix', function() {
-    const box = createBoxFromText([
+    const baseMatrix = createMatrixFromText([
       '123',
       '456',
       '789',
       'abc',
     ].join('\n'));
-    const baseMatrix = box.matrix;
 
     it('can crop the inside', function() {
       const matrix1 = cropMatrix(baseMatrix, {x: 0, y: 0, width: 2, height: 3});

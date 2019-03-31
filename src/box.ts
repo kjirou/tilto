@@ -118,21 +118,6 @@ export function createBox(
   };
 }
 
-export function createBoxFromText(text: string): Box {
-  const matrix = createMatrixFromText(text);
-
-  const box = createBox({
-    x: 0,
-    y: 0,
-    width: getWidth(matrix),
-    height: getHeight(matrix),
-  });
-
-  box.matrix = matrix;
-
-  return box;
-}
-
 export function setBorders(box: Box, options: Partial<Borders>): Box {
   const newBorders = Object.assign({}, box.borders, options);
 
