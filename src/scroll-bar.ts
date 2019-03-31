@@ -16,8 +16,8 @@ export function placeScrollBar(
   matrix: Matrix,
   pourableElements: PourableElement[],
   contentAreaScrollY: number,
-  scrollElementBody: ElementBody,
-  barElementBody: ElementBody
+  trackElementBody: ElementBody,
+  thumbElementBody: ElementBody
 ): {
   matrix: Matrix,
   contentArea: Rectangle,
@@ -101,8 +101,8 @@ export function placeScrollBar(
     const copied = row.slice();
 
     const elementBody = rowIndex >= scrollBarY && rowIndex < scrollBarY + scrollBarHeight
-      ? barElementBody
-      : scrollElementBody;
+      ? thumbElementBody
+      : trackElementBody;
     copied[rightEdgeIndex] = Object.assign({}, rightEdgeElement, elementBody);
 
     return copied;

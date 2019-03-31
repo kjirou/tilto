@@ -13,11 +13,11 @@ import {
 const ansiStyles = require('ansi-styles');
 
 describe('scroll-bar', function() {
-  const scrollElementBody = {
+  const trackElementBody = {
     symbol: '|',
     style: createDefaultElementStyle(),
   };
-  const barElementBody = {
+  const thumbElementBody = {
     symbol: '#',
     style: createDefaultElementStyle(),
   };
@@ -25,7 +25,7 @@ describe('scroll-bar', function() {
   describe('placeScrollBar', function() {
     it('should draw a scroll bar the same as the height of the matrix if there is no content', function() {
       const matrix = createMatrix({width: 3, height: 2});
-      const result = placeScrollBar(matrix, parseContent('', c => 1), 0, scrollElementBody, barElementBody);
+      const result = placeScrollBar(matrix, parseContent('', c => 1), 0, trackElementBody, thumbElementBody);
       assert.strictEqual(
         renderMatrix(result.matrix, '.'),
         [
@@ -37,7 +37,7 @@ describe('scroll-bar', function() {
 
     it('should draw a scroll bar the same as the height of the matrix if the content fits', function() {
       const matrix = createMatrix({width: 3, height: 2});
-      const result = placeScrollBar(matrix, parseContent('a', c => 1), 0, scrollElementBody, barElementBody);
+      const result = placeScrollBar(matrix, parseContent('a', c => 1), 0, trackElementBody, thumbElementBody);
       assert.strictEqual(
         renderMatrix(result.matrix, '.'),
         [
@@ -50,20 +50,20 @@ describe('scroll-bar', function() {
     it('can change the style of the scroll bar', function() {
       const {bgWhite, bgYellow, reset} = ansiStyles;
       const matrix = createMatrix({width: 1, height: 2});
-      const ansiScrollElementBody = {
+      const ansiTrackElementBody = {
         symbol: ' ',
         style: Object.assign(createDefaultElementStyle(), {
           backgroundColor: 'bgWhite',
         }),
       };
-      const ansiBarElementBody = {
+      const ansiThumbElementBody = {
         symbol: ' ',
         style: Object.assign(createDefaultElementStyle(), {
           backgroundColor: 'bgYellow',
         }),
       };
       const result = placeScrollBar(
-        matrix, parseContent('\n\n\n', c => 1), 0, ansiScrollElementBody, ansiBarElementBody);
+        matrix, parseContent('\n\n\n', c => 1), 0, ansiTrackElementBody, ansiThumbElementBody);
       assert.strictEqual(
         renderMatrix(result.matrix, '.'),
         [
@@ -94,7 +94,7 @@ describe('scroll-bar', function() {
           {scrollY: 99, expected: ['|', '|', '|', '|', '#'].join('\n')},
         ].forEach(function({scrollY, expected}) {
           it(`scrollY=${scrollY}`, function() {
-            const result = placeScrollBar(matrix, elements, scrollY, scrollElementBody, barElementBody);
+            const result = placeScrollBar(matrix, elements, scrollY, trackElementBody, thumbElementBody);
             assert.strictEqual(
               renderMatrix(result.matrix, '.'),
               expected
@@ -116,7 +116,7 @@ describe('scroll-bar', function() {
           {scrollY:  4, expected: ['|', '#', '#', '#', '#'].join('\n')},
         ].forEach(function({scrollY, expected}) {
           it(`scrollY=${scrollY}`, function() {
-            const result = placeScrollBar(matrix, elements, scrollY, scrollElementBody, barElementBody);
+            const result = placeScrollBar(matrix, elements, scrollY, trackElementBody, thumbElementBody);
             assert.strictEqual(
               renderMatrix(result.matrix, '.'),
               expected
