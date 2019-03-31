@@ -6,7 +6,6 @@ import * as rectangleModule from './rectangle';
 export type BorderType = 'default';
 export type Box = boxModule.Box;
 export type Coordinate = utils.Coordinate;
-export type Element = matrixModule.Element;
 export type ElementBody = matrixModule.ElementBody;
 export type Matrix = matrixModule.Matrix;
 export type Rectangle = rectangleModule.Rectangle;
