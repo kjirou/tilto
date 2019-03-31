@@ -9,15 +9,12 @@ export type Borders = borderModule.Borders;
 export type Box = boxModule.Box;
 export type Coordinate = utils.Coordinate;
 export type ElementBody = matrixModule.ElementBody;
-export type Matrix = matrixModule.Matrix;
 export type Rectangle = rectangleModule.Rectangle;
 export type Size = utils.Size;
 export type SymbolRuler = matrixModule.SymbolRuler;
 
 export const createBox = boxModule.createBox;
 export const createElementBody = matrixModule.createElementBody;
-export const createMatrix = matrixModule.createMatrix;
-export const createMatrixFromText = matrixModule.createMatrixFromText;
 export const render = boxModule.renderBox;
 export const setBorders = boxModule.setBorders;
 
