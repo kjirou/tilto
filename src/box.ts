@@ -44,7 +44,6 @@ const eaw = require('eastasianwidth');
 export type Box = {
   borders: Borders;
   children: Box[];
-  // Now neither ANSI characters nor surrogate-pairs is considered.
   content: string,
   matrix: Matrix,
   scroll?: {
