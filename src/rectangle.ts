@@ -49,8 +49,6 @@ export function shrinkRectangle(
   const width = rectangle.width - left - right;
 
   if (
-    y < 0 ||
-    x < 0 ||
     height < 0 ||
     width < 0
   ) {
