@@ -2,6 +2,7 @@ import {
   Coordinate,
   Size,
 } from './utils';
+
 export type Rectangle = {
   x: Coordinate['x'],
   y: Coordinate['y'],
@@ -47,13 +48,6 @@ export function shrinkRectangle(
   const height = rectangle.height - top - bottom;
   const x = rectangle.x + left;
   const width = rectangle.width - left - right;
-
-  if (
-    height < 0 ||
-    width < 0
-  ) {
-    throw new Error('Invalid margin sizes');
-  }
 
   return {x, y, width, height};
 }

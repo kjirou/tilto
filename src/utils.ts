@@ -6,11 +6,13 @@ import * as stripAnsi from 'strip-ansi';
 
 const ansiStyles = require('ansi-styles');
 
+// Only integers. Negative values are also valid.
 export type Coordinate = {
   x: number,
   y: number,
 };
 
+// Only ingegers. Negative values can be included but are invalid.
 export type Size = {
   width: number,
   height: number,
