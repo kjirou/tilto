@@ -1,13 +1,9 @@
+import * as stripAnsi from 'strip-ansi';
+
 import {
-  clearBottomSide,
-  clearTopSide,
-  clearLeftSide,
-  clearRightSide,
-  drawBottomSide,
-  drawCorner,
-  drawLeftSide,
-  drawRightSide,
-  drawTopSide,
+  Borders,
+  placeBorders,
+  validateMatrixWithBorders,
 } from './border';
 import {
   Element,
@@ -30,38 +26,24 @@ import {
 } from './matrix';
 import {
   Rectangle,
+  moveRectangle,
   rectangleToCoordinate,
   rectangleToSize,
-  shrinkRectangle,
 } from './rectangle';
 import {
   placeScrollBar,
 } from './scroll-bar';
 import {
+  Coordinate,
+  Size,
   validateSize,
 } from './utils';
 
 const eaw = require('eastasianwidth');
-const stripAnsi = require('strip-ansi');
 
-export type Borders = {
-  topWidth: number,
-  rightWidth: number,
-  bottomWidth: number,
-  leftWidth: number,
-  topSymbols: (ElementSymbol | null)[],
-  rightSymbols: (ElementSymbol | null)[],
-  bottomSymbols: (ElementSymbol | null)[],
-  leftSymbols: (ElementSymbol | null)[],
-  topRightSymbols: (ElementSymbol | null)[],
-  bottomRightSymbols: (ElementSymbol | null)[],
-  bottomLeftSymbols: (ElementSymbol | null)[],
-  topLeftSymbols: (ElementSymbol | null)[],
-};
 export type Box = {
   borders: Borders;
   children: Box[];
-  // Now neither ANSI characters nor surrogate-pairs is considered.
   content: string,
   matrix: Matrix,
   scroll?: {
@@ -135,116 +117,29 @@ export function createBox(
   };
 }
 
-export function createBoxFromText(text: string): Box {
-  const matrix = createMatrixFromText(text);
-
-  const box = createBox({
-    x: 0,
-    y: 0,
-    width: getWidth(matrix),
-    height: getHeight(matrix),
-  });
-
-  box.matrix = matrix;
-
-  return box;
-}
-
-export function setBorders(box: Box, options: Partial<Borders>): Box {
-  const newBorders = Object.assign({}, box.borders, options);
-
-  return Object.assign({}, box, {borders: newBorders});
-}
-
-function drawBorders(matrix: Matrix, borders: Borders): Matrix {
-  const maxWidth = getWidth(matrix);
-  const maxHeight = getHeight(matrix);
-
-  let newMatrix = matrix;
-
-  newMatrix = clearTopSide(newMatrix, borders.topWidth);
-  newMatrix = clearBottomSide(newMatrix, borders.bottomWidth);
-  newMatrix = clearLeftSide(newMatrix, borders.leftWidth);
-  newMatrix = clearRightSide(newMatrix, borders.rightWidth);
-
-  newMatrix = drawTopSide(
-    newMatrix,
-    borders.topWidth,
-    borders.topSymbols,
-    borders.leftWidth,
-    maxWidth - borders.rightWidth
-  );
-  newMatrix = drawBottomSide(
-    newMatrix,
-    borders.bottomWidth,
-    borders.bottomSymbols,
-    borders.leftWidth,
-    maxWidth - borders.rightWidth
-  );
-  newMatrix = drawLeftSide(
-    newMatrix,
-    borders.leftWidth,
-    borders.leftSymbols,
-    borders.topWidth,
-    maxHeight - borders.bottomWidth
-  );
-  newMatrix = drawRightSide(
-    newMatrix,
-    borders.rightWidth,
-    borders.rightSymbols,
-    borders.topWidth,
-    maxHeight - borders.bottomWidth
-  );
-
-  newMatrix = drawCorner(  // top-left
-    newMatrix,
-    {x: 0, y: 0,
-      width: borders.leftWidth, height: borders.topWidth},
-    borders.topLeftSymbols
-  );
-  newMatrix = drawCorner(  // top-right
-    newMatrix,
-    {x: maxWidth - borders.rightWidth, y: 0,
-      width: borders.rightWidth, height: borders.topWidth},
-    borders.topRightSymbols
-  );
-  newMatrix = drawCorner(  // bottom-left
-    newMatrix,
-    {x: 0, y: maxHeight - borders.bottomWidth,
-      width: borders.leftWidth, height: borders.bottomWidth},
-    borders.bottomLeftSymbols
-  );
-  newMatrix = drawCorner(  // bottom-right
-    newMatrix,
-    {x: maxWidth - borders.rightWidth, y: maxHeight - borders.bottomWidth,
-      width: borders.rightWidth, height: borders.bottomWidth},
-    borders.bottomRightSymbols
-  );
-
-  return newMatrix;
-}
-
 function applyBoxSettingsToMatrix(box: Box): Matrix {
   const pourableElements = parseContent(box.content, box.symbolRuler);
 
+  type FilterArguments = {
+    matrix: Matrix,
+    contentArea: Rectangle,
+    contentAreaCoordinate: Coordinate,
+    contentAreaSize: Size,
+    contentAreaMatrix: Matrix,
+  };
   type FilterResult = {
     matrix: Matrix,
     contentArea: Rectangle,
     errorOccured: boolean,
   };
-  const filters: ((preResult: FilterResult) => FilterResult)[] = [];
+  type Filter = (args: FilterArguments) => FilterResult;
+
+  const filters: Filter[] = [];
 
   // Borders
   filters.push(
-    ({matrix, contentArea}) => {
-      const newContentArea = shrinkRectangle(contentArea, {
-        top: box.borders.topWidth,
-        bottom: box.borders.bottomWidth,
-        left: box.borders.leftWidth,
-        right: box.borders.rightWidth,
-      });
-
-      if (validateSize(rectangleToSize(newContentArea)) === false) {
+    ({matrix, contentAreaMatrix, contentArea, contentAreaCoordinate}) => {
+      if (validateMatrixWithBorders(contentAreaMatrix, box.borders) === false) {
         return {
           matrix,
           contentArea,
@@ -252,23 +147,23 @@ function applyBoxSettingsToMatrix(box: Box): Matrix {
         };
       }
 
+      const placed = placeBorders(contentAreaMatrix, box.borders);
+
       return {
-        matrix: drawBorders(matrix, box.borders),
-        contentArea: newContentArea,
+        matrix: overwriteMatrix(matrix, placed.matrix, contentAreaCoordinate, box.symbolRuler),
+        contentArea: moveRectangle(placed.contentArea, contentAreaCoordinate),
         errorOccured: false,
       };
     }
   );
 
-  // A scroll bar
+  // Scroll Bar
   if (box.scroll !== undefined) {
     const scrollSettings = box.scroll;  // To avoid TypeScript's undefined check
 
     filters.push(
-      ({matrix, contentArea}) => {
-        const size = rectangleToSize(contentArea);
-
-        if (validateSize(size) === false || size.width < 1) {
+      ({matrix, contentAreaMatrix, contentArea, contentAreaCoordinate, contentAreaSize}) => {
+        if (validateSize(contentAreaSize) === false || contentAreaSize.width < 1) {
           return {
             matrix,
             contentArea,
@@ -277,7 +172,7 @@ function applyBoxSettingsToMatrix(box: Box): Matrix {
         }
 
         const placed = placeScrollBar(
-          matrix,
+          contentAreaMatrix,
           pourableElements,
           scrollSettings.y,
           scrollSettings.trackElement || createDefaultTrackElement(),
@@ -285,20 +180,75 @@ function applyBoxSettingsToMatrix(box: Box): Matrix {
         );
 
         return {
-          matrix: placed.matrix,
-          contentArea: placed.contentArea,
+          matrix: overwriteMatrix(matrix, placed.matrix, contentAreaCoordinate, box.symbolRuler),
+          contentArea: moveRectangle(placed.contentArea, contentAreaCoordinate),
           errorOccured: false,
         };
       }
     );
   }
 
-  const filtered = filters.reduce(
-    (result, filter) => {
-      if (result.errorOccured) {
-        return result;
+  // Content
+  if (box.content !== '') {
+    const scrollY = box.scroll ? box.scroll.y : 0;
+
+    filters.push(
+      ({matrix, contentAreaMatrix, contentArea, contentAreaCoordinate}) => {
+        const placedMatrix = pourContent(contentAreaMatrix, pourableElements, scrollY);
+
+        return {
+          matrix: overwriteMatrix(matrix, placedMatrix, contentAreaCoordinate, box.symbolRuler),
+          contentArea,
+          errorOccured: false,
+        };
       }
-      return filter(result);
+    );
+  }
+
+  // Children
+  if (box.children.length > 0) {
+    filters.push(
+      ({matrix, contentAreaMatrix, contentArea, contentAreaCoordinate}) => {
+        box.children
+          .slice()
+          .sort((a, b) => a.zIndex - b.zIndex)
+          .forEach(childBox => {
+            const childMatrix = applyBoxSettingsToMatrix(childBox);
+            contentAreaMatrix = overwriteMatrix(
+              contentAreaMatrix,
+              childMatrix,
+              {
+                x: childBox.x,
+                y: childBox.y,
+              },
+              box.symbolRuler
+            );
+          })
+        ;
+
+        return {
+          matrix: overwriteMatrix(matrix, contentAreaMatrix, contentAreaCoordinate, box.symbolRuler),
+          contentArea,
+          errorOccured: false,
+        };
+      }
+    );
+  }
+
+  const filterResult = filters.reduce(
+    (preFilterResult: FilterResult, filter: Filter) => {
+      if (preFilterResult.errorOccured) {
+        return preFilterResult;
+      }
+      return filter(
+        Object.assign({
+          matrix: preFilterResult.matrix,
+          contentArea: preFilterResult.contentArea,
+          contentAreaMatrix: cropMatrix(preFilterResult.matrix, preFilterResult.contentArea),
+          contentAreaCoordinate: rectangleToCoordinate(preFilterResult.contentArea),
+          contentAreaSize:  rectangleToSize(preFilterResult.contentArea),
+        })
+      );
     },
     {
       matrix: box.matrix,
@@ -307,32 +257,10 @@ function applyBoxSettingsToMatrix(box: Box): Matrix {
     }
   );
 
-  let contentAreaMatrix = cropMatrix(filtered.matrix, filtered.contentArea);
-  if (box.content !== '') {
-    const scrollY = box.scroll ? box.scroll.y : 0;
-    contentAreaMatrix = pourContent(contentAreaMatrix, box.content, box.symbolRuler, scrollY);
-  }
-
-  (box.children || [])
-    .slice()
-    .sort((a, b) => a.zIndex - b.zIndex)
-    .forEach(childBox => {
-      const preparedChildMatrix = applyBoxSettingsToMatrix(childBox);
-      contentAreaMatrix = overwriteMatrix(
-        contentAreaMatrix,
-        preparedChildMatrix,
-        {
-          x: childBox.x,
-          y: childBox.y,
-        },
-        box.symbolRuler
-      );
-    });
-
   return overwriteMatrix(
-    filtered.matrix,
-    contentAreaMatrix,
-    rectangleToCoordinate(filtered.contentArea),
+    box.matrix,
+    filterResult.matrix,
+    {x: 0, y: 0},
     box.symbolRuler
   );
 }
@@ -343,11 +271,11 @@ export function renderBox(
     backgroundSymbol?: ElementSymbol,
   } = {}
 ): string {
-  const actualOptions = Object.assign({
+  const settings = Object.assign({
     backgroundSymbol: ' ',
   }, options);
 
-  const preparedMatrix = applyBoxSettingsToMatrix(box);
+  const matrix = applyBoxSettingsToMatrix(box);
 
-  return renderMatrix(preparedMatrix, actualOptions.backgroundSymbol);
+  return renderMatrix(matrix, settings.backgroundSymbol);
 }

@@ -6,8 +6,8 @@ const ANSI_RESET = '\u001b[0m';
 
 let root = tilto.createBox({width: 80, height: 20});
 
-let sideBar = tilto.createBox({width: 20, height: 20});
-sideBar = tilto.setBorderType(sideBar, 'default');
+const sideBar = tilto.createBox({width: 20, height: 20});
+sideBar.borders = tilto.createBordersByType('default');
 sideBar.content = `Channels
 #elona
 #ftl
@@ -22,8 +22,8 @@ Direct Messages
 @foo
 @bart`;
 
-let messageListContainer = tilto.createBox({x: 20, width: 60, height: 20});
-messageListContainer = tilto.setBorders(messageListContainer, {
+const messageListContainer = tilto.createBox({x: 20, width: 60, height: 20});
+Object.assign(messageListContainer.borders, {
   topWidth: 1,
   bottomWidth: 1,
   rightWidth: 1,
@@ -49,8 +49,8 @@ kjirou 3:12PM
   はあああああああああ！
 `;
 
-let messageInput = tilto.createBox({y: 15, width: 59, height: 4});
-messageInput = tilto.setBorders(messageInput, {
+const messageInput = tilto.createBox({y: 15, width: 59, height: 4});
+Object.assign(messageInput.borders, {
   topWidth: 1,
   topSymbols: ['-'],
 });

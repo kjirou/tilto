@@ -24,6 +24,13 @@ export function rectangleToSize(rectangle: Rectangle): Size {
   };
 }
 
+export function moveRectangle(rectangle: Rectangle, coordinate: Coordinate) {
+  return Object.assign({}, rectangle, {
+    y: rectangle.y + coordinate.y,
+    x: rectangle.x + coordinate.x,
+  });
+}
+
 /**
  * Shrink a rectangle with margins
  */

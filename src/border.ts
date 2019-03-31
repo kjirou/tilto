@@ -1,12 +1,35 @@
 import {
-  Element,
   ElementSymbol,
   Matrix,
+  getHeight,
   getMaxX,
   getMaxY,
+  getWidth,
+  matrixToRectangle,
 } from './matrix';
-import {Rectangle} from './rectangle';
+import {
+  Rectangle,
+  rectangleToSize,
+  shrinkRectangle,
+} from './rectangle';
+import {
+  validateSize,
+} from './utils';
 
+export type Borders = {
+  topWidth: number,
+  rightWidth: number,
+  bottomWidth: number,
+  leftWidth: number,
+  topSymbols: (ElementSymbol | null)[],
+  rightSymbols: (ElementSymbol | null)[],
+  bottomSymbols: (ElementSymbol | null)[],
+  leftSymbols: (ElementSymbol | null)[],
+  topRightSymbols: (ElementSymbol | null)[],
+  bottomRightSymbols: (ElementSymbol | null)[],
+  bottomLeftSymbols: (ElementSymbol | null)[],
+  topLeftSymbols: (ElementSymbol | null)[],
+};
 
 function getByCirculatedIndex<ArrayElement>(ary: ArrayElement[], index: number): ArrayElement {
   const found = ary[(ary.length + index) % ary.length];
@@ -173,3 +196,97 @@ export function drawCorner(
     return row;
   });
 };
+
+function shrinkContentAreaByBorders(matrix: Matrix, borders: Borders): Rectangle {
+  return shrinkRectangle(
+    matrixToRectangle(matrix),
+    {
+      top: borders.topWidth,
+      bottom: borders.bottomWidth,
+      left: borders.leftWidth,
+      right: borders.rightWidth,
+    }
+  );
+}
+
+export function validateMatrixWithBorders(matrix: Matrix, borders: Borders): boolean {
+  const contentArea = shrinkContentAreaByBorders(matrix, borders);
+  return validateSize(rectangleToSize(contentArea));
+}
+
+export function placeBorders(matrix: Matrix, borders: Borders): {
+  matrix: Matrix,
+  contentArea: Rectangle,
+} {
+  if (validateMatrixWithBorders(matrix, borders) === false) {
+    throw new Error('Borders do not fit in the matrix');
+  }
+
+  const maxWidth = getWidth(matrix);
+  const maxHeight = getHeight(matrix);
+  let newMatrix = matrix;
+
+  newMatrix = clearTopSide(newMatrix, borders.topWidth);
+  newMatrix = clearBottomSide(newMatrix, borders.bottomWidth);
+  newMatrix = clearLeftSide(newMatrix, borders.leftWidth);
+  newMatrix = clearRightSide(newMatrix, borders.rightWidth);
+
+  newMatrix = drawTopSide(
+    newMatrix,
+    borders.topWidth,
+    borders.topSymbols,
+    borders.leftWidth,
+    maxWidth - borders.rightWidth
+  );
+  newMatrix = drawBottomSide(
+    newMatrix,
+    borders.bottomWidth,
+    borders.bottomSymbols,
+    borders.leftWidth,
+    maxWidth - borders.rightWidth
+  );
+  newMatrix = drawLeftSide(
+    newMatrix,
+    borders.leftWidth,
+    borders.leftSymbols,
+    borders.topWidth,
+    maxHeight - borders.bottomWidth
+  );
+  newMatrix = drawRightSide(
+    newMatrix,
+    borders.rightWidth,
+    borders.rightSymbols,
+    borders.topWidth,
+    maxHeight - borders.bottomWidth
+  );
+
+  newMatrix = drawCorner(  // top-left
+    newMatrix,
+    {x: 0, y: 0,
+      width: borders.leftWidth, height: borders.topWidth},
+    borders.topLeftSymbols
+  );
+  newMatrix = drawCorner(  // top-right
+    newMatrix,
+    {x: maxWidth - borders.rightWidth, y: 0,
+      width: borders.rightWidth, height: borders.topWidth},
+    borders.topRightSymbols
+  );
+  newMatrix = drawCorner(  // bottom-left
+    newMatrix,
+    {x: 0, y: maxHeight - borders.bottomWidth,
+      width: borders.leftWidth, height: borders.bottomWidth},
+    borders.bottomLeftSymbols
+  );
+  newMatrix = drawCorner(  // bottom-right
+    newMatrix,
+    {x: maxWidth - borders.rightWidth, y: maxHeight - borders.bottomWidth,
+      width: borders.rightWidth, height: borders.bottomWidth},
+    borders.bottomRightSymbols
+  );
+
+  return {
+    matrix: newMatrix,
+    contentArea: shrinkContentAreaByBorders(matrix, borders),
+  };
+}
