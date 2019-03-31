@@ -16,7 +16,6 @@ export type SymbolRuler = matrixModule.SymbolRuler;
 export const createBox = boxModule.createBox;
 export const createElementBody = matrixModule.createElementBody;
 export const render = boxModule.renderBox;
-export const setBorders = boxModule.setBorders;
 
 export function getWidth(box: Box): number {
   return matrixModule.getWidth(box.matrix);

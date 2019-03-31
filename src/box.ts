@@ -117,12 +117,6 @@ export function createBox(
   };
 }
 
-export function setBorders(box: Box, options: Partial<Borders>): Box {
-  const newBorders = Object.assign({}, box.borders, options);
-
-  return Object.assign({}, box, {borders: newBorders});
-}
-
 function applyBoxSettingsToMatrix(box: Box): Matrix {
   const pourableElements = parseContent(box.content, box.symbolRuler);
 

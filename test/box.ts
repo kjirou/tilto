@@ -4,7 +4,6 @@ import {
   Box,
   createBox,
   defaultSymbolRuler,
-  setBorders,
   renderBox,
 } from '../src/box';
 
@@ -110,7 +109,8 @@ describe('box', function() {
         });
 
         it('can set the top side border', function() {
-          box = setBorders(box, {topWidth: 1, topSymbols:['*']});
+          box.borders.topWidth = 1;
+          box.borders.topSymbols = ['*'];
           assert.strictEqual(renderBox(box), [
             '***',
             '...',
@@ -120,7 +120,8 @@ describe('box', function() {
         });
 
         it('can set the bottom side border', function() {
-          box = setBorders(box, {bottomWidth: 1, bottomSymbols:['*']});
+          box.borders.bottomWidth = 1;
+          box.borders.bottomSymbols = ['*'];
           assert.strictEqual(renderBox(box), [
             '...',
             '...',
@@ -130,7 +131,8 @@ describe('box', function() {
         });
 
         it('can set the left side border', function() {
-          box = setBorders(box, {leftWidth: 1, leftSymbols:['*']});
+          box.borders.leftWidth = 1;
+          box.borders.leftSymbols = ['*'];
           assert.strictEqual(renderBox(box), [
             '*..',
             '*..',
@@ -140,7 +142,8 @@ describe('box', function() {
         });
 
         it('can set the right side border', function() {
-          box = setBorders(box, {rightWidth: 1, rightSymbols:['*']});
+          box.borders.rightWidth = 1;
+          box.borders.rightSymbols = ['*'];
           assert.strictEqual(renderBox(box), [
             '..*',
             '..*',
@@ -150,7 +153,9 @@ describe('box', function() {
         });
 
         it('can set the top-left corner', function() {
-          box = setBorders(box, {topWidth: 1, leftWidth: 1, topLeftSymbols:['*']});
+          box.borders.topWidth = 1;
+          box.borders.leftWidth = 1;
+          box.borders.topLeftSymbols = ['*'];
           assert.strictEqual(renderBox(box), [
             '*  ',
             ' ..',
@@ -160,7 +165,9 @@ describe('box', function() {
         });
 
         it('can set the top-right corner', function() {
-          box = setBorders(box, {topWidth: 1, rightWidth: 1, topRightSymbols:['*']});
+          box.borders.topWidth = 1;
+          box.borders.rightWidth = 1;
+          box.borders.topRightSymbols = ['*'];
           assert.strictEqual(renderBox(box), [
             '  *',
             '.. ',
@@ -170,7 +177,9 @@ describe('box', function() {
         });
 
         it('can set the bottom-left corner', function() {
-          box = setBorders(box, {bottomWidth: 1, leftWidth: 1, bottomLeftSymbols:['*']});
+          box.borders.bottomWidth = 1;
+          box.borders.leftWidth = 1;
+          box.borders.bottomLeftSymbols = ['*'];
           assert.strictEqual(renderBox(box), [
             ' ..',
             ' ..',
@@ -180,7 +189,9 @@ describe('box', function() {
         });
 
         it('can set the bottom-right corner', function() {
-          box = setBorders(box, {bottomWidth: 1, rightWidth: 1, bottomRightSymbols:['*']});
+          box.borders.bottomWidth = 1;
+          box.borders.rightWidth = 1;
+          box.borders.bottomRightSymbols = ['*'];
           assert.strictEqual(renderBox(box), [
             '.. ',
             '.. ',
@@ -193,7 +204,7 @@ describe('box', function() {
       describe('borders in all sides', function() {
         it('works (case: 1)', function() {
           let box = createBox({x: 0, y: 0, width: 3, height: 4});
-          box = setBorders(box, {
+          Object.assign(box.borders, {
             topWidth: 1,
             bottomWidth: 1,
             leftWidth: 1,
@@ -218,7 +229,7 @@ describe('box', function() {
 
         it('works (case: 2)', function() {
           let box = createBox({x: 0, y: 0, width: 7, height: 6});
-          box = setBorders(box, {
+          Object.assign(box.borders, {
             topWidth: 1,
             bottomWidth: 4,
             leftWidth: 2,
@@ -248,7 +259,7 @@ describe('box', function() {
         it('works', function() {
           let box = createBox({x: 0, y: 0, width: 7, height: 6});
 
-          box = setBorders(box, {
+          Object.assign(box.borders, {
             topWidth: 1,
             bottomWidth: 1,
             leftWidth: 1,

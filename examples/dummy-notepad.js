@@ -11,7 +11,7 @@ statusBar.borders = tilto.createBordersByType('default');
 statusBar.content = '[C]lear | [Q]uit';
 
 let textarea = tilto.createBox({y: 3, width: 40, height: 17});
-textarea = tilto.setBorders(textarea, {
+Object.assign(textarea.borders, {
   bottomWidth: 1,
   leftWidth: 1,
   rightWidth: 1,
