@@ -230,7 +230,6 @@ function drawBorders(matrix: Matrix, borders: Borders): Matrix {
   return newMatrix;
 }
 
-// TODO: cache
 function applyBoxSettingsToMatrix(box: Box): Matrix {
   const pourableElements = parseContent(box.content, box.symbolRuler);
 
