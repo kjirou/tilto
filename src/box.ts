@@ -27,9 +27,9 @@ import {
 } from './matrix';
 import {
   Rectangle,
+  rectangleToSize,
   shrinkRectangle,
   toCoordinate,
-  toSize,
 } from './rectangle';
 
 const eaw = require('eastasianwidth');
@@ -83,7 +83,7 @@ export function createBox(
 
   const rectangle = Object.assign({}, {x: 0, y: 0}, rectangleLike);
 
-  const matrix = createMatrix(toSize(rectangle), settings.defaultSymbol);
+  const matrix = createMatrix(rectangleToSize(rectangle), settings.defaultSymbol);
   if (!validateMatrix(matrix)) {
     throw new Error('The matrix size is invalid');
   }

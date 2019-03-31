@@ -17,7 +17,7 @@ export function toCoordinate(rectangle: Rectangle): Coordinate {
   };
 }
 
-export function toSize(rectangle: Rectangle): Size {
+export function rectangleToSize(rectangle: Rectangle): Size {
   return {
     width: rectangle.width,
     height: rectangle.height,
