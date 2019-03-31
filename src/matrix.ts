@@ -585,7 +585,7 @@ function renderElement(element: Element): string {
     modifiers.push(ansiStyles.color[style.foregroundColor].open);
   }
   if (style.backgroundColor) {
-    modifiers.push(ansiStyles.color[style.backgroundColor].open);
+    modifiers.push(ansiStyles.bgColor[style.backgroundColor].open);
   }
   if (style.bold) {
     modifiers.push(ansiStyles.bold.open);
