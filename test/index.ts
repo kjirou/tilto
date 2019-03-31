@@ -183,6 +183,39 @@ describe('index', function() {
           ].join('\n')
         );
       });
+
+      it('should ignore borders if there is no place', function() {
+        let box1 = createBox({width: 1, height: 2});
+        box1 = setBorderType(box1, 'default');
+        assert.strictEqual(
+          render(box1),
+          [
+            ' ',
+            ' ',
+          ].join('\n')
+        );
+
+        let box2 = createBox({width: 2, height: 1});
+        box2 = setBorderType(box2, 'default');
+        assert.strictEqual(
+          render(box2),
+          '  '
+        );
+      });
+
+      it('should ignore scroll bars if there is no place', function() {
+        let box = createBox({width: 2, height: 3});
+        box = setBorderType(box, 'default');
+        box.scroll = {y: 0};
+        assert.strictEqual(
+          render(box),
+          [
+            '++',
+            '||',
+            '++',
+          ].join('\n')
+        );
+      });
     });
   });
 
