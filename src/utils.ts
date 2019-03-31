@@ -14,6 +14,13 @@ export type Size = {
   height: number,
 };
 
+export function validateSize(size: Size): boolean {
+  return size.width >= 0 &&
+    size.height >= 0 &&
+    size.width === Math.floor(size.width) &&
+    size.height === Math.floor(size.height);
+}
+
 /**
  * Split a string considering surrogate-pairs.
  */
