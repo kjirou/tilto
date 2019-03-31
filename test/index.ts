@@ -13,6 +13,7 @@ import {
   getMaxY,
   getWidth,
   render,
+  setBorderType,
 } from '../src/index';
 
 const ansiStyles = require('ansi-styles');
@@ -32,6 +33,25 @@ describe('index', function() {
             `あ${red.open}い${reset.close}${red.open}う${reset.close}e`,
           ].join('\n')
         );
+      });
+    });
+
+    describe('borders', function() {
+      describe('setBorderType', function() {
+        it('can render the "default" type', function() {
+          let box = createBox({width: 5, height: 4});
+          box = setBorderType(box, 'default');
+
+          assert.strictEqual(
+            render(box),
+            [
+              '+---+',
+              '|   |',
+              '|   |',
+              '+---+',
+            ].join('\n')
+          );
+        });
       });
     });
 
@@ -73,6 +93,75 @@ describe('index', function() {
           [
             '  b',
             '  a',
+          ].join('\n')
+        );
+      });
+    });
+
+    describe('children', function() {
+      it('can have a child', function() {
+        const box = createBox({width: 8, height: 5});
+        const child = createBox({x: 3, y: 1, width: 4, height: 3}, {defaultSymbol: '.'});
+        box.children.push(child);
+        assert.strictEqual(
+          render(box),
+          [
+            '        ',
+            '   .... ',
+            '   .... ',
+            '   .... ',
+            '        ',
+          ].join('\n')
+        );
+      });
+
+      it('should make the older brother is overwritten with the younger one', function() {
+        const box = createBox({width: 8, height: 5});
+        const child1 = createBox({x: 3, y: 1, width: 4, height: 3}, {defaultSymbol: '1'});
+        const child2 = createBox({x: 2, width: 2, height: 5}, {defaultSymbol: '2'});
+        box.children = [child1, child2];
+
+        assert.strictEqual(
+          render(box),
+          [
+            '  22    ',
+            '  22111 ',
+            '  22111 ',
+            '  22111 ',
+            '  22    ',
+          ].join('\n')
+        );
+      });
+
+      it('should make the winner by the higher "zIndex"', function() {
+        const box = createBox({width: 2, height: 2});
+        const child1 = createBox({width: 2, height: 1}, {defaultSymbol: '1'});
+        child1.zIndex = 1;
+        const child2 = createBox({width: 1, height: 2}, {defaultSymbol: '2'});
+        box.children = [child1, child2];
+
+        assert.strictEqual(
+          render(box),
+          [
+            '11',
+            '2 ',
+          ].join('\n')
+        );
+      });
+
+      it('can have children recursively', function() {
+        const box = createBox({width: 3, height: 3});
+        const child = createBox({width: 2, height: 2}, {defaultSymbol: '1'});
+        const grandchild = createBox({width: 1, height: 1}, {defaultSymbol: '2'});
+        child.children = [grandchild];
+        box.children = [child];
+
+        assert.strictEqual(
+          render(box),
+          [
+            '21 ',
+            '11 ',
+            '   ',
           ].join('\n')
         );
       });
