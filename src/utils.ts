@@ -2,10 +2,6 @@
  * This file MUST NOT depend on any file in the project.
  */
 
-import * as stripAnsi from 'strip-ansi';
-
-const ansiStyles = require('ansi-styles');
-
 // Only integers. Negative values are also valid.
 export type Coordinate = {
   x: number,
