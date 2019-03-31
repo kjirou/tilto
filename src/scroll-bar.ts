@@ -9,8 +9,12 @@ import {
 } from './matrix';
 import {
   Rectangle,
+  rectangleToSize,
   shrinkRectangle,
 } from './rectangle';
+import {
+  validateSize,
+} from './utils';
 
 export function placeScrollBar(
   matrix: Matrix,
@@ -23,6 +27,9 @@ export function placeScrollBar(
   contentArea: Rectangle,
 } {
   const nextContentArea = shrinkRectangle(matrixToRectangle(matrix), {right: 1});
+  if (!validateSize(rectangleToSize(nextContentArea))) {
+    throw new Error('The matrix\'s width must be 1 or more.');
+  }
   const matrixHeight = nextContentArea.height;
   const {contentHeight} = pourElementsVirtually(pourableElements, nextContentArea.width);
 
