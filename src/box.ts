@@ -1,3 +1,5 @@
+import * as stripAnsi from 'strip-ansi';
+
 import {
   Borders,
   placeBorders,
@@ -35,7 +37,6 @@ import {
 } from './utils';
 
 const eaw = require('eastasianwidth');
-const stripAnsi = require('strip-ansi');
 
 export type Box = {
   borders: Borders;
