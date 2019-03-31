@@ -5,8 +5,16 @@ import {
   getMaxX,
   getMaxY,
   getWidth,
+  matrixToRectangle,
 } from './matrix';
-import {Rectangle} from './rectangle';
+import {
+  Rectangle,
+  rectangleToSize,
+  shrinkRectangle,
+} from './rectangle';
+import {
+  validateSize,
+} from './utils';
 
 export type Borders = {
   topWidth: number,
@@ -189,10 +197,33 @@ export function drawCorner(
   });
 };
 
-export function drawBorders(matrix: Matrix, borders: Borders): Matrix {
+function shrinkContentAreaByBorders(matrix: Matrix, borders: Borders): Rectangle {
+  return shrinkRectangle(
+    matrixToRectangle(matrix),
+    {
+      top: borders.topWidth,
+      bottom: borders.bottomWidth,
+      left: borders.leftWidth,
+      right: borders.rightWidth,
+    }
+  );
+}
+
+export function validateMatrixWithBorders(matrix: Matrix, borders: Borders): boolean {
+  const contentArea = shrinkContentAreaByBorders(matrix, borders);
+  return validateSize(rectangleToSize(contentArea));
+}
+
+export function placeBorders(matrix: Matrix, borders: Borders): {
+  matrix: Matrix,
+  contentArea: Rectangle,
+} {
+  if (validateMatrixWithBorders(matrix, borders) === false) {
+    throw new Error('Borders do not fit in the matrix');
+  }
+
   const maxWidth = getWidth(matrix);
   const maxHeight = getHeight(matrix);
-
   let newMatrix = matrix;
 
   newMatrix = clearTopSide(newMatrix, borders.topWidth);
@@ -254,5 +285,8 @@ export function drawBorders(matrix: Matrix, borders: Borders): Matrix {
     borders.bottomRightSymbols
   );
 
-  return newMatrix;
+  return {
+    matrix: newMatrix,
+    contentArea: shrinkContentAreaByBorders(matrix, borders),
+  };
 }

@@ -1,6 +1,7 @@
 import {
   Borders,
-  drawBorders,
+  placeBorders,
+  validateMatrixWithBorders,
 } from './border';
 import {
   Element,
@@ -25,7 +26,6 @@ import {
   Rectangle,
   rectangleToCoordinate,
   rectangleToSize,
-  shrinkRectangle,
 } from './rectangle';
 import {
   placeScrollBar,
@@ -148,14 +148,7 @@ function applyBoxSettingsToMatrix(box: Box): Matrix {
   // Borders
   filters.push(
     ({matrix, contentArea}) => {
-      const newContentArea = shrinkRectangle(contentArea, {
-        top: box.borders.topWidth,
-        bottom: box.borders.bottomWidth,
-        left: box.borders.leftWidth,
-        right: box.borders.rightWidth,
-      });
-
-      if (validateSize(rectangleToSize(newContentArea)) === false) {
+      if (validateMatrixWithBorders(matrix, box.borders) === false) {
         return {
           matrix,
           contentArea,
@@ -163,9 +156,11 @@ function applyBoxSettingsToMatrix(box: Box): Matrix {
         };
       }
 
+      const result = placeBorders(matrix, box.borders);
+
       return {
-        matrix: drawBorders(matrix, box.borders),
-        contentArea: newContentArea,
+        matrix: result.matrix,
+        contentArea: result.contentArea,
         errorOccured: false,
       };
     }
