@@ -166,6 +166,24 @@ describe('index', function() {
         );
       });
     });
+
+    describe('complex cases', function() {
+      it('should apply scroll bars after borders', function() {
+        let box = createBox({width: 5, height: 4});
+        box = setBorderType(box, 'default');
+        box.content = 'abc';
+        box.scroll = {y: 0};
+        assert.strictEqual(
+          render(box),
+          [
+            '+---+',
+            '|ab#|',
+            '|c #|',
+            '+---+',
+          ].join('\n')
+        );
+      });
+    });
   });
 
   describe('getWidth, getHeight, getMaxX, getMaxY', function() {
