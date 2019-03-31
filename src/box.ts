@@ -293,11 +293,11 @@ export function renderBox(
     backgroundSymbol?: ElementSymbol,
   } = {}
 ): string {
-  const actualOptions = Object.assign({
+  const settings = Object.assign({
     backgroundSymbol: ' ',
   }, options);
 
-  const preparedMatrix = applyBoxSettingsToMatrix(box);
+  const matrix = applyBoxSettingsToMatrix(box);
 
-  return renderMatrix(preparedMatrix, actualOptions.backgroundSymbol);
+  return renderMatrix(matrix, settings.backgroundSymbol);
 }
