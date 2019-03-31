@@ -10,6 +10,8 @@ import {
   placeScrollBar,
 } from '../src/scroll-bar';
 
+const ansiStyles = require('ansi-styles');
+
 describe('scroll-bar', function() {
   const scrollElementBody = {
     symbol: '|',
@@ -29,6 +31,44 @@ describe('scroll-bar', function() {
         [
           '..#',
           '..#',
+        ].join('\n')
+      );
+    });
+
+    it('should draw a scroll bar the same as the height of the matrix if the content fits', function() {
+      const matrix = createMatrix({width: 3, height: 2});
+      const result = placeScrollBar(matrix, parseContent('a', c => 1), 0, scrollElementBody, barElementBody);
+      assert.strictEqual(
+        renderMatrix(result.matrix, '.'),
+        [
+          '..#',
+          '..#',
+        ].join('\n')
+      );
+    });
+
+    it('can change the style of the scroll bar', function() {
+      const {bgWhite, bgYellow, reset} = ansiStyles;
+      const matrix = createMatrix({width: 1, height: 2});
+      const ansiScrollElementBody = {
+        symbol: ' ',
+        style: Object.assign(createDefaultElementStyle(), {
+          backgroundColor: 'bgWhite',
+        }),
+      };
+      const ansiBarElementBody = {
+        symbol: ' ',
+        style: Object.assign(createDefaultElementStyle(), {
+          backgroundColor: 'bgYellow',
+        }),
+      };
+      const result = placeScrollBar(
+        matrix, parseContent('\n\n\n', c => 1), 0, ansiScrollElementBody, ansiBarElementBody);
+      assert.strictEqual(
+        renderMatrix(result.matrix, '.'),
+        [
+          bgYellow.open + ' ' + reset.close,
+          bgWhite.open + ' ' + reset.close,
         ].join('\n')
       );
     });
