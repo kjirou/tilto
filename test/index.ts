@@ -1,3 +1,8 @@
+/**
+ * This test file is also used as a test of whether the public APIs are sufficient.
+ * Therefore, the values to be tested MUST be created only with the public APIs.
+ */
+
 import * as assert from 'assert';
 
 import {
