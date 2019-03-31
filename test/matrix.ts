@@ -394,7 +394,7 @@ describe('matrix', function() {
     });
 
     it('works', function() {
-      matrix = pourContent(matrix, '12345\nabc', () => 1);
+      matrix = pourContent(matrix, '12345\nabc', () => 1, 0);
       assert.strictEqual(renderMatrix(matrix, '.'), [
         '1234',
         '5...',
@@ -405,7 +405,7 @@ describe('matrix', function() {
     it('ignores zero-width symbols', function() {
       matrix = pourContent(matrix, '1234aaa567aaa8aaa9', function(symbol) {
         return symbol === 'a' ? 0 : 1;
-      });
+      }, 0);
       assert.strictEqual(renderMatrix(matrix, '.'), [
         '1234',
         '5678',
@@ -431,7 +431,7 @@ describe('matrix', function() {
 
     describe('multibytes characters', function() {
       it('reduces space considering the width of multibytes', function() {
-        matrix = pourContent(matrix, 'あ\n\nいうえ', defaultSymbolRuler);
+        matrix = pourContent(matrix, 'あ\n\nいうえ', defaultSymbolRuler, 0);
         assert.strictEqual(renderMatrix(matrix, '.'), [
           'あ..',
           '....',
@@ -440,7 +440,7 @@ describe('matrix', function() {
       });
 
       it('breaks the line automatically', function() {
-        matrix = pourContent(matrix, 'あいうえおかき', defaultSymbolRuler);
+        matrix = pourContent(matrix, 'あいうえおかき', defaultSymbolRuler, 0);
         assert.strictEqual(renderMatrix(matrix, '.'), [
           'あい',
           'うえ',
@@ -449,7 +449,7 @@ describe('matrix', function() {
       });
 
       it('breaks the line automatically even when the width is not enough', function() {
-        matrix = pourContent(matrix, '1あい2う3え', defaultSymbolRuler);
+        matrix = pourContent(matrix, '1あい2う3え', defaultSymbolRuler, 0);
         assert.strictEqual(renderMatrix(matrix, '.'), [
           '1あ.',
           'い2.',
@@ -459,7 +459,7 @@ describe('matrix', function() {
 
       it('cuts the content if a multibyte character appear when the width is 1', function() {
         matrix = createMatrix({width: 1, height: 5}, null);
-        matrix = pourContent(matrix, '12あ34', defaultSymbolRuler);
+        matrix = pourContent(matrix, '12あ34', defaultSymbolRuler, 0);
         assert.strictEqual(renderMatrix(matrix, '.'), [
           '1',
           '2',
@@ -504,7 +504,7 @@ describe('matrix', function() {
     it('can render single byte ANSI characters', function() {
       const {blue, reset, underline} = ansiStyles;
       let matrix = createMatrix({width: 2, height: 2}, null);
-      matrix = pourContent(matrix, `a${blue.open}${underline.open}bc${reset.close}d`, defaultSymbolRuler);
+      matrix = pourContent(matrix, `a${blue.open}${underline.open}bc${reset.close}d`, defaultSymbolRuler, 0);
       assert.strictEqual(renderMatrix(matrix, '.'), [
         `a${blue.open}${underline.open}b${reset.close}`,
         `${blue.open}${underline.open}c${reset.close}d`,

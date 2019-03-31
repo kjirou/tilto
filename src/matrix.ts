@@ -545,7 +545,7 @@ export function pourContent(
   matrix: Matrix,
   content: string,
   symbolRuler: SymbolRuler,
-  startingY: number = 0
+  startingY: number
 ): Matrix {
   const width = getWidth(matrix);
   const height = getHeight(matrix);
