@@ -6,6 +6,7 @@
   "types": "dist/index.d.js",
   "scripts": {
     "build": "$(npm bin)/tsc --project ./tsconfigs/build.json",
+    "build-and-publish": "rm -rf ./dist && npm run build && npm publish",
     "test": "$(npm bin)/mocha --require './setup/ts-node-reigister-for-test.js' 'test/**/*.ts'",
     "typecheck": "$(npm bin)/tsc --project ./tsconfigs/test.json"
   },
@@ -43,7 +44,6 @@
     "typescript": "^3.4.1"
   },
   "files": [
-    "LICENSE",
     "README.md",
     "dist",
     "examples",
