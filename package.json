@@ -1,6 +1,6 @@
 {
   "name": "tilto",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A TUI (Text User Interface) renderer",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
